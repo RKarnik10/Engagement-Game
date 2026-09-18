@@ -10,7 +10,7 @@ in the source with a `TODO(Qn)` comment so it can be found with
 | Q1 | Construct: attention fluctuations, engagement/motivation, or both? | Both. RT-variability time course for attention; self-report probes optional (not built). | pending | |
 | Q2 | Response device and button count? | One hand, 4 buttons: `layout: "row4"`, `keys: ["1","2","3","4"]` in `src/config.js`. | pending | |
 | Q3 | Presentation software for scanning? | Browser build now; scanner platform decided in Phase 4. | pending | |
-| Q4 | TR, run length, number of runs, trigger key, dummy scans? | `trS: 1.0`, `durationS: 60`, `triggerKey: "t"`, `firstOnsetMs: 2000` in `src/config.js`. | pending | |
+| Q4 | TR, run length, number of runs, trigger key, dummy scans? | `trS: 1.0`, `durationS: 60`, `triggerKey: "t"`, `firstOnsetMs: 2000` in `src/config.js`. Rehaan expects real runs of about 10 to 15 minutes (noted September 18, 2026, to confirm); the settings panel's run-length limit is 600 s and must be raised for 15-minute runs. | pending | |
 | Q5 | Continuous play or blocks? | Continuous with jittered gaps (`src/schedule.js`). | pending | |
 | Q6 | Show a score or feedback? | Configurable, on for piloting: `showScore: true`; hit +1, false press -1 (`src/engine.js`). | pending | |
 | Q7 | Adaptive difficulty? | Off. Fixed timing from config; nothing adapts. | pending | |

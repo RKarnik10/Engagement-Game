@@ -5,6 +5,10 @@ Every value marked *(placeholder)* is a starting guess to be confirmed, not a de
 
 **Author:** Rehaan Karnik (undergraduate RA). Drafted with AI assistance; references were pulled from search and are listed in section 10 with notes on what was and was not verified.
 
+**Build status (September 18, 2026):** Phases 0 and 1 of section 7 are done. The modular build in `src/` reproduces the prototype exactly and has automated tests (`npm test`). **Section 11** lists next steps and what we need from Dr. Song, in plain language.
+
+**Companion documents:** [research-notes.md](research-notes.md) (the reading behind sections 8 and 10), [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [docs/decisions.md](docs/decisions.md) (where answers to the open questions are recorded).
+
 ---
 
 ## 1. What this is
@@ -25,7 +29,7 @@ Attention and engagement measures are computed from those logs offline (section 
 
 `index.html` is the v0.1 prototype: one self-contained HTML file with no dependencies. It implements sections 3 and 4.5 of this document with placeholder parameters. The modular build described in sections 6 and 7 will live in `src/` and should not replace `index.html` until it matches the prototype's behavior.
 
-To run locally, open `index.html` in any browser.
+To run locally, open `index.html` in any browser. For the modular build in `src/`, run `npm run serve` from the repository folder and open http://localhost:8000/ (it needs a local server because browsers block ES modules opened straight from disk).
 
 ---
 
@@ -178,6 +182,7 @@ Vanilla HTML, CSS, and JavaScript with **no framework and no build step**, so it
 ```
 Engagement-Game/
 ├── README.md               # this blueprint
+├── research-notes.md       # literature notes behind sections 8 and 10
 ├── index.html              # v0.1 single-file prototype (served by GitHub Pages)
 ├── package.json            # {"type": "module"}, test script only, no dependencies
 ├── src/
@@ -194,15 +199,23 @@ Engagement-Game/
 │   ├── export.js           # events TSV + full JSON; download via Blob
 │   └── render/
 │       ├── board.js        # hole layout shared by all skins
+│       ├── trace.js        # attention-trace chart, experimenter view only
 │       ├── skin-mole.js
 │       └── skin-neutral.js
 ├── tests/
 │   ├── schedule.test.js
-│   └── classify.test.js
+│   ├── classify.test.js
+│   ├── engine.test.js
+│   ├── export.test.js
+│   ├── input.test.js
+│   ├── config.test.js
+│   └── _sim.js             # fake-clock helper for the engine tests
 ├── analysis/               # Phase 3 (Python)
 │   └── compute_measures.py
 └── docs/
-    └── decisions.md        # dated answers to the open questions
+    ├── decisions.md        # dated answers to the open questions
+    ├── review-guide.md     # how to review this repository without reading code
+    └── analysis-plan.md    # Phase 3 analysis plan in plain language
 ```
 
 **Rules that keep it analyzable and portable:**
@@ -353,3 +366,62 @@ Verification notes are in brackets. "Checked" means I saw the abstract or publis
 10. Song, H., Shim, W. M., & Rosenberg, M. D. (2023). *eLife, 12*, e85487. [the lab's required pre-read; add the exact title from the paper]
 11. Weber, R., Ritterfeld, U., & Mathiak, K. (2006). Does playing violent video games induce aggression? Empirical evidence of a functional magnetic resonance imaging study. *Media Psychology, 8*(1), 39–60. [checked]
 12. gradCPT and abrupt onsets: the point in section 3.5 comes from the introduction of a bioRxiv preprint on oscillatory dynamics of sustained attention states (doi 10.1101/2024.09.25.614991), which credits the gradCPT to Rosenberg et al. (2013) and Esterman et al. (2013). [preprint, not peer reviewed; pull the original Rosenberg et al. 2013 citation before citing formally]
+
+---
+
+## 11. Next steps and what we need from Dr. Song
+
+*Written September 18, 2026, in plain language. Companion documents: [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [research-notes.md](research-notes.md) (the reading behind sections 8 and 10).*
+
+### 11.1 Where things stand
+
+- This blueprint is drafted but not yet reviewed.
+- The prototype (`index.html`) works in any browser.
+- The modular build (`src/`) reproduces the prototype exactly, is split into small files, and has 55 automated checks. Phases 0 and 1 of section 7 are done.
+- Nothing has been decided. Every number is a placeholder until Dr. Song weighs in.
+- Rehaan expects real runs of about 10 to 15 minutes. The game handles that; the one change needed is raising the run-length limit in the settings panel, which currently stops at 10 minutes.
+
+### 11.2 Step 1: try the game (about 10 minutes)
+
+1. Open the live page, or download the repository and double-click `index.html`. Press **T** to start. The T key stands in for the scanner's start pulse.
+2. Play the 60-second run. Press the key under each mole (keys 1 to 4). Do not press for eggplants.
+3. In the settings panel, switch "How targets appear" to "Rise and sink gradually" and play again. This is the version closer to the lab's gradCPT, where nothing pops up suddenly.
+4. Scroll down. The attention trace is a first look at reaction-time steadiness over the run. The two downloads (events table, full log) are the files the analysis would use.
+
+What we want to know: does this feel like the right task, and are these the outputs you would want to work with?
+
+### 11.3 Step 2: decide the open questions
+
+Each row below is a row of section 2 and of `docs/decisions.md`. A one-line answer per row is enough.
+
+| # | Question, in plain terms | What the code assumes today |
+|---|---|---|
+| Q1 | What are we trying to measure: how attention drifts moment to moment, how engaged the person feels, or both? | Both. Steadiness of reaction times for attention; optional "how focused were you?" questions for engagement. |
+| Q2 | What button box does the scanner have, and how many buttons? | One hand, four buttons, keys 1 to 4. |
+| Q3 | Which software should the scanner version run on? | Browser for now; decide before scanning (Phase 4). |
+| Q4 | Scan settings: TR (how often the scanner takes one brain picture), run length, number of runs, the key the scanner sends at each picture, and how many throwaway pictures at the start. | TR 1 s, 60 s demo runs, key `t`, first target 2 s after the start. |
+| Q5 | One continuous run, or blocks with rest in between? | Continuous, with random gaps between targets. |
+| Q6 | Should the player see a score? | Yes, for piloting. A score is a reward and may add its own brain response. |
+| Q7 | Should the game speed up when someone does well? | No. Fixed speed keeps runs comparable. |
+| Q8 | Moles and eggplants, or neutral shapes? | Build both; moles first. |
+| Q9 | Who are the participants? | Healthy adults. |
+| Q10 | Is eye tracking available, and how big is the screen at the viewing distance? | Unknown. |
+| Q11 | If an eggplant is up and the player presses the key for a *different* hole, is that a false press or just a wrong-hole press? | Wrong-hole; the target stays up. |
+
+### 11.4 Step 3: check the design details
+
+1. The outcome table in section 3.3: do the seven outcomes and their names match how you want targets scored?
+2. The timing values in section 3.4: 80% moles, each target up for 0.9 s, gaps of 0.5 to 1.2 s, first three targets always moles, never two eggplants in a row, never the same hole twice in a row.
+3. The events file columns in section 4.5: are these the columns your fMRI pipeline expects, and are the names right for BIDS?
+4. The measures in section 5, especially how the attention trace is computed. The details to confirm are listed in section 10 of `docs/analysis-plan.md`.
+5. Pop-up or gradual rise (section 3.5): which one, or pilot both?
+
+### 11.5 Lab logistics
+
+- Does this fall under an existing IRB protocol, or does it need an amendment?
+- Who will validate timing on the scanner computer (Phase 4), and which display and button box will be used?
+- Is a public GitHub repository acceptable for this project?
+
+### 11.6 After the answers
+
+Answers go in `docs/decisions.md` with the date. Then, in order: the neutral look (Phase 2), the analysis script (Phase 3), participant and run numbering in the data files, a full-screen participant view, automatic saving at the end of a run, and the scanner-readiness work (Phase 4).
