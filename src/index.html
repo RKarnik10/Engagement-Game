@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whac-a-mole attention task: modular build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Whac-a-mole attention task</h1>
+    <p>Modular build (<code>src/</code>) of the v0.1 prototype. Same schedule, response rules, timestamps, and export format; split into ES modules so the schedule and classification logic can be unit-tested. Play a run, then look at the attention trace and download the data.</p>
+  </header>
+
+  <div class="layout">
+    <section aria-label="Participant display">
+      <div class="stage" id="stage" tabindex="0">
+        <div class="hud"><span id="hud-score">Score 0</span><span id="hud-time"></span></div>
+        <div class="holes row4 skin-mole" id="holes"></div>
+        <div class="overlay" id="overlay" aria-live="polite">
+          <div class="overlay-card">
+            <h3 id="ov-title">Ready</h3>
+            <div id="ov-body"></div>
+          </div>
+        </div>
+      </div>
+      <p class="caption small muted">The grey panel is what a participant would see. It stays the same mid-grey in light and dark mode because screen brightness changes show up in visual cortex. Keys work on a keyboard; taps work on a touch screen. <kbd>Esc</kbd> ends a run early.</p>
+    </section>
+
+    <aside class="console" aria-label="Experimenter console">
+      <section>
+        <h2>Run settings</h2>
+        <form id="settings" autocomplete="off">
+          <fieldset>
+            <legend>Look</legend>
+            <div class="opts">
+              <label><input type="radio" name="skin" value="mole" checked> Moles and eggplants</label>
+              <label class="disabled"><input type="radio" name="skin" value="neutral" disabled> Neutral shapes (Phase 2)</label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Layout</legend>
+            <div class="opts">
+              <label><input type="radio" name="layout" value="row4" checked> 4 holes, keys 1 to 4 (button-box style)</label>
+              <label><input type="radio" name="layout" value="grid9"> 9 holes, number pad (desktop only)</label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>How targets appear</legend>
+            <div class="opts">
+              <label><input type="radio" name="onset" value="instant" checked> Pop up instantly</label>
+              <label><input type="radio" name="onset" value="gradual"> Rise and sink gradually</label>
+            </div>
+          </fieldset>
+          <div class="range-row">
+            <div class="top"><label for="goProb">Share of go targets</label><output id="goProb-out" for="goProb">80%</output></div>
+            <input type="range" id="goProb" name="goProb" min="60" max="95" step="5" value="80">
+          </div>
+          <div class="row"><label for="holdMs">Time up (ms)</label><input type="number" id="holdMs" name="holdMs" min="300" max="3000" step="50" value="900"></div>
+          <div class="row"><label for="isiMin">Shortest gap (ms)</label><input type="number" id="isiMin" name="isiMin" min="100" max="5000" step="50" value="500"></div>
+          <div class="row"><label for="isiMax">Longest gap (ms)</label><input type="number" id="isiMax" name="isiMax" min="100" max="5000" step="50" value="1200"></div>
+          <div class="row"><label for="duration">Run length (s)</label><input type="number" id="duration" name="duration" min="15" max="600" step="5" value="60"></div>
+          <div class="row"><label for="tr">TR, simulated (s)</label><input type="number" id="tr" name="tr" min="0.3" max="5" step="0.1" value="1"></div>
+          <div class="row"><label for="seed">Schedule seed</label><input type="number" id="seed" name="seed" step="1" value="1234"></div>
+          <div class="opts" style="margin-bottom:14px"><label><input type="checkbox" name="showScore" checked> Show score to the player</label></div>
+        </form>
+        <div class="buttons">
+          <button type="button" class="primary" id="start">Start run</button>
+          <button type="button" id="stop" disabled>End run</button>
+        </div>
+      </section>
+      <section>
+        <h2>Live measures</h2>
+        <dl class="measures">
+          <dt>Go targets hit</dt><dd id="m-hit">–</dd>
+          <dt>Hit rate</dt><dd id="m-hitrate">–</dd>
+          <dt>False presses on no-go</dt><dd id="m-com">–</dd>
+          <dt>Wrong-hole presses</dt><dd id="m-wrong">–</dd>
+          <dt>Presses with no target</dt><dd id="m-early">–</dd>
+          <dt>Mean reaction time</dt><dd id="m-rt">–</dd>
+          <dt>RT variability (SD ÷ mean)</dt><dd id="m-cv">–</dd>
+        </dl>
+      </section>
+    </aside>
+  </div>
+
+  <section class="timeline" aria-label="Attention trace">
+    <h2>Attention trace</h2>
+    <p class="small muted">Each dot is a hit. Its height is how far that reaction time strayed from the run's average, smoothed across neighboring hits. This is a simplified version of the variance time course in Esterman et al. (2013). Above the dashed median line counts as less stable responding. Yellow ticks mark simulated scan volumes, and red marks show errors.</p>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 1000 198" role="img" aria-label="Reaction-time variability over the run, with scan volumes and errors marked">
+        <g id="chart-data"><text class="axis" x="522" y="72" text-anchor="middle">Start a run to see the trace.</text></g>
+        <line id="cursor" class="cursor" x1="44" x2="44" y1="8" y2="180" visibility="hidden"/>
+      </svg>
+    </div>
+    <ul class="legend">
+      <li><span class="sw sw-line"></span>Smoothed RT deviation</li>
+      <li><span class="sw sw-med"></span>Median split</li>
+      <li><span class="sw sw-tr"></span>Scan volume (simulated)</li>
+      <li><span class="sw sw-tri"></span>False press on no-go</li>
+      <li><span class="sw sw-ring"></span>Missed go target</li>
+    </ul>
+  </section>
+
+  <div class="data">
+    <section aria-label="Event log">
+      <h2>Event log</h2>
+      <p class="small muted">Newest first. Times are seconds since the trigger. Simulated volume events are kept in the full log but not listed here.</p>
+      <ul class="log" id="log"><li><span class="empty">No events yet.</span></li></ul>
+    </section>
+    <section aria-label="Run data">
+      <h2>Run data</h2>
+      <p class="small muted">The events table follows the BIDS events layout (onset and duration in seconds), so it can go straight into an fMRI design matrix. The full log keeps every event, the settings, and frame-timing stats. Downloads are named by date, time, and seed.</p>
+      <div class="export-bar">
+        <button type="button" class="primary" id="dl-tsv" disabled>Download events (TSV)</button>
+        <button type="button" class="primary" id="dl-json" disabled>Download full log (JSON)</button>
+      </div>
+      <div class="export-bar">
+        <button type="button" id="fmt-tsv" aria-pressed="true">Preview TSV</button>
+        <button type="button" id="fmt-json" aria-pressed="false">Preview JSON</button>
+        <button type="button" id="copy" disabled>Copy</button>
+      </div>
+      <textarea id="export" readonly spellcheck="false" placeholder="Finish or end a run to see its data here." aria-label="Run data export"></textarea>
+      <p id="copy-status" class="small muted" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <section class="notes small muted">
+    <h2>What is real here and what is not</h2>
+    <p>The schedule, response rules, timestamps, and export format follow the project blueprint. Every number in Run settings is a placeholder until Dr. Song weighs in. The trigger and scan volumes are simulated (further presses of <kbd>T</kbd> during a run are logged as real trigger pulses), the neutral look is not built yet, and browser timing is tied to screen refresh rather than validated against scanner hardware.</p>
+    <p>Source code and the full project blueprint: <a href="https://github.com/RKarnik10/Engagement-Game">github.com/RKarnik10/Engagement-Game</a></p>
+  </section>
+</div>
+
+<script type="module" src="./main.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+*.log
+# Local run exports (keep data out of the repo)
+exports/

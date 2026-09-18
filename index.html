@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whac-a-mole attention task: prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EDF0;
+  --panel:#F7F9FA;
+  --ink:#18222C;
+  --muted:#56626E;
+  --line:#C6CED5;
+  --signal:#E3B21F;
+  --signal-ink:#18222C;
+  --good:#2E7A57;
+  --bad:#B4432C;
+  /* Stimulus colours are fixed in both themes: the participant display must not change with the viewer's theme. */
+  --field:#808080;
+  --mound:#6E6258;
+  --pit:#2A231D;
+  --lip:#574B40;
+  --mole:#6A4A33;
+  --mole-muzzle:#9C7A5E;
+  --mole-nose:#D9938A;
+  --mole-eye:#17110D;
+  --egg:#5E3D7E;
+  --leaf:#4C7A3A;
+  --n-go:#2F6E8C;
+  --n-go-core:#A9D3E4;
+  --n-nogo:#8C6A2F;
+  --font:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11171D; --panel:#18212A; --ink:#E2E8ED; --muted:#98A4AF; --line:#2B3742;
+    --good:#5CC196; --bad:#E27A62;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11171D; --panel:#18212A; --ink:#E2E8ED; --muted:#98A4AF; --line:#2B3742;
+  --good:#5CC196; --bad:#E27A62;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 56px}
+header{max-width:66ch;margin-bottom:22px}
+h1{font-size:1.75rem;line-height:1.15;margin:0 0 6px;font-weight:700;letter-spacing:-0.01em}
+header p{margin:0;color:var(--muted)}
+h2{font-size:1.05rem;line-height:1.3;margin:0 0 8px;font-weight:700}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* Participant display */
+.stage{position:relative;aspect-ratio:16/10;background:var(--field);border-radius:4px;overflow:hidden;outline:none;touch-action:manipulation;-webkit-user-select:none;user-select:none;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+.stage:focus-visible{box-shadow:0 0 0 3px var(--signal)}
+.holes{position:absolute;display:grid;justify-items:center;align-items:center}
+.holes.row4{inset:22% 5% 16%;grid-template-columns:repeat(4,1fr);column-gap:3%}
+.holes.grid9{inset:8% 29% 5%;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);column-gap:6%}
+.hole{width:100%;max-width:170px;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.hole .art{width:100%}
+.hole svg{width:100%;height:auto;display:block;overflow:visible}
+.keycap{margin-top:2px;font-size:.8rem;font-weight:700;line-height:1;padding:4px 7px;border-radius:3px;background:#B9B9B9;color:#262626;font-variant-numeric:tabular-nums}
+.holes.grid9 .keycap{font-size:.7rem;padding:3px 6px}
+.mound{fill:var(--mound)}
+.pit{fill:var(--pit)}
+.lip{fill:none;stroke:var(--lip);stroke-width:5;stroke-linecap:round}
+.fx{fill:none;stroke:transparent;stroke-width:4}
+.hole.fx-hit .fx{stroke:#F2F2F2}
+.hole.fx-com .fx{stroke:#C0392B}
+.hole.fx-wrong .fx{stroke:#1E1E1E}
+.shape-go,.shape-nogo{display:none}
+.hole[data-type="go"] .shape-go{display:inline}
+.hole[data-type="nogo"] .shape-nogo{display:inline}
+.skin-neutral .mole-art{display:none}
+.skin-mole .neutral-art{display:none}
+.m-body{fill:var(--mole)} .m-muzzle,.m-paw{fill:var(--mole-muzzle)} .m-nose{fill:var(--mole-nose)} .m-eye{fill:var(--mole-eye)}
+.egg{fill:var(--egg)} .leaf{fill:var(--leaf)}
+.n-go{fill:var(--n-go)} .n-go-core{fill:var(--n-go-core)} .n-nogo{fill:var(--n-nogo)}
+
+.hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:10px 14px;font-weight:700;color:#1C1C1C;font-variant-numeric:tabular-nums;font-size:.95rem;pointer-events:none}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:6%;background:rgba(128,128,128,.6)}
+.overlay-card{max-width:31rem;background:#2B2B2B;color:#F1F1F1;padding:18px 22px;border-radius:4px}
+.overlay-card h3{margin:0 0 6px;font-size:1.15rem}
+.overlay-card p{font-size:.95rem}
+.overlay-card p:last-child{margin-bottom:0}
+kbd{font-family:var(--font);font-weight:700;background:#E3E3E3;color:#1C1C1C;border-radius:3px;padding:0 6px}
+.caption{margin-top:10px}
+
+/* Experimenter console */
+.console{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px}
+.console section + section{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+fieldset{border:0;margin:0 0 14px;padding:0;min-width:0}
+legend{font-weight:700;font-size:.92rem;margin-bottom:4px;padding:0}
+.opts{display:flex;flex-direction:column;gap:2px}
+.opts label{display:flex;gap:8px;align-items:baseline;font-size:.92rem;cursor:pointer}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:8px;font-size:.92rem}
+.row input[type=number]{width:5.6rem;font:inherit;font-size:.92rem;padding:4px 6px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--ink);font-variant-numeric:tabular-nums}
+.range-row{margin-bottom:10px;font-size:.92rem}
+.range-row .top{display:flex;justify-content:space-between}
+.range-row output{font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--signal)}
+input[type=radio],input[type=checkbox]{accent-color:var(--ink)}
+.buttons{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-weight:700;font-size:.95rem;padding:9px 14px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+button.primary{background:var(--signal);border-color:var(--signal);color:var(--signal-ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.measures{display:grid;grid-template-columns:1fr auto;gap:5px 12px;margin:0;font-size:.92rem}
+.measures dt{color:var(--muted)}
+.measures dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Attention trace */
+.timeline{margin-top:30px}
+.timeline > p{max-width:72ch}
+.chart-wrap{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px 12px 4px;overflow-x:auto}
+#chart{width:100%;min-width:560px;height:auto;display:block}
+.vtc{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+.vtc-dot{fill:var(--ink)}
+.median{stroke:var(--muted);stroke-dasharray:5 5}
+.axisline{stroke:var(--line)}
+.tr{stroke:var(--signal);stroke-width:1.6}
+.mk-com{fill:var(--bad)}
+.mk-om{fill:none;stroke:var(--bad);stroke-width:1.8}
+.axis{fill:var(--muted);font-size:13px;font-family:var(--font)}
+.cursor{stroke:var(--muted);stroke-width:1}
+.legend{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:.86rem;color:var(--muted);margin:10px 0 0;padding:0;list-style:none}
+.sw{display:inline-block;vertical-align:middle;margin-right:7px}
+.sw-line{width:16px;height:2px;background:var(--ink)}
+.sw-med{width:16px;border-top:2px dashed var(--muted)}
+.sw-tr{width:2px;height:12px;background:var(--signal)}
+.sw-tri{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid var(--bad)}
+.sw-ring{width:10px;height:10px;border:2px solid var(--bad);border-radius:50%}
+
+/* Data */
+.data{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:24px;margin-top:30px}
+@media (max-width:900px){.data{grid-template-columns:1fr}}
+.log{list-style:none;margin:0;padding:0;font-size:.88rem;font-variant-numeric:tabular-nums;max-height:330px;overflow:auto;border-top:1px solid var(--line)}
+.log li{display:grid;grid-template-columns:4.6rem 8.6rem minmax(0,1fr);gap:8px;padding:5px 2px;border-bottom:1px solid var(--line)}
+.log .t{color:var(--muted)}
+.log .ev{font-weight:700}
+.log .ev-hit,.log .ev-correct_rejection{color:var(--good)}
+.log .ev-commission,.log .ev-omission,.log .ev-wrong_hole{color:var(--bad)}
+.log .empty{display:block;color:var(--muted);padding:10px 2px}
+.export-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.export-bar button{padding:6px 11px;font-size:.88rem}
+textarea{width:100%;min-height:300px;font-family:var(--mono);font-size:.78rem;line-height:1.45;white-space:pre;overflow:auto;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:10px;resize:vertical}
+#copy-status{min-height:1.4em;margin-top:6px}
+.notes{margin-top:30px;max-width:72ch;border-top:1px solid var(--line);padding-top:16px}
+
+@media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto !important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Whac-a-mole attention task</h1>
+    <p>A working prototype of the in-scanner game, built for the Song Lab meeting on September 18, 2026. Play a run, then look at the attention trace and the data it produced.</p>
+  </header>
+
+  <div class="layout">
+    <section aria-label="Participant display">
+      <div class="stage" id="stage" tabindex="0">
+        <div class="hud"><span id="hud-score">Score 0</span><span id="hud-time"></span></div>
+        <div class="holes row4 skin-mole" id="holes"></div>
+        <div class="overlay" id="overlay" aria-live="polite">
+          <div class="overlay-card">
+            <h3 id="ov-title">Ready</h3>
+            <div id="ov-body"></div>
+          </div>
+        </div>
+      </div>
+      <p class="caption small muted">The grey panel is what a participant would see. It stays the same mid-grey in light and dark mode because screen brightness changes show up in visual cortex. Keys work on a keyboard; taps work on a touch screen. <kbd>Esc</kbd> ends a run early.</p>
+    </section>
+
+    <aside class="console" aria-label="Experimenter console">
+      <section>
+        <h2>Run settings</h2>
+        <form id="settings" autocomplete="off">
+          <fieldset>
+            <legend>Look</legend>
+            <div class="opts">
+              <label><input type="radio" name="skin" value="mole" checked> Moles and eggplants</label>
+              <label><input type="radio" name="skin" value="neutral"> Neutral shapes (no whacking)</label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Layout</legend>
+            <div class="opts">
+              <label><input type="radio" name="layout" value="row4" checked> 4 holes, keys 1 to 4 (button-box style)</label>
+              <label><input type="radio" name="layout" value="grid9"> 9 holes, number pad (desktop only)</label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>How targets appear</legend>
+            <div class="opts">
+              <label><input type="radio" name="onset" value="instant" checked> Pop up instantly</label>
+              <label><input type="radio" name="onset" value="gradual"> Rise and sink gradually</label>
+            </div>
+          </fieldset>
+          <div class="range-row">
+            <div class="top"><label for="goProb">Share of go targets</label><output id="goProb-out" for="goProb">80%</output></div>
+            <input type="range" id="goProb" name="goProb" min="60" max="95" step="5" value="80">
+          </div>
+          <div class="row"><label for="holdMs">Time up (ms)</label><input type="number" id="holdMs" name="holdMs" min="300" max="3000" step="50" value="900"></div>
+          <div class="row"><label for="isiMin">Shortest gap (ms)</label><input type="number" id="isiMin" name="isiMin" min="100" max="5000" step="50" value="500"></div>
+          <div class="row"><label for="isiMax">Longest gap (ms)</label><input type="number" id="isiMax" name="isiMax" min="100" max="5000" step="50" value="1200"></div>
+          <div class="row"><label for="duration">Run length (s)</label><input type="number" id="duration" name="duration" min="15" max="600" step="5" value="60"></div>
+          <div class="row"><label for="tr">TR, simulated (s)</label><input type="number" id="tr" name="tr" min="0.3" max="5" step="0.1" value="1"></div>
+          <div class="row"><label for="seed">Schedule seed</label><input type="number" id="seed" name="seed" step="1" value="1234"></div>
+          <div class="opts" style="margin-bottom:14px"><label><input type="checkbox" name="showScore" checked> Show score to the player</label></div>
+        </form>
+        <div class="buttons">
+          <button type="button" class="primary" id="start">Start run</button>
+          <button type="button" id="stop" disabled>End run</button>
+        </div>
+      </section>
+      <section>
+        <h2>Live measures</h2>
+        <dl class="measures">
+          <dt>Go targets hit</dt><dd id="m-hit">–</dd>
+          <dt>Hit rate</dt><dd id="m-hitrate">–</dd>
+          <dt>False presses on no-go</dt><dd id="m-com">–</dd>
+          <dt>Wrong-hole presses</dt><dd id="m-wrong">–</dd>
+          <dt>Presses with no target</dt><dd id="m-early">–</dd>
+          <dt>Mean reaction time</dt><dd id="m-rt">–</dd>
+          <dt>RT variability (SD ÷ mean)</dt><dd id="m-cv">–</dd>
+        </dl>
+      </section>
+    </aside>
+  </div>
+
+  <section class="timeline" aria-label="Attention trace">
+    <h2>Attention trace</h2>
+    <p class="small muted">Each dot is a hit. Its height is how far that reaction time strayed from the run's average, smoothed across neighboring hits. This is a simplified version of the variance time course in Esterman et al. (2013). Above the dashed median line counts as less stable responding. Yellow ticks mark simulated scan volumes, and red marks show errors.</p>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 1000 198" role="img" aria-label="Reaction-time variability over the run, with scan volumes and errors marked">
+        <g id="chart-data"><text class="axis" x="522" y="72" text-anchor="middle">Start a run to see the trace.</text></g>
+        <line id="cursor" class="cursor" x1="44" x2="44" y1="8" y2="180" visibility="hidden"/>
+      </svg>
+    </div>
+    <ul class="legend">
+      <li><span class="sw sw-line"></span>Smoothed RT deviation</li>
+      <li><span class="sw sw-med"></span>Median split</li>
+      <li><span class="sw sw-tr"></span>Scan volume (simulated)</li>
+      <li><span class="sw sw-tri"></span>False press on no-go</li>
+      <li><span class="sw sw-ring"></span>Missed go target</li>
+    </ul>
+  </section>
+
+  <div class="data">
+    <section aria-label="Event log">
+      <h2>Event log</h2>
+      <p class="small muted">Newest first. Times are seconds since the trigger.</p>
+      <ul class="log" id="log"><li><span class="empty">No events yet.</span></li></ul>
+    </section>
+    <section aria-label="Run data">
+      <h2>Run data</h2>
+      <p class="small muted">The events table follows the BIDS events layout (onset and duration in seconds), so it can go straight into an fMRI design matrix. The full log keeps every event, the settings, and frame-timing stats.</p>
+      <div class="export-bar">
+        <button type="button" id="fmt-tsv" aria-pressed="true">Events table (TSV)</button>
+        <button type="button" id="fmt-json" aria-pressed="false">Full log (JSON)</button>
+        <button type="button" id="copy" disabled>Copy</button>
+      </div>
+      <textarea id="export" readonly spellcheck="false" placeholder="Finish or end a run to see its data here." aria-label="Run data export"></textarea>
+      <p id="copy-status" class="small muted" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <section class="notes small muted">
+    <h2>What is real here and what is not</h2>
+    <p>The schedule, response rules, timestamps, and export format follow the project blueprint. Every number in Run settings is a placeholder until Dr. Song weighs in. The trigger and scan volumes are simulated, the two looks are not yet matched for brightness, and browser timing is tied to screen refresh rather than validated against scanner hardware.</p>
+    <p>Source code and the full project blueprint: <a href="https://github.com/RKarnik10/Engagement-Game" style="color:inherit">github.com/RKarnik10/Engagement-Game</a></p>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const form = $('settings'), holesEl = $('holes'), overlay = $('overlay');
+const ovTitle = $('ov-title'), ovBody = $('ov-body');
+const hudScore = $('hud-score'), hudTime = $('hud-time');
+const startBtn = $('start'), stopBtn = $('stop');
+const logEl = $('log'), exportBox = $('export');
+const chartData = $('chart-data'), cursorEl = $('cursor');
+
+const KEYMAP = { row4:['1','2','3','4'], grid9:['7','8','9','4','5','6','1','2','3'] };
+const RAMP_MS = 350;
+const CH = { W:1000, L:44, R:14, base:118, height:100 };
+const LABEL = {
+  trigger:'Trigger', target_on:'Target up', hit:'Hit', omission:'Missed',
+  commission:'False press', correct_rejection:'Correct skip', wrong_hole:'Wrong hole',
+  no_target_press:'Press, no target', truncated:'Cut off', run_end:'Run end'
+};
+
+/* Seeded PRNG (mulberry32) so the same seed always yields the same schedule. */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : NaN;
+const sdev = a => { if (a.length < 2) return NaN; const m = mean(a); return Math.sqrt(a.reduce((s, x) => s + (x - m) * (x - m), 0) / (a.length - 1)); };
+const median = a => { if (!a.length) return NaN; const s = [...a].sort((x, y) => x - y); const k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
+
+function readConfig(){
+  const f = new FormData(form);
+  const num = (k, d) => { const v = parseFloat(f.get(k)); return Number.isFinite(v) ? v : d; };
+  let lo = num('isiMin', 500), hi = num('isiMax', 1200);
+  if (hi < lo) { const tmp = lo; lo = hi; hi = tmp; }
+  return {
+    skin: f.get('skin') || 'mole',
+    layout: f.get('layout') || 'row4',
+    onset: f.get('onset') || 'instant',
+    rampMs: RAMP_MS,
+    goProb: clamp(num('goProb', 80), 60, 95) / 100,
+    holdMs: clamp(num('holdMs', 900), 300, 3000),
+    isiMinMs: clamp(lo, 100, 5000),
+    isiMaxMs: clamp(hi, 100, 5000),
+    durationS: clamp(num('duration', 60), 15, 600),
+    trS: clamp(num('tr', 1), 0.3, 5),
+    showScore: f.get('showScore') === 'on',
+    seed: Math.trunc(num('seed', 1234))
+  };
+}
+
+/* Schedule is fixed before the run and never depends on responses. */
+function buildSchedule(cfg){
+  const rand = mulberry32(cfg.seed);
+  const nHoles = KEYMAP[cfg.layout].length;
+  const windowMs = cfg.holdMs + (cfg.onset === 'gradual' ? 2 * cfg.rampMs : 0);
+  const endMs = cfg.durationS * 1000;
+  const trials = [];
+  let t = 2000, prev = -1;
+  while (t + windowMs <= endMs){
+    let hole;
+    do { hole = Math.floor(rand() * nHoles); } while (hole === prev);
+    trials.push({ trial: trials.length + 1, hole, scheduledOnsetMs: Math.round(t), windowMs });
+    prev = hole;
+    t += windowMs + cfg.isiMinMs + rand() * (cfg.isiMaxMs - cfg.isiMinMs);
+  }
+  // Exact go/no-go proportion. Constraints: first 3 trials are go; no two no-go in a row.
+  // Pick k values from 0..(slots-k), sort, then spread them out by +j so no two are adjacent.
+  const n = trials.length;
+  const slots = Math.max(0, n - 3);
+  const nNogo = Math.min(Math.round(n * (1 - cfg.goProb)), Math.floor((slots + 1) / 2));
+  const pool = Array.from({ length: Math.max(0, slots - nNogo + 1) }, (_, i) => i);
+  for (let i = pool.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); const tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp; }
+  const picks = pool.slice(0, nNogo).sort((p, q) => p - q);
+  const types = Array(n).fill('go');
+  picks.forEach((v, j) => { types[3 + v + j] = 'nogo'; });
+  let streak = 0;
+  trials.forEach((tr, i) => {
+    tr.type = types[i];
+    tr.precedingGo = tr.type === 'nogo' ? streak : null;
+    streak = tr.type === 'go' ? streak + 1 : 0;
+  });
+  return trials;
+}
+
+function holeSVG(i){
+  return '<svg viewBox="0 0 120 120" aria-hidden="true">' +
+    '<defs><clipPath id="clip-' + i + '"><rect x="-10" y="-10" width="140" height="102"/></clipPath></defs>' +
+    '<ellipse class="mound" cx="60" cy="95" rx="57" ry="19"/>' +
+    '<ellipse class="pit" cx="60" cy="92" rx="45" ry="12"/>' +
+    '<g clip-path="url(#clip-' + i + ')"><g class="target" transform="translate(0 84)">' +
+      '<g class="shape-go">' +
+        '<g class="mole-art">' +
+          '<path class="m-body" d="M28 118 V56 C28 34 42 22 60 22 C78 22 92 34 92 56 V118 Z"/>' +
+          '<ellipse class="m-muzzle" cx="60" cy="66" rx="17" ry="13"/>' +
+          '<circle class="m-eye" cx="49" cy="47" r="3.6"/><circle class="m-eye" cx="71" cy="47" r="3.6"/>' +
+          '<ellipse class="m-nose" cx="60" cy="59" rx="7" ry="5"/>' +
+          '<ellipse class="m-paw" cx="42" cy="86" rx="9" ry="6"/><ellipse class="m-paw" cx="78" cy="86" rx="9" ry="6"/>' +
+        '</g>' +
+        '<g class="neutral-art"><circle class="n-go" cx="60" cy="62" r="30"/><circle class="n-go-core" cx="60" cy="62" r="13"/></g>' +
+      '</g>' +
+      '<g class="shape-nogo">' +
+        '<g class="mole-art">' +
+          '<ellipse class="egg" cx="60" cy="70" rx="23" ry="33"/>' +
+          '<path class="leaf" d="M40 44 Q60 28 80 44 Q70 40 60 47 Q50 40 40 44 Z"/>' +
+          '<rect class="leaf" x="57" y="24" width="6" height="14" rx="2"/>' +
+        '</g>' +
+        '<g class="neutral-art"><path class="n-nogo" d="M60 30 L92 62 L60 94 L28 62 Z"/></g>' +
+      '</g>' +
+    '</g></g>' +
+    '<path class="lip" d="M15 92 A45 12 0 0 0 105 92"/>' +
+    '<ellipse class="fx" cx="60" cy="92" rx="52" ry="16"/>' +
+  '</svg>';
+}
+
+function renderBoard(cfg){
+  holesEl.className = 'holes ' + cfg.layout + ' skin-' + cfg.skin;
+  holesEl.innerHTML = KEYMAP[cfg.layout].map((k, i) =>
+    '<div class="hole" data-i="' + i + '" data-type=""><div class="art">' + holeSVG(i) + '</div><span class="keycap">' + k + '</span></div>'
+  ).join('');
+}
+
+function setTarget(i, p){
+  const h = holesEl.children[i];
+  if (!h) return;
+  h.querySelector('.target').setAttribute('transform', 'translate(0 ' + (84 * (1 - p)).toFixed(1) + ')');
+}
+
+function visibility(el, win, cfg){
+  if (cfg.onset !== 'gradual') return 1;
+  const r = cfg.rampMs;
+  if (el < r) return el / r;
+  if (el > win - r) return Math.max(0, (win - el) / r);
+  return 1;
+}
+
+function instructions(cfg){
+  const keys = cfg.layout === 'row4' ? 'keys 1 to 4' : 'the number pad, where 7 8 9 is the top row';
+  return cfg.skin === 'mole'
+    ? 'Whack each mole by pressing its key. Leave the eggplants alone. Use ' + keys + '.'
+    : 'Press the key under each round light. Skip the diamonds. Use ' + keys + '.';
+}
+
+function setIdleOverlay(cfg){
+  ovTitle.textContent = 'Ready';
+  ovBody.innerHTML = '<p>' + instructions(cfg) + '</p>' +
+    '<p>Press <kbd>T</kbd> or select Start run. T stands in for the scanner\u2019s trigger pulse, and every timestamp is measured from it.</p>';
+  overlay.hidden = false;
+}
+
+/* ---------- run state ---------- */
+let run = null;
+
+function startRun(){
+  if (run && run.running) return;
+  const cfg = readConfig();
+  renderBoard(cfg);
+  const trials = buildSchedule(cfg);
+  run = {
+    cfg, trials, next: 0, active: null, running: true, t0: performance.now(),
+    events: [], score: 0, counts: { wrong_hole: 0, no_target_press: 0 }, volumes: 0,
+    lastFrame: null, frames: { n: 0, sum: 0, max: 0, slow: 0 }, raf: 0
+  };
+  logEl.innerHTML = '';
+  exportBox.value = '';
+  $('copy').disabled = true;
+  $('copy-status').textContent = '';
+  logEvent('trigger', { volume: 0, note: 'simulated' }, 0);
+  setFormDisabled(true);
+  startBtn.disabled = true; stopBtn.disabled = false;
+  overlay.hidden = true;
+  hudScore.hidden = !cfg.showScore;
+  hudScore.textContent = 'Score 0';
+  cursorEl.setAttribute('visibility', 'visible');
+  updateMeasures(); drawChart();
+  $('stage').focus({ preventScroll: true });
+  run.raf = requestAnimationFrame(tick);
+}
+
+function tick(){
+  if (!run || !run.running) return;
+  const now = performance.now();
+  const t = now - run.t0;
+  const cfg = run.cfg, trials = run.trials;
+
+  if (run.lastFrame !== null){
+    const d = now - run.lastFrame, f = run.frames;
+    f.n++; f.sum += d; if (d > f.max) f.max = d; if (d > 20) f.slow++;
+  }
+  run.lastFrame = now;
+
+  const trMs = cfg.trS * 1000;
+  while ((run.volumes + 1) * trMs <= t){
+    run.volumes++;
+    run.events.push({ t_ms: +(run.volumes * trMs).toFixed(1), event: 'volume', volume: run.volumes, simulated: true });
+  }
+
+  if (run.active){
+    const a = run.active, el = t - a.actualOnsetMs;
+    if (el >= a.windowMs) resolve(a, a.type === 'go' ? 'omission' : 'correct_rejection', null, t, null);
+    else setTarget(a.hole, visibility(el, a.windowMs, cfg));
+  }
+
+  if (!run.active && run.next < trials.length && t >= trials[run.next].scheduledOnsetMs){
+    const a = trials[run.next++];
+    a.actualOnsetMs = t;
+    run.active = a;
+    holesEl.children[a.hole].dataset.type = a.type;
+    setTarget(a.hole, visibility(0, a.windowMs, cfg));
+    logEvent('target_on', { trial: a.trial, hole: a.hole + 1, type: a.type, scheduled_ms: a.scheduledOnsetMs, lag_ms: +(t - a.scheduledOnsetMs).toFixed(1) }, t);
+  }
+
+  hudTime.textContent = Math.max(0, Math.ceil(cfg.durationS - t / 1000)) + ' s';
+  moveCursor(t);
+  if (t >= cfg.durationS * 1000){ endRun('completed'); return; }
+  run.raf = requestAnimationFrame(tick);
+}
+
+function resolve(a, outcome, rtMs, t, source){
+  a.outcome = outcome; a.rtMs = rtMs; a.offsetMs = t; a.source = source;
+  setTarget(a.hole, 0);
+  run.active = null;
+  const d = { trial: a.trial, hole: a.hole + 1, type: a.type };
+  if (rtMs != null) d.rt_ms = +rtMs.toFixed(1);
+  if (source) d.source = source;
+  logEvent(outcome, d, t);
+  if (outcome === 'hit') bump(1);
+  else if (outcome === 'commission') bump(-1);
+  if (outcome === 'hit') flash(a.hole, 'fx-hit');
+  if (outcome === 'commission') flash(a.hole, 'fx-com');
+  updateMeasures(); drawChart();
+}
+
+function respond(i, source){
+  if (!run || !run.running) return;
+  const t = performance.now() - run.t0;
+  const a = run.active;
+  if (a && a.hole === i){
+    resolve(a, a.type === 'go' ? 'hit' : 'commission', t - a.actualOnsetMs, t, source);
+  } else if (a){
+    run.counts.wrong_hole++;
+    logEvent('wrong_hole', { trial: a.trial, hole: i + 1, target_hole: a.hole + 1, source }, t);
+    flash(i, 'fx-wrong'); updateMeasures();
+  } else {
+    run.counts.no_target_press++;
+    logEvent('no_target_press', { hole: i + 1, source }, t);
+    updateMeasures();
+  }
+}
+
+function endRun(reason){
+  if (!run || !run.running) return;
+  const t = performance.now() - run.t0;
+  cancelAnimationFrame(run.raf);
+  if (run.active){
+    const a = run.active;
+    a.outcome = 'truncated'; a.offsetMs = t;
+    setTarget(a.hole, 0);
+    run.active = null;
+    logEvent('truncated', { trial: a.trial, hole: a.hole + 1, type: a.type }, t);
+  }
+  run.running = false;
+  run.endedMs = t;
+  logEvent('run_end', { reason }, t);
+  setFormDisabled(false);
+  startBtn.disabled = false; stopBtn.disabled = true;
+  const s = stats();
+  ovTitle.textContent = reason === 'completed' ? 'Run finished' : 'Run ended early';
+  ovBody.innerHTML = '<p>' + s.hits + ' of ' + (s.hits + s.om) + ' go targets hit, ' + s.com + ' false presses on ' + (s.com + s.cr) +
+    ' no-go targets' + (s.rts.length ? ', mean reaction time ' + Math.round(s.m) + ' ms.' : '.') + '</p>' +
+    '<p>The attention trace and full data are below. Press <kbd>T</kbd> or select Start run to play again.</p>';
+  overlay.hidden = false;
+  updateMeasures(); drawChart(); moveCursor(t);
+  showExport();
+  $('copy').disabled = false;
+}
+
+function bump(d){ run.score += d; hudScore.textContent = 'Score ' + run.score; }
+
+function flash(i, cls){
+  const h = holesEl.children[i];
+  if (!h) return;
+  h.classList.remove('fx-hit', 'fx-com', 'fx-wrong');
+  void h.offsetWidth;
+  h.classList.add(cls);
+  clearTimeout(h._fx);
+  h._fx = setTimeout(() => h.classList.remove(cls), 200);
+}
+
+function logEvent(event, data, t){
+  const e = Object.assign({ t_ms: +t.toFixed(1), event }, data);
+  run.events.push(e);
+  const detail = [];
+  if (data.trial) detail.push('trial ' + data.trial);
+  if (data.hole != null) detail.push('hole ' + data.hole);
+  if (data.type) detail.push(data.type === 'go' ? 'go' : 'no-go');
+  if (data.rt_ms != null) detail.push(Math.round(data.rt_ms) + ' ms');
+  if (data.lag_ms != null && data.lag_ms > 20) detail.push('late by ' + Math.round(data.lag_ms) + ' ms');
+  if (data.reason) detail.push(data.reason);
+  const li = document.createElement('li');
+  li.innerHTML = '<span class="t">' + (t / 1000).toFixed(2) + ' s</span><span class="ev ev-' + event + '">' + (LABEL[event] || event) + '</span><span>' + detail.join(', ') + '</span>';
+  logEl.prepend(li);
+  while (logEl.children.length > 80) logEl.lastChild.remove();
+}
+
+function stats(){
+  const done = run.trials.filter(x => x.outcome && x.outcome !== 'truncated');
+  const c = o => done.filter(x => x.outcome === o).length;
+  const rts = done.filter(x => x.outcome === 'hit').map(x => x.rtMs);
+  return { hits: c('hit'), om: c('omission'), com: c('commission'), cr: c('correct_rejection'), rts, m: mean(rts), s: sdev(rts) };
+}
+
+function updateMeasures(){
+  if (!run) return;
+  const s = stats();
+  const pct = (a, b) => b ? Math.round(100 * a / b) + '%' : '–';
+  $('m-hit').textContent = s.hits + ' / ' + (s.hits + s.om);
+  $('m-hitrate').textContent = pct(s.hits, s.hits + s.om);
+  $('m-com').textContent = s.com + ' / ' + (s.com + s.cr);
+  $('m-wrong').textContent = run.counts.wrong_hole;
+  $('m-early').textContent = run.counts.no_target_press;
+  $('m-rt').textContent = s.rts.length ? Math.round(s.m) + ' ms' : '–';
+  $('m-cv').textContent = s.rts.length > 1 ? (s.s / s.m).toFixed(2) : '–';
+}
+
+function smooth(arr, sigma){
+  const n = arr.length, out = new Array(n), rad = Math.ceil(sigma * 3);
+  for (let i = 0; i < n; i++){
+    let s = 0, w = 0;
+    for (let k = -rad; k <= rad; k++){
+      const j = i + k;
+      if (j < 0 || j >= n) continue;
+      const g = Math.exp(-(k * k) / (2 * sigma * sigma));
+      s += g * arr[j]; w += g;
+    }
+    out[i] = s / w;
+  }
+  return out;
+}
+
+function xScale(t){
+  const dur = run.cfg.durationS * 1000;
+  return CH.L + (clamp(t, 0, dur) / dur) * (CH.W - CH.L - CH.R);
+}
+
+function moveCursor(t){
+  const x = xScale(t).toFixed(1);
+  cursorEl.setAttribute('x1', x); cursorEl.setAttribute('x2', x);
+}
+
+function drawChart(){
+  if (!run) return;
+  const cfg = run.cfg, dur = cfg.durationS * 1000, x = xScale;
+  let s = '<line class="axisline" x1="' + CH.L + '" x2="' + (CH.W - CH.R) + '" y1="' + CH.base + '" y2="' + CH.base + '"/>';
+  s += '<text class="axis" x="' + CH.L + '" y="11">Higher means less stable responding</text>';
+  const trMs = cfg.trS * 1000;
+  for (let k = 0; k * trMs <= dur + 1; k++){
+    const xx = x(k * trMs).toFixed(1);
+    s += '<line class="tr" x1="' + xx + '" x2="' + xx + '" y1="162" y2="' + (k % 10 === 0 ? 176 : 169) + '"/>';
+  }
+  const stepS = cfg.durationS > 150 ? 30 : 10;
+  for (let sec = 0; sec <= cfg.durationS; sec += stepS){
+    s += '<text class="axis" x="' + x(sec * 1000).toFixed(1) + '" y="194" text-anchor="middle">' + sec + ' s</text>';
+  }
+  run.trials.forEach(a => {
+    if (a.outcome === 'commission'){
+      const xx = x(a.actualOnsetMs);
+      s += '<path class="mk-com" d="M' + (xx - 5).toFixed(1) + ' 150 L' + (xx + 5).toFixed(1) + ' 150 L' + xx.toFixed(1) + ' 140 Z"/>';
+    } else if (a.outcome === 'omission'){
+      s += '<circle class="mk-om" cx="' + x(a.actualOnsetMs).toFixed(1) + '" cy="145" r="4.2"/>';
+    }
+  });
+  const hits = run.trials.filter(a => a.outcome === 'hit');
+  if (hits.length >= 3){
+    const rts = hits.map(a => a.rtMs), m = mean(rts), sd = sdev(rts) || 1;
+    const sm = smooth(rts.map(r => Math.abs(r - m) / sd), 1.5);
+    const top = Math.max(1.5, ...sm);
+    const y = v => CH.base - (v / top) * CH.height;
+    const med = y(median(sm)).toFixed(1);
+    s += '<line class="median" x1="' + CH.L + '" x2="' + (CH.W - CH.R) + '" y1="' + med + '" y2="' + med + '"/>';
+    s += '<polyline class="vtc" points="' + hits.map((a, j) => x(a.actualOnsetMs).toFixed(1) + ',' + y(sm[j]).toFixed(1)).join(' ') + '"/>';
+    hits.forEach((a, j) => { s += '<circle class="vtc-dot" cx="' + x(a.actualOnsetMs).toFixed(1) + '" cy="' + y(sm[j]).toFixed(1) + '" r="2.6"/>'; });
+  } else {
+    s += '<text class="axis" x="' + ((CH.W + CH.L) / 2) + '" y="72" text-anchor="middle">The trace appears after three hits.</text>';
+  }
+  chartData.innerHTML = s;
+}
+
+/* ---------- export ---------- */
+let exportMode = 'tsv';
+
+function buildTSV(){
+  const keys = KEYMAP[run.cfg.layout];
+  const rows = [['onset', 'duration', 'trial_type', 'hole', 'key', 'outcome', 'response_time', 'scheduled_onset', 'preceding_go']];
+  run.trials.filter(a => a.actualOnsetMs != null).forEach(a => {
+    rows.push([
+      (a.actualOnsetMs / 1000).toFixed(3),
+      a.offsetMs != null ? ((a.offsetMs - a.actualOnsetMs) / 1000).toFixed(3) : 'n/a',
+      a.type, a.hole + 1, keys[a.hole], a.outcome || 'n/a',
+      a.rtMs != null ? (a.rtMs / 1000).toFixed(3) : 'n/a',
+      (a.scheduledOnsetMs / 1000).toFixed(3),
+      a.precedingGo != null ? a.precedingGo : 'n/a'
+    ]);
+  });
+  return rows.map(r => r.join('\t')).join('\n');
+}
+
+function buildJSON(){
+  const f = run.frames;
+  return JSON.stringify({
+    meta: {
+      task: 'whac-a-mole go/no-go', version: '0.1-demo', created: new Date().toISOString(),
+      clock: 'milliseconds from simulated trigger, via performance.now()',
+      onset_note: 'actual onset = animation frame on which the target was first drawn; display latency not measured',
+      user_agent: navigator.userAgent,
+      frame_stats: f.n ? { frames: f.n, mean_interval_ms: +(f.sum / f.n).toFixed(2), max_interval_ms: +f.max.toFixed(1), intervals_over_20ms: f.slow } : null,
+      config: run.cfg
+    },
+    trials: run.trials.filter(a => a.actualOnsetMs != null).map(a => ({
+      trial: a.trial, type: a.type, hole: a.hole + 1, scheduled_onset_ms: a.scheduledOnsetMs,
+      actual_onset_ms: +a.actualOnsetMs.toFixed(1), offset_ms: a.offsetMs != null ? +a.offsetMs.toFixed(1) : null,
+      outcome: a.outcome || null, rt_ms: a.rtMs != null ? +a.rtMs.toFixed(1) : null,
+      preceding_go: a.precedingGo, input: a.source || null
+    })),
+    events: run.events
+  }, null, 2);
+}
+
+function showExport(){
+  if (!run || run.running) return;
+  exportBox.value = exportMode === 'tsv' ? buildTSV() : buildJSON();
+  $('fmt-tsv').setAttribute('aria-pressed', String(exportMode === 'tsv'));
+  $('fmt-json').setAttribute('aria-pressed', String(exportMode === 'json'));
+}
+
+$('fmt-tsv').addEventListener('click', () => { exportMode = 'tsv'; showExport(); });
+$('fmt-json').addEventListener('click', () => { exportMode = 'json'; showExport(); });
+$('copy').addEventListener('click', async () => {
+  exportBox.focus(); exportBox.select();
+  let ok = false;
+  try { await navigator.clipboard.writeText(exportBox.value); ok = true; }
+  catch (_) { try { ok = document.execCommand('copy'); } catch (__) { ok = false; } }
+  $('copy-status').textContent = ok ? 'Copied.' : 'Copying is blocked here. The text is selected, so press Ctrl+C or \u2318C.';
+});
+
+/* ---------- controls ---------- */
+function setFormDisabled(v){ form.querySelectorAll('input').forEach(el => { el.disabled = v; }); }
+
+function syncIdle(){
+  if (run && run.running) return;
+  const cfg = readConfig();
+  $('goProb-out').textContent = Math.round(cfg.goProb * 100) + '%';
+  renderBoard(cfg);
+  setIdleOverlay(cfg);
+  hudScore.hidden = !cfg.showScore;
+  hudTime.textContent = cfg.durationS + ' s';
+}
+
+form.addEventListener('input', syncIdle);
+form.addEventListener('submit', e => e.preventDefault());
+startBtn.addEventListener('click', startRun);
+stopBtn.addEventListener('click', () => endRun('stopped'));
+
+document.addEventListener('keydown', e => {
+  const tag = e.target && e.target.tagName;
+  const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+  if (!run || !run.running){
+    if (!typing && (e.key === 't' || e.key === 'T') && !e.metaKey && !e.ctrlKey && !e.altKey){ e.preventDefault(); startRun(); }
+    return;
+  }
+  if (e.key === 'Escape'){ endRun('stopped'); return; }
+  if (e.repeat) return;
+  const i = KEYMAP[run.cfg.layout].indexOf(e.key);
+  if (i < 0) return;
+  e.preventDefault();
+  respond(i, 'key ' + e.key);
+});
+
+holesEl.addEventListener('pointerdown', e => {
+  const h = e.target.closest('.hole');
+  if (!h || !run || !run.running) return;
+  e.preventDefault();
+  respond(Number(h.dataset.i), 'pointer');
+});
+
+syncIdle();
+})();
+</script>
+</body>
+</html>
