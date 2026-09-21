@@ -2,9 +2,7 @@
  * Test helper: drive the engine under a fake clock and a fake animation-frame
  * loop. Not a test file (no .test.js suffix).
  *
- * presses: [{ tMs, hole, source? }]   pulses: [{ tMs, source? }]
- * frameMs: fixed frame interval; frameJitter(frameIndex) -> ms overrides it.
- * stopAt: call engine.stop('stopped') at this time.
+ * presses: [{ tMs, button, source? }]   pulses: [{ tMs, source? }]
  */
 import { createEngine } from '../src/engine.js';
 import { createLogger } from '../src/logger.js';
@@ -35,7 +33,7 @@ export function simulateRun({ config, trials, presses = [], pulses = [], stopAt 
     while (queue.length && queue[0].tMs <= next) {
       const ev = queue.shift();
       if (ev.tMs > now) now = ev.tMs;
-      if (ev.kind === 'press') engine.press(ev.hole, ev.source || 'key');
+      if (ev.kind === 'press') engine.press(ev.button, ev.source || 'key');
       else engine.pulse(ev.source || 'key t');
     }
     if (stopAt != null && next >= stopAt) {

@@ -6,34 +6,29 @@
  * to the logger. It never draws: the renderer subscribes through `onFrame`
  * and `onEvent` and only draws what the engine reports.
  *
+ * A "press" is a BUTTON index (a column in the 3x3 layout), not a hole.
+ *
  * `clock`, `raf`, and `caf` can be injected so the engine runs under a fake
- * clock in Node tests. Defaults use performance.now() and
- * requestAnimationFrame in the browser.
+ * clock in Node tests.
  */
 
 import {
   classifyPress, classifyTimeout, classifyRunEnd, endsTrial, hasResponseTime, OUTCOME,
 } from './classify.js';
+import { runDurationMs } from './config.js';
 
 const round1 = (x) => +x.toFixed(1);
 
 /** A frame interval above this counts as "slow" in the frame statistics (README 4.5). */
 export const SLOW_FRAME_MS = 20;
 
-// TODO(Q6): score is a reward signal. Hit +1, false press on a no-go -1, as in the prototype.
+/**
+ * Score deltas, kept for piloting outside the scanner. DECIDED(Q6): the
+ * participant is shown nothing, so this never reaches the screen unless
+ * showScore is turned back on.
+ */
 const SCORE_DELTA = Object.freeze({ [OUTCOME.HIT]: 1, [OUTCOME.COMMISSION]: -1 });
 
-/**
- * @param {object} opts
- * @param {object} opts.config     Resolved config (config.js).
- * @param {Array}  opts.trials     Schedule from schedule.js (not mutated; copied).
- * @param {object} opts.logger     From logger.js.
- * @param {() => number} [opts.clock]  Milliseconds, monotonic. Default performance.now().
- * @param {(fn: Function) => any} [opts.raf]   Default requestAnimationFrame.
- * @param {(id: any) => void} [opts.caf]       Default cancelAnimationFrame.
- * @param {(frame: {tMs:number, active:object|null, elapsedMs:number|null}) => void} [opts.onFrame]
- * @param {(record: object, trial: object|null) => void} [opts.onEvent]
- */
 export function createEngine({ config, trials, logger, clock, raf, caf, onFrame, onEvent }) {
   if (!config || !Array.isArray(trials) || !logger) {
     throw new Error('engine: config, trials, and logger are required');
@@ -45,10 +40,10 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
   const eventHook = onEvent || (() => {});
 
   const records = trials.map((t) => ({
-    ...t, actualOnsetMs: null, offsetMs: null, outcome: null, rtMs: null, source: null,
+    ...t, actualOnsetMs: null, offsetMs: null, outcome: null, rtMs: null, source: null, pressed: null,
   }));
-  const nHoles = config.keys.length;
-  const durationMs = config.durationS * 1000;
+  const nButtons = config.keys.length;
+  const durationMs = runDurationMs(config);
   const trMs = config.trS * 1000;
 
   const s = {
@@ -76,13 +71,18 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
 
   const elapsed = () => now() - s.t0;
 
-  function resolve(a, outcome, rtMs, t, source) {
+  function resolve(a, outcome, rtMs, t, source, pressed) {
     a.outcome = outcome;
     a.rtMs = rtMs;
     a.offsetMs = t;
     a.source = source;
+    a.pressed = pressed == null ? null : pressed;
     s.active = null;
-    const d = { trial: a.trial, hole: a.hole + 1, type: a.type };
+    const d = {
+      trial: a.trial, hole: a.hole + 1, row: a.row, col: a.col,
+      type: a.type, stim: a.stim, expected_button: a.response + 1,
+    };
+    if (pressed != null) d.pressed_button = pressed + 1;
     if (rtMs != null) d.rt_ms = round1(rtMs);
     if (source) d.source = source;
     if (SCORE_DELTA[outcome]) s.score += SCORE_DELTA[outcome];
@@ -115,7 +115,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     // Active target reaches the end of its window.
     if (s.active) {
       const el = t - s.active.actualOnsetMs;
-      if (el >= s.active.windowMs) resolve(s.active, classifyTimeout(s.active), null, t, null);
+      if (el >= s.active.windowMs) resolve(s.active, classifyTimeout(s.active), null, t, null, null);
     }
 
     // Next scheduled target. The onset logged is this frame's time: the frame
@@ -125,7 +125,8 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       a.actualOnsetMs = t;
       s.active = a;
       emit('target_on', {
-        trial: a.trial, hole: a.hole + 1, type: a.type,
+        trial: a.trial, hole: a.hole + 1, row: a.row, col: a.col,
+        type: a.type, stim: a.stim, expected_button: a.response + 1,
         scheduled_ms: a.scheduledOnsetMs, lag_ms: round1(t - a.scheduledOnsetMs),
       }, t, a);
     }
@@ -140,41 +141,42 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     s.rafId = requestFrame(tick);
   }
 
-  /**
-   * Start the run. Sets t = 0 and logs the trigger.
-   * @param {{source?: string}} [opts]  e.g. { source: 'key t' } or { source: 'button' }.
-   */
+  /** Start the run. Sets t = 0 and logs the trigger. */
   function start(opts = {}) {
     if (s.phase !== 'idle') throw new Error('engine: start() can only be called once');
     s.phase = 'running';
     s.t0 = now();
     s.tMs = 0;
-    emit('trigger', { volume: 0, source: opts.source || 'button' }, 0);
+    emit('trigger', { volume: 0, source: opts.source || 'button', setting: config.setting }, 0);
     s.rafId = requestFrame(tick);
   }
 
   /**
-   * A key or pointer press on a hole.
-   * @param {number} hole    0-based hole index.
-   * @param {string} source  e.g. "key 3" or "pointer".
+   * A button press (a column in the 3x3 layout).
+   * @param {number} button  0-based button index.
+   * @param {string} source  e.g. "key 2" or "pointer".
    * @returns {string|null}  The outcome code, or null if the run is not running.
    */
-  function press(hole, source) {
+  function press(button, source) {
     if (s.phase !== 'running') return null;
-    if (!Number.isInteger(hole) || hole < 0 || hole >= nHoles) {
-      throw new Error(`engine: hole must be an integer in [0, ${nHoles}), got ${hole}`);
+    if (!Number.isInteger(button) || button < 0 || button >= nButtons) {
+      throw new Error(`engine: button must be an integer in [0, ${nButtons}), got ${button}`);
     }
     const t = elapsed();
     const a = s.active;
-    const outcome = classifyPress(a, hole);
+    const outcome = classifyPress(a, button);
     if (endsTrial(outcome)) {
-      resolve(a, outcome, hasResponseTime(outcome) ? t - a.actualOnsetMs : null, t, source);
+      resolve(a, outcome, hasResponseTime(outcome) ? t - a.actualOnsetMs : null, t, source, button);
     } else if (outcome === OUTCOME.WRONG_HOLE) {
       s.counts.wrong_hole++;
-      emit(outcome, { trial: a.trial, hole: hole + 1, target_hole: a.hole + 1, source }, t, a);
+      emit(outcome, {
+        trial: a.trial, hole: a.hole + 1, row: a.row, col: a.col,
+        expected_button: a.response + 1, pressed_button: button + 1,
+        rt_ms: round1(t - a.actualOnsetMs), source,
+      }, t, a);
     } else {
       s.counts.no_target_press++;
-      emit(outcome, { hole: hole + 1, source }, t);
+      emit(outcome, { pressed_button: button + 1, source }, t);
     }
     return outcome;
   }
@@ -190,10 +192,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     return emit('volume', { volume: s.pulses, simulated: false, source }, t);
   }
 
-  /**
-   * End the run. A target that is still up becomes `truncated`.
-   * @param {'completed'|'stopped'} reason
-   */
+  /** End the run. A target that is still up becomes `truncated`. */
   function end(reason) {
     if (s.phase !== 'running') return;
     const t = elapsed();
@@ -204,7 +203,10 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       a.outcome = outcome;
       a.offsetMs = t;
       s.active = null;
-      emit(outcome, { trial: a.trial, hole: a.hole + 1, type: a.type }, t, a);
+      emit(outcome, {
+        trial: a.trial, hole: a.hole + 1, row: a.row, col: a.col,
+        type: a.type, stim: a.stim, expected_button: a.response + 1,
+      }, t, a);
     }
     s.phase = 'ended';
     s.endedMs = t;

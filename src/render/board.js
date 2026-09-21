@@ -1,9 +1,11 @@
 /**
  * Board: hole layout and drawing helpers shared by all skins (README 3.6).
  *
- * Only draws. Never decides outcomes. The engine reports what is up and the
- * board shows it. Skins supply the target art; everything else (mound, pit,
- * clip, key caps, feedback ring) lives here so it is identical across skins.
+ * Only draws. Never decides outcomes.
+ *
+ * Decided September 21, 2026: the board gives the participant NO feedback.
+ * A press changes nothing on screen; moles only pop in and out. There is no
+ * flash, no highlight, and no score, so nothing here reacts to a press.
  */
 
 import { LAYOUTS } from '../config.js';
@@ -18,73 +20,68 @@ const HOLE = Object.freeze({ mound: '#6E6258', pit: '#2A231D', lip: '#574B40' })
 const TRAVEL = 84;
 
 /**
- * SVG for one hole. The target group holds both go and no-go art; the hole's
- * data-type attribute picks which one is visible (styles.css).
+ * SVG for one hole. The target group holds every stimulus picture; the hole's
+ * data-stim attribute picks which one is visible (styles.css).
  * @param {number} i     0-based hole index (for a unique clip-path id).
- * @param {object} skin  { goArt, nogoArt }.
+ * @param {object} skin  { art: { [stimName]: svgFragment } }.
  */
 export function holeSVG(i, skin) {
+  const arts = Object.entries(skin.art)
+    .map(([name, svg]) => `<g class="stim" data-stim="${name}">${svg}</g>`)
+    .join('');
   return (
     `<svg viewBox="0 0 120 120" aria-hidden="true">` +
       `<defs><clipPath id="clip-${i}"><rect x="-10" y="-10" width="140" height="102"/></clipPath></defs>` +
       `<ellipse fill="${HOLE.mound}" cx="60" cy="95" rx="57" ry="19"/>` +
       `<ellipse fill="${HOLE.pit}" cx="60" cy="92" rx="45" ry="12"/>` +
-      `<g clip-path="url(#clip-${i})"><g class="target" transform="translate(0 ${TRAVEL})">` +
-        `<g class="shape-go">${skin.goArt}</g>` +
-        `<g class="shape-nogo">${skin.nogoArt}</g>` +
-      `</g></g>` +
+      `<g clip-path="url(#clip-${i})"><g class="target" transform="translate(0 ${TRAVEL})">${arts}</g></g>` +
       `<path fill="none" stroke="${HOLE.lip}" stroke-width="5" stroke-linecap="round" d="M15 92 A45 12 0 0 0 105 92"/>` +
-      `<ellipse class="fx" cx="60" cy="92" rx="52" ry="16"/>` +
     `</svg>`
   );
 }
 
 /**
  * Build the holes for a config and skin.
- * @param {Element} holesEl
- * @param {object} config   Resolved config (layout, keys).
- * @param {object} skin
+ *
+ * Each hole carries data-i (its own index) and data-btn (the 0-based button
+ * for its column), so a tap can be turned into a button press.
  */
 export function renderBoard(holesEl, config, skin) {
+  const layout = LAYOUTS[config.layout];
   holesEl.className = `holes ${config.layout} skin-${skin.name}`;
-  holesEl.innerHTML = config.keys.map((key, i) =>
-    `<div class="hole" data-i="${i}" data-type="">` +
+  holesEl.style.setProperty('--cols', layout.columns);
+  holesEl.style.setProperty('--rows', layout.rows);
+  holesEl.innerHTML = Array.from({ length: layout.holes }, (_, i) =>
+    `<div class="hole" data-i="${i}" data-btn="${layout.holeResponse[i]}" data-stim="">` +
       `<div class="art">${holeSVG(i, skin)}</div>` +
-      `<span class="keycap">${key}</span>` +
     `</div>`,
   ).join('');
 }
 
 /**
- * Show a target at visible fraction p (0 = fully down, 1 = fully up).
+ * Draw the button labels under the board. One per button, aligned with the
+ * column it controls.
+ * TODO(Q2): in the scanner the participant uses a button box, so these
+ * labels may be for desktop piloting only. Confirm whether to show them.
  */
+export function renderKeycaps(capsEl, config) {
+  const layout = LAYOUTS[config.layout];
+  capsEl.className = `keycaps ${config.layout}`;
+  capsEl.style.setProperty('--cols', layout.columns);
+  capsEl.innerHTML = config.keys.map((key) => `<span class="keycap">${key}</span>`).join('');
+}
+
+/** Show a target at visible fraction p (0 = fully down, 1 = fully up). */
 export function setTarget(holesEl, i, p) {
   const h = holesEl.children[i];
   if (!h) return;
   h.querySelector('.target').setAttribute('transform', `translate(0 ${(TRAVEL * (1 - p)).toFixed(1)})`);
 }
 
-/** Select which art is shown in a hole: 'go', 'nogo', or '' for none. */
-export function setTargetType(holesEl, i, type) {
+/** Select which picture is shown in a hole, or '' for none. */
+export function setStimulus(holesEl, i, stim) {
   const h = holesEl.children[i];
-  if (h) h.dataset.type = type || '';
-}
-
-/**
- * Brief feedback ring around a hole. TODO(Q6): feedback is a reward signal;
- * keep or remove with the score decision.
- * @param {'hit'|'commission'|'wrong'} kind
- */
-export function flash(holesEl, i, kind) {
-  const h = holesEl.children[i];
-  if (!h) return;
-  const cls = { hit: 'fx-hit', commission: 'fx-com', wrong: 'fx-wrong' }[kind];
-  if (!cls) return;
-  h.classList.remove('fx-hit', 'fx-com', 'fx-wrong');
-  void h.offsetWidth; // restart the transition
-  h.classList.add(cls);
-  clearTimeout(h._fx);
-  h._fx = setTimeout(() => h.classList.remove(cls), 200);
+  if (h) h.dataset.stim = stim || '';
 }
 
 /**
@@ -101,11 +98,12 @@ export function rampVisibility(elapsedMs, windowMs, config) {
   return 1;
 }
 
-/** Human description of the key mapping for instructions. */
+/** Human description of the button mapping for instructions. */
 export function keysDescription(config) {
   const layout = LAYOUTS[config.layout];
-  const defaults = layout && layout.keys.join() === config.keys.join();
-  if (config.layout === 'row4' && defaults) return 'keys 1 to 4';
-  if (config.layout === 'grid9' && defaults) return 'the number pad, where 7 8 9 is the top row';
-  return `keys ${config.keys.join(' ')} for the holes in reading order`;
+  if (layout.holeResponse.some((r, i) => r !== i)) {
+    return `One button per column, left to right: ${config.keys.join(', ')}. ` +
+      'The row does not matter, only the column.';
+  }
+  return `One button per hole: ${config.keys.join(', ')}.`;
 }

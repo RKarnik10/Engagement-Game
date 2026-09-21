@@ -1,0 +1,601 @@
+trial,onset_s,stimulus,trial_type,mole_row,mole_col,hole,expected_button,pressed_button,response_time_ms,outcome,correct,scheduled_onset_s,onset_lag_ms,preceding_go
+1,2.000,happy mole,go,1,1,1,1,1,507,hit,1,2.000,0,n/a
+2,3.017,happy mole,go,3,1,7,1,1,425,hit,1,3.000,17,n/a
+3,4.017,happy mole,go,3,3,9,3,3,337,hit,1,4.000,17,n/a
+4,5.000,happy mole,go,1,1,1,1,1,377,hit,1,5.000,0,n/a
+5,6.000,happy mole,go,1,2,2,2,2,449,hit,1,6.000,0,n/a
+6,7.000,happy mole,go,3,2,8,2,2,481,hit,1,7.000,0,n/a
+7,8.000,happy mole,go,2,1,4,1,1,422,hit,1,8.000,0,n/a
+8,9.000,happy mole,go,1,2,2,2,2,426,hit,1,9.000,0,n/a
+9,10.017,happy mole,go,2,2,5,2,2,386,hit,1,10.000,17,n/a
+10,11.017,happy mole,go,1,3,3,3,3,471,hit,1,11.000,17,n/a
+11,12.017,happy mole,go,3,3,9,3,n/a,n/a,omission,0,12.000,17,n/a
+12,13.017,happy mole,go,2,2,5,2,2,324,hit,1,13.000,17,n/a
+13,14.017,happy mole,go,1,3,3,3,3,408,hit,1,14.000,17,n/a
+14,15.017,happy mole,go,2,1,4,1,1,268,hit,1,15.000,17,n/a
+15,16.017,molerat,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,16.000,17,14
+16,17.017,happy mole,go,1,1,1,1,1,293,hit,1,17.000,17,n/a
+17,18.017,sad mole,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,18.000,17,1
+18,19.017,happy mole,go,3,2,8,2,2,395,hit,1,19.000,17,n/a
+19,20.000,happy mole,go,2,2,5,2,2,464,hit,1,20.000,0,n/a
+20,21.000,happy mole,go,3,3,9,3,3,364,hit,1,21.000,0,n/a
+21,22.000,happy mole,go,1,3,3,3,3,545,hit,1,22.000,0,n/a
+22,23.000,happy mole,go,2,3,6,3,3,339,hit,1,23.000,0,n/a
+23,24.000,happy mole,go,1,2,2,2,2,375,hit,1,24.000,0,n/a
+24,25.000,molerat,nogo,2,3,6,3,n/a,n/a,correct_rejection,1,25.000,0,6
+25,26.000,happy mole,go,3,2,8,2,2,466,hit,1,26.000,0,n/a
+26,27.000,happy mole,go,3,3,9,3,3,415,hit,1,27.000,0,n/a
+27,28.000,happy mole,go,1,3,3,3,3,431,hit,1,28.000,0,n/a
+28,29.000,happy mole,go,1,2,2,2,n/a,n/a,omission,0,29.000,0,n/a
+29,30.000,happy mole,go,2,2,5,2,2,525,hit,1,30.000,0,n/a
+30,31.000,happy mole,go,1,3,3,3,3,444,hit,1,31.000,0,n/a
+31,32.000,happy mole,go,3,1,7,1,n/a,n/a,omission,0,32.000,0,n/a
+32,33.000,happy mole,go,3,3,9,3,3,448,hit,1,33.000,0,n/a
+33,34.000,happy mole,go,2,1,4,1,1,367,hit,1,34.000,0,n/a
+34,35.000,happy mole,go,1,1,1,1,1,372,hit,1,35.000,0,n/a
+35,36.000,sad mole,nogo,2,3,6,3,3,505,commission,0,36.000,0,10
+36,37.000,happy mole,go,3,3,9,3,3,452,hit,1,37.000,0,n/a
+37,38.000,happy mole,go,3,1,7,1,1,449,hit,1,38.000,0,n/a
+38,39.000,happy mole,go,1,1,1,1,1,495,hit,1,39.000,0,n/a
+39,40.017,happy mole,go,1,3,3,3,3,465,hit,1,40.000,17,n/a
+40,41.017,happy mole,go,3,2,8,2,2,417,hit,1,41.000,17,n/a
+41,42.017,sad mole,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,42.000,17,5
+42,43.017,happy mole,go,3,1,7,1,1,278,hit,1,43.000,17,n/a
+43,44.017,molerat,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,44.000,17,1
+44,45.017,happy mole,go,2,2,5,2,2,476,hit,1,45.000,17,n/a
+45,46.017,happy mole,go,1,3,3,3,3,548,hit,1,46.000,17,n/a
+46,47.017,happy mole,go,3,1,7,1,1,345,hit,1,47.000,17,n/a
+47,48.017,happy mole,go,1,3,3,3,3,325,hit,1,48.000,17,n/a
+48,49.017,happy mole,go,2,2,5,2,2,353,hit,1,49.000,17,n/a
+49,50.017,happy mole,go,3,2,8,2,2,332,hit,1,50.000,17,n/a
+50,51.017,happy mole,go,2,2,5,2,2,386,hit,1,51.000,17,n/a
+51,52.017,sad mole,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,52.000,17,7
+52,53.017,happy mole,go,1,3,3,3,3,331,hit,1,53.000,17,n/a
+53,54.017,happy mole,go,3,1,7,1,1,421,hit,1,54.000,17,n/a
+54,55.017,happy mole,go,1,2,2,2,2,374,hit,1,55.000,17,n/a
+55,56.017,molerat,nogo,3,3,9,3,3,525,commission,0,56.000,17,3
+56,57.017,happy mole,go,3,1,7,1,1,359,hit,1,57.000,17,n/a
+57,58.017,happy mole,go,2,3,6,3,3,370,hit,1,58.000,17,n/a
+58,59.017,happy mole,go,2,2,5,2,2,345,hit,1,59.000,17,n/a
+59,60.017,happy mole,go,3,3,9,3,3,412,hit,1,60.000,17,n/a
+60,61.017,happy mole,go,2,3,6,3,3,378,hit,1,61.000,17,n/a
+61,62.017,happy mole,go,3,2,8,2,2,474,hit,1,62.000,17,n/a
+62,63.017,happy mole,go,1,2,2,2,2,425,hit,1,63.000,17,n/a
+63,64.017,happy mole,go,3,1,7,1,1,411,hit,1,64.000,17,n/a
+64,65.017,happy mole,go,2,3,6,3,3,328,hit,1,65.000,17,n/a
+65,66.017,happy mole,go,3,3,9,3,3,486,hit,1,66.000,17,n/a
+66,67.017,sad mole,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,67.000,17,10
+67,68.017,happy mole,go,1,1,1,1,1,417,hit,1,68.000,17,n/a
+68,69.017,happy mole,go,3,1,7,1,1,381,hit,1,69.000,17,n/a
+69,70.017,sad mole,nogo,1,3,3,3,n/a,n/a,correct_rejection,1,70.000,17,2
+70,71.017,happy mole,go,1,2,2,2,2,459,hit,1,71.000,17,n/a
+71,72.017,molerat,nogo,3,1,7,1,1,350,commission,0,72.000,17,1
+72,73.017,happy mole,go,3,3,9,3,3,243,hit,1,73.000,17,n/a
+73,74.017,happy mole,go,1,3,3,3,n/a,n/a,omission,0,74.000,17,n/a
+74,75.017,happy mole,go,3,3,9,3,3,513,hit,1,75.000,17,n/a
+75,76.017,happy mole,go,1,3,3,3,3,390,hit,1,76.000,17,n/a
+76,77.017,molerat,nogo,1,2,2,2,2,445,commission,0,77.000,17,4
+77,78.017,happy mole,go,1,3,3,3,3,256,hit,1,78.000,17,n/a
+78,79.000,happy mole,go,2,3,6,3,3,437,hit,1,79.000,0,n/a
+79,80.000,happy mole,go,3,3,9,3,n/a,n/a,omission,0,80.000,0,n/a
+80,81.000,happy mole,go,2,2,5,2,2,378,hit,1,81.000,0,n/a
+81,82.000,happy mole,go,2,1,4,1,1,449,hit,1,82.000,0,n/a
+82,83.000,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,83.000,0,5
+83,84.000,happy mole,go,1,3,3,3,3,441,hit,1,84.000,0,n/a
+84,85.000,happy mole,go,3,2,8,2,2,399,hit,1,85.000,0,n/a
+85,86.000,happy mole,go,2,1,4,1,1,434,hit,1,86.000,0,n/a
+86,87.000,sad mole,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,87.000,0,3
+87,88.000,happy mole,go,2,1,4,1,1,460,hit,1,88.000,0,n/a
+88,89.000,sad mole,nogo,3,2,8,2,n/a,n/a,correct_rejection,1,89.000,0,1
+89,90.000,happy mole,go,2,3,6,3,3,424,hit,1,90.000,0,n/a
+90,91.000,happy mole,go,3,2,8,2,2,463,hit,1,91.000,0,n/a
+91,92.000,sad mole,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,92.000,0,2
+92,93.000,happy mole,go,3,3,9,3,3,422,hit,1,93.000,0,n/a
+93,94.000,molerat,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,94.000,0,1
+94,95.000,happy mole,go,2,2,5,2,2,391,hit,1,95.000,0,n/a
+95,96.000,happy mole,go,3,3,9,3,3,370,hit,1,96.000,0,n/a
+96,97.000,happy mole,go,1,1,1,1,1,429,hit,1,97.000,0,n/a
+97,98.000,happy mole,go,3,3,9,3,3,399,hit,1,98.000,0,n/a
+98,99.000,happy mole,go,1,3,3,3,3,402,hit,1,99.000,0,n/a
+99,100.000,happy mole,go,1,1,1,1,1,419,hit,1,100.000,0,n/a
+100,101.000,happy mole,go,1,3,3,3,3,424,hit,1,101.000,0,n/a
+101,102.000,happy mole,go,3,2,8,2,2,393,hit,1,102.000,0,n/a
+102,103.000,happy mole,go,1,2,2,2,2,388,hit,1,103.000,0,n/a
+103,104.000,happy mole,go,3,1,7,1,1,337,hit,1,104.000,0,n/a
+104,105.000,happy mole,go,2,1,4,1,1,370,hit,1,105.000,0,n/a
+105,106.000,happy mole,go,1,1,1,1,1,466,hit,1,106.000,0,n/a
+106,107.000,happy mole,go,2,1,4,1,1,456,hit,1,107.000,0,n/a
+107,108.000,happy mole,go,3,3,9,3,3,346,hit,1,108.000,0,n/a
+108,109.000,happy mole,go,2,2,5,2,2,302,hit,1,109.000,0,n/a
+109,110.000,sad mole,nogo,2,1,4,1,n/a,n/a,correct_rejection,1,110.000,0,15
+110,111.000,happy mole,go,2,3,6,3,3,462,hit,1,111.000,0,n/a
+111,112.000,happy mole,go,2,2,5,2,2,430,hit,1,112.000,0,n/a
+112,113.000,sad mole,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,113.000,0,2
+113,114.000,happy mole,go,3,2,8,2,2,372,hit,1,114.000,0,n/a
+114,115.000,happy mole,go,2,1,4,1,1,409,hit,1,115.000,0,n/a
+115,116.000,happy mole,go,2,3,6,3,3,389,hit,1,116.000,0,n/a
+116,117.000,happy mole,go,2,2,5,2,2,404,hit,1,117.000,0,n/a
+117,118.000,happy mole,go,3,3,9,3,3,454,hit,1,118.000,0,n/a
+118,119.000,sad mole,nogo,2,1,4,1,1,361,commission,0,119.000,0,5
+119,120.000,happy mole,go,2,2,5,2,2,522,hit,1,120.000,0,n/a
+120,121.000,happy mole,go,1,2,2,2,2,423,hit,1,121.000,0,n/a
+121,122.000,happy mole,go,3,1,7,1,1,501,hit,1,122.000,0,n/a
+122,123.000,molerat,nogo,2,3,6,3,3,313,commission,0,123.000,0,3
+123,124.000,happy mole,go,1,1,1,1,1,357,hit,1,124.000,0,n/a
+124,125.000,molerat,nogo,3,2,8,2,2,460,commission,0,125.000,0,1
+125,126.000,happy mole,go,1,2,2,2,2,381,hit,1,126.000,0,n/a
+126,127.000,happy mole,go,1,3,3,3,3,303,hit,1,127.000,0,n/a
+127,128.000,happy mole,go,3,1,7,1,1,373,hit,1,128.000,0,n/a
+128,129.000,sad mole,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,129.000,0,3
+129,130.000,happy mole,go,1,3,3,3,3,332,hit,1,130.000,0,n/a
+130,131.000,happy mole,go,1,1,1,1,1,387,hit,1,131.000,0,n/a
+131,132.000,sad mole,nogo,1,3,3,3,n/a,n/a,correct_rejection,1,132.000,0,2
+132,133.000,happy mole,go,3,1,7,1,1,304,hit,1,133.000,0,n/a
+133,134.000,happy mole,go,2,1,4,1,1,326,hit,1,134.000,0,n/a
+134,135.000,molerat,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,135.000,0,2
+135,136.000,happy mole,go,3,1,7,1,1,384,hit,1,136.000,0,n/a
+136,137.000,happy mole,go,1,3,3,3,3,317,hit,1,137.000,0,n/a
+137,138.000,happy mole,go,2,2,5,2,2,340,hit,1,138.000,0,n/a
+138,139.000,happy mole,go,3,1,7,1,1,335,hit,1,139.000,0,n/a
+139,140.000,happy mole,go,2,3,6,3,3,413,hit,1,140.000,0,n/a
+140,141.000,happy mole,go,3,1,7,1,1,372,hit,1,141.000,0,n/a
+141,142.000,happy mole,go,1,3,3,3,3,305,hit,1,142.000,0,n/a
+142,143.000,happy mole,go,1,2,2,2,2,421,hit,1,143.000,0,n/a
+143,144.000,happy mole,go,3,3,9,3,3,248,hit,1,144.000,0,n/a
+144,145.000,happy mole,go,3,2,8,2,2,428,hit,1,145.000,0,n/a
+145,146.000,happy mole,go,1,2,2,2,2,449,hit,1,146.000,0,n/a
+146,147.000,happy mole,go,1,1,1,1,1,453,hit,1,147.000,0,n/a
+147,148.000,happy mole,go,2,1,4,1,1,475,hit,1,148.000,0,n/a
+148,149.000,molerat,nogo,1,2,2,2,2,447,commission,0,149.000,0,13
+149,150.000,happy mole,go,1,1,1,1,1,359,hit,1,150.000,0,n/a
+150,151.000,happy mole,go,3,2,8,2,2,364,hit,1,151.000,0,n/a
+151,152.000,happy mole,go,2,2,5,2,2,403,hit,1,152.000,0,n/a
+152,153.000,molerat,nogo,2,3,6,3,3,360,commission,0,153.000,0,3
+153,154.000,happy mole,go,3,1,7,1,1,326,hit,1,154.000,0,n/a
+154,155.000,molerat,nogo,1,3,3,3,n/a,n/a,correct_rejection,1,155.000,0,1
+155,156.000,happy mole,go,1,2,2,2,2,334,hit,1,156.000,0,n/a
+156,157.000,happy mole,go,3,1,7,1,1,384,hit,1,157.000,0,n/a
+157,158.017,happy mole,go,3,3,9,3,3,224,hit,1,158.000,17,n/a
+158,159.017,happy mole,go,2,3,6,3,3,351,hit,1,159.000,17,n/a
+159,160.017,sad mole,nogo,3,2,8,2,2,325,commission,0,160.000,17,4
+160,161.017,happy mole,go,1,3,3,3,3,267,hit,1,161.000,17,n/a
+161,162.017,happy mole,go,2,1,4,1,1,275,hit,1,162.000,17,n/a
+162,163.017,happy mole,go,1,1,1,1,1,345,hit,1,163.000,17,n/a
+163,164.017,happy mole,go,3,3,9,3,3,289,hit,1,164.000,17,n/a
+164,165.017,sad mole,nogo,2,1,4,1,n/a,n/a,correct_rejection,1,165.000,17,4
+165,166.017,happy mole,go,3,3,9,3,3,424,hit,1,166.000,17,n/a
+166,167.017,happy mole,go,1,1,1,1,1,374,hit,1,167.000,17,n/a
+167,168.017,happy mole,go,2,2,5,2,2,237,hit,1,168.000,17,n/a
+168,169.017,happy mole,go,2,3,6,3,3,439,hit,1,169.000,17,n/a
+169,170.017,happy mole,go,3,1,7,1,1,236,hit,1,170.000,17,n/a
+170,171.017,happy mole,go,2,3,6,3,3,355,hit,1,171.000,17,n/a
+171,172.017,happy mole,go,1,3,3,3,3,338,hit,1,172.000,17,n/a
+172,173.017,molerat,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,173.000,17,7
+173,174.017,happy mole,go,1,1,1,1,1,267,hit,1,174.000,17,n/a
+174,175.017,molerat,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,175.000,17,1
+175,176.017,happy mole,go,3,3,9,3,3,398,hit,1,176.000,17,n/a
+176,177.017,happy mole,go,2,3,6,3,n/a,n/a,omission,0,177.000,17,n/a
+177,178.017,happy mole,go,1,1,1,1,1,369,hit,1,178.000,17,n/a
+178,179.017,happy mole,go,2,1,4,1,1,365,hit,1,179.000,17,n/a
+179,180.017,happy mole,go,1,1,1,1,1,418,hit,1,180.000,17,n/a
+180,181.017,happy mole,go,2,1,4,1,n/a,n/a,omission,0,181.000,17,n/a
+181,182.017,happy mole,go,3,2,8,2,2,332,hit,1,182.000,17,n/a
+182,183.017,molerat,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,183.000,17,7
+183,184.017,happy mole,go,2,1,4,1,1,384,hit,1,184.000,17,n/a
+184,185.017,happy mole,go,2,2,5,2,2,374,hit,1,185.000,17,n/a
+185,186.017,happy mole,go,1,1,1,1,1,337,hit,1,186.000,17,n/a
+186,187.017,happy mole,go,3,2,8,2,2,286,hit,1,187.000,17,n/a
+187,188.017,happy mole,go,3,3,9,3,3,343,hit,1,188.000,17,n/a
+188,189.017,happy mole,go,1,1,1,1,1,446,hit,1,189.000,17,n/a
+189,190.017,happy mole,go,2,1,4,1,1,304,hit,1,190.000,17,n/a
+190,191.017,happy mole,go,1,3,3,3,3,375,hit,1,191.000,17,n/a
+191,192.017,sad mole,nogo,3,2,8,2,n/a,n/a,correct_rejection,1,192.000,17,8
+192,193.017,happy mole,go,2,2,5,2,2,316,hit,1,193.000,17,n/a
+193,194.017,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,194.000,17,1
+194,195.017,happy mole,go,1,3,3,3,3,335,hit,1,195.000,17,n/a
+195,196.017,sad mole,nogo,2,3,6,3,n/a,n/a,correct_rejection,1,196.000,17,1
+196,197.017,happy mole,go,3,2,8,2,2,305,hit,1,197.000,17,n/a
+197,198.017,happy mole,go,3,3,9,3,3,381,hit,1,198.000,17,n/a
+198,199.017,happy mole,go,1,3,3,3,3,356,hit,1,199.000,17,n/a
+199,200.017,happy mole,go,2,1,4,1,1,323,hit,1,200.000,17,n/a
+200,201.017,happy mole,go,2,3,6,3,3,402,hit,1,201.000,17,n/a
+201,202.017,happy mole,go,2,2,5,2,2,319,hit,1,202.000,17,n/a
+202,203.017,happy mole,go,1,2,2,2,2,419,hit,1,203.000,17,n/a
+203,204.017,molerat,nogo,3,2,8,2,n/a,n/a,correct_rejection,1,204.000,17,7
+204,205.017,happy mole,go,2,2,5,2,2,325,hit,1,205.000,17,n/a
+205,206.017,happy mole,go,3,3,9,3,3,415,hit,1,206.000,17,n/a
+206,207.017,happy mole,go,2,3,6,3,3,298,hit,1,207.000,17,n/a
+207,208.017,sad mole,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,208.000,17,3
+208,209.017,happy mole,go,3,3,9,3,3,448,hit,1,209.000,17,n/a
+209,210.017,molerat,nogo,1,3,3,3,n/a,n/a,correct_rejection,1,210.000,17,1
+210,211.017,happy mole,go,3,1,7,1,1,435,hit,1,211.000,17,n/a
+211,212.017,happy mole,go,3,3,9,3,3,410,hit,1,212.000,17,n/a
+212,213.017,happy mole,go,3,2,8,2,2,383,hit,1,213.000,17,n/a
+213,214.017,happy mole,go,1,2,2,2,2,361,hit,1,214.000,17,n/a
+214,215.017,happy mole,go,2,1,4,1,n/a,n/a,omission,0,215.000,17,n/a
+215,216.017,happy mole,go,3,1,7,1,1,452,hit,1,216.000,17,n/a
+216,217.017,happy mole,go,2,2,5,2,2,425,hit,1,217.000,17,n/a
+217,218.017,happy mole,go,3,3,9,3,3,364,hit,1,218.000,17,n/a
+218,219.017,molerat,nogo,1,3,3,3,n/a,n/a,correct_rejection,1,219.000,17,8
+219,220.017,happy mole,go,3,3,9,3,3,330,hit,1,220.000,17,n/a
+220,221.017,happy mole,go,1,2,2,2,2,412,hit,1,221.000,17,n/a
+221,222.017,happy mole,go,2,2,5,2,2,342,hit,1,222.000,17,n/a
+222,223.017,happy mole,go,3,2,8,2,2,422,hit,1,223.000,17,n/a
+223,224.017,happy mole,go,1,3,3,3,3,307,hit,1,224.000,17,n/a
+224,225.017,molerat,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,225.000,17,5
+225,226.017,happy mole,go,1,2,2,2,2,387,hit,1,226.000,17,n/a
+226,227.017,happy mole,go,3,2,8,2,2,415,hit,1,227.000,17,n/a
+227,228.017,happy mole,go,2,1,4,1,1,418,hit,1,228.000,17,n/a
+228,229.017,happy mole,go,3,1,7,1,1,364,hit,1,229.000,17,n/a
+229,230.017,happy mole,go,2,2,5,2,2,403,hit,1,230.000,17,n/a
+230,231.017,happy mole,go,1,3,3,3,3,509,hit,1,231.000,17,n/a
+231,232.017,sad mole,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,232.000,17,6
+232,233.017,happy mole,go,3,2,8,2,2,453,hit,1,233.000,17,n/a
+233,234.017,happy mole,go,1,3,3,3,3,426,hit,1,234.000,17,n/a
+234,235.017,sad mole,nogo,1,2,2,2,2,387,commission,0,235.000,17,2
+235,236.017,happy mole,go,3,3,9,3,3,470,hit,1,236.000,17,n/a
+236,237.017,happy mole,go,3,1,7,1,1,431,hit,1,237.000,17,n/a
+237,238.017,happy mole,go,1,3,3,3,3,406,hit,1,238.000,17,n/a
+238,239.017,happy mole,go,2,1,4,1,1,400,hit,1,239.000,17,n/a
+239,240.017,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,240.000,17,4
+240,241.017,happy mole,go,2,1,4,1,1,377,hit,1,241.000,17,n/a
+241,242.017,happy mole,go,2,3,6,3,3,406,hit,1,242.000,17,n/a
+242,243.017,molerat,nogo,2,1,4,1,n/a,n/a,correct_rejection,1,243.000,17,2
+243,244.017,happy mole,go,2,2,5,2,2,432,hit,1,244.000,17,n/a
+244,245.017,molerat,nogo,1,1,1,1,1,405,commission,0,245.000,17,1
+245,246.017,happy mole,go,3,1,7,1,1,384,hit,1,246.000,17,n/a
+246,247.017,happy mole,go,3,2,8,2,2,397,hit,1,247.000,17,n/a
+247,248.017,sad mole,nogo,1,3,3,3,n/a,n/a,correct_rejection,1,248.000,17,2
+248,249.017,happy mole,go,3,1,7,1,1,357,hit,1,249.000,17,n/a
+249,250.017,sad mole,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,250.000,17,1
+250,251.017,happy mole,go,3,1,7,1,1,319,hit,1,251.000,17,n/a
+251,252.017,happy mole,go,2,2,5,2,2,401,hit,1,252.000,17,n/a
+252,253.017,sad mole,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,253.000,17,2
+253,254.017,happy mole,go,3,1,7,1,1,409,hit,1,254.000,17,n/a
+254,255.017,molerat,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,255.000,17,1
+255,256.017,happy mole,go,3,1,7,1,1,360,hit,1,256.000,17,n/a
+256,257.017,happy mole,go,3,3,9,3,3,400,hit,1,257.000,17,n/a
+257,258.017,happy mole,go,1,1,1,1,1,485,hit,1,258.000,17,n/a
+258,259.017,happy mole,go,2,3,6,3,3,435,hit,1,259.000,17,n/a
+259,260.017,sad mole,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,260.000,17,4
+260,261.017,happy mole,go,1,1,1,1,1,362,hit,1,261.000,17,n/a
+261,262.017,happy mole,go,2,3,6,3,3,8,hit,1,262.000,17,n/a
+262,263.017,happy mole,go,3,3,9,3,3,343,hit,1,263.000,17,n/a
+263,264.017,happy mole,go,2,2,5,2,2,401,hit,1,264.000,17,n/a
+264,265.017,happy mole,go,3,1,7,1,1,436,hit,1,265.000,17,n/a
+265,266.017,happy mole,go,1,1,1,1,1,501,hit,1,266.000,17,n/a
+266,267.017,happy mole,go,2,2,5,2,2,416,hit,1,267.000,17,n/a
+267,268.017,happy mole,go,2,1,4,1,1,409,hit,1,268.000,17,n/a
+268,269.017,molerat,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,269.000,17,8
+269,270.017,happy mole,go,2,1,4,1,1,411,hit,1,270.000,17,n/a
+270,271.017,molerat,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,271.000,17,1
+271,272.017,happy mole,go,3,3,9,3,3,477,hit,1,272.000,17,n/a
+272,273.017,happy mole,go,2,1,4,1,1,451,hit,1,273.000,17,n/a
+273,274.017,happy mole,go,3,2,8,2,n/a,n/a,omission,0,274.000,17,n/a
+274,275.017,happy mole,go,1,1,1,1,1,424,hit,1,275.000,17,n/a
+275,276.017,happy mole,go,2,1,4,1,1,358,hit,1,276.000,17,n/a
+276,277.017,happy mole,go,1,1,1,1,1,434,hit,1,277.000,17,n/a
+277,278.017,happy mole,go,2,2,5,2,2,386,hit,1,278.000,17,n/a
+278,279.017,happy mole,go,2,3,6,3,3,358,hit,1,279.000,17,n/a
+279,280.017,happy mole,go,2,2,5,2,2,525,hit,1,280.000,17,n/a
+280,281.017,sad mole,nogo,2,3,6,3,n/a,n/a,correct_rejection,1,281.000,17,9
+281,282.017,happy mole,go,1,3,3,3,3,519,hit,1,282.000,17,n/a
+282,283.017,happy mole,go,2,3,6,3,3,404,hit,1,283.000,17,n/a
+283,284.017,sad mole,nogo,3,2,8,2,n/a,n/a,correct_rejection,1,284.000,17,2
+284,285.017,happy mole,go,3,3,9,3,3,393,hit,1,285.000,17,n/a
+285,286.017,happy mole,go,1,1,1,1,n/a,n/a,omission,0,286.000,17,n/a
+286,287.017,molerat,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,287.000,17,2
+287,288.017,happy mole,go,2,1,4,1,1,473,hit,1,288.000,17,n/a
+288,289.017,happy mole,go,2,2,5,2,2,494,hit,1,289.000,17,n/a
+289,290.017,happy mole,go,2,3,6,3,3,452,hit,1,290.000,17,n/a
+290,291.017,molerat,nogo,2,2,5,2,2,343,commission,0,291.000,17,3
+291,292.017,happy mole,go,3,2,8,2,2,354,hit,1,292.000,17,n/a
+292,293.017,happy mole,go,3,1,7,1,n/a,n/a,omission,0,293.000,17,n/a
+293,294.017,sad mole,nogo,2,1,4,1,1,421,commission,0,294.000,17,2
+294,295.017,happy mole,go,3,3,9,3,3,367,hit,1,295.000,17,n/a
+295,296.017,happy mole,go,3,2,8,2,2,407,hit,1,296.000,17,n/a
+296,297.017,happy mole,go,1,1,1,1,1,469,hit,1,297.000,17,n/a
+297,298.017,happy mole,go,2,2,5,2,2,377,hit,1,298.000,17,n/a
+298,299.017,happy mole,go,3,3,9,3,3,476,hit,1,299.000,17,n/a
+299,300.017,happy mole,go,3,2,8,2,2,453,hit,1,300.000,17,n/a
+300,301.017,happy mole,go,1,3,3,3,3,440,hit,1,301.000,17,n/a
+301,302.017,happy mole,go,2,1,4,1,1,399,hit,1,302.000,17,n/a
+302,303.017,molerat,nogo,1,1,1,1,1,399,commission,0,303.000,17,8
+303,304.017,happy mole,go,1,3,3,3,3,457,hit,1,304.000,17,n/a
+304,305.017,happy mole,go,2,3,6,3,n/a,n/a,omission,0,305.000,17,n/a
+305,306.017,happy mole,go,1,2,2,2,2,407,hit,1,306.000,17,n/a
+306,307.017,sad mole,nogo,1,3,3,3,3,362,commission,0,307.000,17,3
+307,308.017,happy mole,go,1,2,2,2,2,403,hit,1,308.000,17,n/a
+308,309.017,sad mole,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,309.000,17,1
+309,310.017,happy mole,go,2,3,6,3,3,472,hit,1,310.000,17,n/a
+310,311.017,happy mole,go,3,3,9,3,3,440,hit,1,311.000,17,n/a
+311,312.017,happy mole,go,2,1,4,1,1,422,hit,1,312.000,17,n/a
+312,313.017,molerat,nogo,3,2,8,2,n/a,n/a,correct_rejection,1,313.000,17,3
+313,314.017,happy mole,go,1,3,3,3,3,365,hit,1,314.000,17,n/a
+314,315.000,happy mole,go,1,1,1,1,n/a,n/a,omission,0,315.000,0,n/a
+315,316.000,happy mole,go,2,3,6,3,3,347,hit,1,316.000,0,n/a
+316,317.000,sad mole,nogo,3,3,9,3,3,435,commission,0,317.000,0,3
+317,318.000,happy mole,go,1,2,2,2,2,343,hit,1,318.000,0,n/a
+318,319.000,sad mole,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,319.000,0,1
+319,320.000,happy mole,go,1,1,1,1,1,419,hit,1,320.000,0,n/a
+320,321.000,happy mole,go,1,3,3,3,3,375,hit,1,321.000,0,n/a
+321,322.000,happy mole,go,3,1,7,1,1,408,hit,1,322.000,0,n/a
+322,323.000,happy mole,go,1,1,1,1,1,464,hit,1,323.000,0,n/a
+323,324.000,happy mole,go,2,1,4,1,1,424,hit,1,324.000,0,n/a
+324,325.000,happy mole,go,1,2,2,2,2,301,hit,1,325.000,0,n/a
+325,326.000,happy mole,go,3,1,7,1,1,486,hit,1,326.000,0,n/a
+326,327.000,happy mole,go,3,3,9,3,3,453,hit,1,327.000,0,n/a
+327,328.000,molerat,nogo,2,3,6,3,n/a,n/a,correct_rejection,1,328.000,0,8
+328,329.000,happy mole,go,3,2,8,2,2,432,hit,1,329.000,0,n/a
+329,330.000,happy mole,go,1,3,3,3,3,404,hit,1,330.000,0,n/a
+330,331.000,happy mole,go,3,3,9,3,3,447,hit,1,331.000,0,n/a
+331,332.000,happy mole,go,2,3,6,3,n/a,n/a,omission,0,332.000,0,n/a
+332,333.000,happy mole,go,2,1,4,1,1,381,hit,1,333.000,0,n/a
+333,334.000,happy mole,go,3,3,9,3,3,523,hit,1,334.000,0,n/a
+334,335.000,happy mole,go,2,1,4,1,1,410,hit,1,335.000,0,n/a
+335,336.000,happy mole,go,1,3,3,3,3,335,hit,1,336.000,0,n/a
+336,337.000,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,337.000,0,8
+337,338.000,happy mole,go,3,2,8,2,2,428,hit,1,338.000,0,n/a
+338,339.000,happy mole,go,2,1,4,1,1,459,hit,1,339.000,0,n/a
+339,340.000,happy mole,go,2,3,6,3,3,407,hit,1,340.000,0,n/a
+340,341.000,happy mole,go,1,2,2,2,2,420,hit,1,341.000,0,n/a
+341,342.000,happy mole,go,2,1,4,1,1,305,hit,1,342.000,0,n/a
+342,343.000,happy mole,go,2,3,6,3,3,404,hit,1,343.000,0,n/a
+343,344.000,happy mole,go,3,1,7,1,1,380,hit,1,344.000,0,n/a
+344,345.000,happy mole,go,2,3,6,3,3,318,hit,1,345.000,0,n/a
+345,346.000,happy mole,go,1,3,3,3,3,449,hit,1,346.000,0,n/a
+346,347.000,molerat,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,347.000,0,9
+347,348.000,happy mole,go,1,2,2,2,2,295,hit,1,348.000,0,n/a
+348,349.000,happy mole,go,3,1,7,1,1,322,hit,1,349.000,0,n/a
+349,350.000,happy mole,go,3,3,9,3,n/a,n/a,omission,0,350.000,0,n/a
+350,351.000,happy mole,go,2,1,4,1,1,415,hit,1,351.000,0,n/a
+351,352.000,happy mole,go,3,2,8,2,2,368,hit,1,352.000,0,n/a
+352,353.000,happy mole,go,3,3,9,3,3,436,hit,1,353.000,0,n/a
+353,354.000,happy mole,go,3,1,7,1,1,306,hit,1,354.000,0,n/a
+354,355.000,happy mole,go,1,3,3,3,3,330,hit,1,355.000,0,n/a
+355,356.000,happy mole,go,1,1,1,1,1,445,hit,1,356.000,0,n/a
+356,357.000,happy mole,go,2,2,5,2,2,329,hit,1,357.000,0,n/a
+357,358.000,happy mole,go,3,1,7,1,1,366,hit,1,358.000,0,n/a
+358,359.000,happy mole,go,3,2,8,2,2,481,hit,1,359.000,0,n/a
+359,360.000,happy mole,go,2,2,5,2,2,365,hit,1,360.000,0,n/a
+360,361.000,happy mole,go,1,2,2,2,2,436,hit,1,361.000,0,n/a
+361,362.000,happy mole,go,3,3,9,3,3,282,hit,1,362.000,0,n/a
+362,363.000,happy mole,go,2,1,4,1,1,430,hit,1,363.000,0,n/a
+363,364.000,happy mole,go,3,3,9,3,3,538,hit,1,364.000,0,n/a
+364,365.000,happy mole,go,1,1,1,1,1,486,hit,1,365.000,0,n/a
+365,366.000,happy mole,go,3,3,9,3,3,635,hit,1,366.000,0,n/a
+366,367.000,happy mole,go,2,3,6,3,3,408,hit,1,367.000,0,n/a
+367,368.000,happy mole,go,3,2,8,2,2,379,hit,1,368.000,0,n/a
+368,369.000,sad mole,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,369.000,0,21
+369,370.000,happy mole,go,2,3,6,3,3,425,hit,1,370.000,0,n/a
+370,371.000,molerat,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,371.000,0,1
+371,372.000,happy mole,go,3,3,9,3,3,537,hit,1,372.000,0,n/a
+372,373.000,molerat,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,373.000,0,1
+373,374.000,happy mole,go,2,3,6,3,3,422,hit,1,374.000,0,n/a
+374,375.000,happy mole,go,1,1,1,1,1,204,hit,1,375.000,0,n/a
+375,376.000,molerat,nogo,2,1,4,1,n/a,n/a,correct_rejection,1,376.000,0,2
+376,377.000,happy mole,go,2,3,6,3,3,320,hit,1,377.000,0,n/a
+377,378.000,sad mole,nogo,1,3,3,3,n/a,n/a,correct_rejection,1,378.000,0,1
+378,379.000,happy mole,go,2,3,6,3,3,362,hit,1,379.000,0,n/a
+379,380.000,happy mole,go,3,2,8,2,2,526,hit,1,380.000,0,n/a
+380,381.000,happy mole,go,2,3,6,3,3,331,hit,1,381.000,0,n/a
+381,382.000,happy mole,go,3,2,8,2,2,415,hit,1,382.000,0,n/a
+382,383.000,happy mole,go,1,3,3,3,3,445,hit,1,383.000,0,n/a
+383,384.000,happy mole,go,2,3,6,3,3,460,hit,1,384.000,0,n/a
+384,385.000,happy mole,go,2,2,5,2,2,438,hit,1,385.000,0,n/a
+385,386.000,happy mole,go,3,3,9,3,3,402,hit,1,386.000,0,n/a
+386,387.000,happy mole,go,3,1,7,1,1,550,hit,1,387.000,0,n/a
+387,388.000,happy mole,go,2,1,4,1,1,391,hit,1,388.000,0,n/a
+388,389.000,happy mole,go,1,2,2,2,2,619,hit,1,389.000,0,n/a
+389,390.000,happy mole,go,2,2,5,2,2,457,hit,1,390.000,0,n/a
+390,391.000,sad mole,nogo,3,2,8,2,2,344,commission,0,391.000,0,12
+391,392.000,happy mole,go,1,3,3,3,3,304,hit,1,392.000,0,n/a
+392,393.000,molerat,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,393.000,0,1
+393,394.000,happy mole,go,1,3,3,3,3,257,hit,1,394.000,0,n/a
+394,395.000,sad mole,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,395.000,0,1
+395,396.000,happy mole,go,1,2,2,2,2,384,hit,1,396.000,0,n/a
+396,397.000,sad mole,nogo,1,3,3,3,n/a,n/a,correct_rejection,1,397.000,0,1
+397,398.000,happy mole,go,3,1,7,1,1,354,hit,1,398.000,0,n/a
+398,399.000,happy mole,go,1,2,2,2,2,446,hit,1,399.000,0,n/a
+399,400.000,molerat,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,400.000,0,2
+400,401.000,happy mole,go,3,3,9,3,3,262,hit,1,401.000,0,n/a
+401,402.000,happy mole,go,1,1,1,1,1,386,hit,1,402.000,0,n/a
+402,403.000,happy mole,go,2,1,4,1,1,423,hit,1,403.000,0,n/a
+403,404.000,happy mole,go,1,2,2,2,2,392,hit,1,404.000,0,n/a
+404,405.000,happy mole,go,1,1,1,1,1,401,hit,1,405.000,0,n/a
+405,406.000,happy mole,go,2,3,6,3,3,374,hit,1,406.000,0,n/a
+406,407.000,happy mole,go,3,3,9,3,3,391,hit,1,407.000,0,n/a
+407,408.000,sad mole,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,408.000,0,7
+408,409.000,happy mole,go,2,3,6,3,3,487,hit,1,409.000,0,n/a
+409,410.000,happy mole,go,1,1,1,1,1,221,hit,1,410.000,0,n/a
+410,411.000,happy mole,go,1,2,2,2,2,383,hit,1,411.000,0,n/a
+411,412.000,happy mole,go,3,1,7,1,1,246,hit,1,412.000,0,n/a
+412,413.000,happy mole,go,2,1,4,1,1,353,hit,1,413.000,0,n/a
+413,414.000,happy mole,go,2,3,6,3,3,387,hit,1,414.000,0,n/a
+414,415.000,happy mole,go,3,2,8,2,2,398,hit,1,415.000,0,n/a
+415,416.000,molerat,nogo,2,1,4,1,n/a,n/a,correct_rejection,1,416.000,0,7
+416,417.000,happy mole,go,1,2,2,2,2,518,hit,1,417.000,0,n/a
+417,418.000,happy mole,go,2,1,4,1,1,502,hit,1,418.000,0,n/a
+418,419.000,happy mole,go,2,3,6,3,3,399,hit,1,419.000,0,n/a
+419,420.000,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,420.000,0,3
+420,421.000,happy mole,go,2,2,5,2,2,335,hit,1,421.000,0,n/a
+421,422.000,molerat,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,422.000,0,1
+422,423.000,happy mole,go,3,3,9,3,n/a,n/a,omission,0,423.000,0,n/a
+423,424.000,happy mole,go,2,3,6,3,n/a,n/a,omission,0,424.000,0,n/a
+424,425.000,happy mole,go,1,1,1,1,1,561,hit,1,425.000,0,n/a
+425,426.000,happy mole,go,2,2,5,2,2,333,hit,1,426.000,0,n/a
+426,427.000,molerat,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,427.000,0,4
+427,428.000,happy mole,go,2,2,5,2,n/a,n/a,omission,0,428.000,0,n/a
+428,429.000,happy mole,go,1,2,2,2,2,496,hit,1,429.000,0,n/a
+429,430.000,happy mole,go,3,1,7,1,1,440,hit,1,430.000,0,n/a
+430,431.000,molerat,nogo,3,2,8,2,2,381,commission,0,431.000,0,3
+431,432.000,happy mole,go,3,1,7,1,1,438,hit,1,432.000,0,n/a
+432,433.000,happy mole,go,1,1,1,1,1,331,hit,1,433.000,0,n/a
+433,434.000,happy mole,go,2,2,5,2,2,479,hit,1,434.000,0,n/a
+434,435.000,happy mole,go,2,1,4,1,1,460,hit,1,435.000,0,n/a
+435,436.000,happy mole,go,3,1,7,1,1,450,hit,1,436.000,0,n/a
+436,437.000,happy mole,go,1,3,3,3,3,451,hit,1,437.000,0,n/a
+437,438.000,happy mole,go,3,1,7,1,1,549,hit,1,438.000,0,n/a
+438,439.000,happy mole,go,2,3,6,3,3,459,hit,1,439.000,0,n/a
+439,440.000,happy mole,go,1,1,1,1,1,517,hit,1,440.000,0,n/a
+440,441.000,molerat,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,441.000,0,9
+441,442.000,happy mole,go,1,3,3,3,3,385,hit,1,442.000,0,n/a
+442,443.000,happy mole,go,3,2,8,2,2,328,hit,1,443.000,0,n/a
+443,444.000,happy mole,go,1,1,1,1,1,299,hit,1,444.000,0,n/a
+444,445.000,happy mole,go,3,2,8,2,2,488,hit,1,445.000,0,n/a
+445,446.000,happy mole,go,1,1,1,1,1,387,hit,1,446.000,0,n/a
+446,447.000,happy mole,go,3,2,8,2,2,418,hit,1,447.000,0,n/a
+447,448.000,happy mole,go,1,1,1,1,1,595,hit,1,448.000,0,n/a
+448,449.000,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,449.000,0,7
+449,450.000,happy mole,go,3,3,9,3,3,413,hit,1,450.000,0,n/a
+450,451.000,happy mole,go,1,1,1,1,1,401,hit,1,451.000,0,n/a
+451,452.000,happy mole,go,1,3,3,3,3,459,hit,1,452.000,0,n/a
+452,453.000,happy mole,go,2,3,6,3,3,489,hit,1,453.000,0,n/a
+453,454.000,happy mole,go,3,2,8,2,2,528,hit,1,454.000,0,n/a
+454,455.000,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,455.000,0,5
+455,456.000,happy mole,go,1,3,3,3,3,428,hit,1,456.000,0,n/a
+456,457.000,happy mole,go,1,2,2,2,2,403,hit,1,457.000,0,n/a
+457,458.000,happy mole,go,3,2,8,2,2,539,hit,1,458.000,0,n/a
+458,459.000,happy mole,go,3,1,7,1,1,427,hit,1,459.000,0,n/a
+459,460.000,happy mole,go,2,3,6,3,3,479,hit,1,460.000,0,n/a
+460,461.000,happy mole,go,3,2,8,2,2,471,hit,1,461.000,0,n/a
+461,462.000,sad mole,nogo,1,1,1,1,1,499,commission,0,462.000,0,6
+462,463.000,happy mole,go,2,2,5,2,2,619,hit,1,463.000,0,n/a
+463,464.000,happy mole,go,3,2,8,2,2,618,hit,1,464.000,0,n/a
+464,465.000,sad mole,nogo,2,3,6,3,n/a,n/a,correct_rejection,1,465.000,0,2
+465,466.000,happy mole,go,3,1,7,1,1,305,hit,1,466.000,0,n/a
+466,467.000,sad mole,nogo,2,2,5,2,2,544,commission,0,467.000,0,1
+467,468.000,happy mole,go,3,3,9,3,3,384,hit,1,468.000,0,n/a
+468,469.000,happy mole,go,1,3,3,3,3,605,hit,1,469.000,0,n/a
+469,470.000,happy mole,go,3,1,7,1,1,590,hit,1,470.000,0,n/a
+470,471.000,molerat,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,471.000,0,3
+471,472.000,happy mole,go,1,2,2,2,2,452,hit,1,472.000,0,n/a
+472,473.000,happy mole,go,2,2,5,2,2,420,hit,1,473.000,0,n/a
+473,474.000,sad mole,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,474.000,0,2
+474,475.000,happy mole,go,2,1,4,1,1,249,hit,1,475.000,0,n/a
+475,476.000,molerat,nogo,3,3,9,3,n/a,n/a,correct_rejection,1,476.000,0,1
+476,477.000,happy mole,go,2,1,4,1,1,397,hit,1,477.000,0,n/a
+477,478.000,happy mole,go,1,1,1,1,1,407,hit,1,478.000,0,n/a
+478,479.000,happy mole,go,1,3,3,3,3,567,hit,1,479.000,0,n/a
+479,480.000,happy mole,go,3,1,7,1,1,501,hit,1,480.000,0,n/a
+480,481.000,happy mole,go,2,2,5,2,2,611,hit,1,481.000,0,n/a
+481,482.000,happy mole,go,1,1,1,1,1,414,hit,1,482.000,0,n/a
+482,483.000,happy mole,go,3,1,7,1,1,421,hit,1,483.000,0,n/a
+483,484.000,happy mole,go,2,1,4,1,1,556,hit,1,484.000,0,n/a
+484,485.000,sad mole,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,485.000,0,8
+485,486.000,happy mole,go,1,1,1,1,1,372,hit,1,486.000,0,n/a
+486,487.000,happy mole,go,3,2,8,2,2,474,hit,1,487.000,0,n/a
+487,488.000,happy mole,go,2,2,5,2,2,516,hit,1,488.000,0,n/a
+488,489.000,happy mole,go,1,1,1,1,1,540,hit,1,489.000,0,n/a
+489,490.000,happy mole,go,3,1,7,1,1,462,hit,1,490.000,0,n/a
+490,491.000,happy mole,go,1,3,3,3,3,396,hit,1,491.000,0,n/a
+491,492.000,molerat,nogo,1,2,2,2,n/a,n/a,correct_rejection,1,492.000,0,6
+492,493.000,happy mole,go,1,1,1,1,1,567,hit,1,493.000,0,n/a
+493,494.000,happy mole,go,1,3,3,3,3,344,hit,1,494.000,0,n/a
+494,495.000,happy mole,go,1,1,1,1,1,443,hit,1,495.000,0,n/a
+495,496.000,happy mole,go,1,3,3,3,3,334,hit,1,496.000,0,n/a
+496,497.000,happy mole,go,2,1,4,1,1,441,hit,1,497.000,0,n/a
+497,498.000,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,498.000,0,5
+498,499.000,happy mole,go,1,1,1,1,1,407,hit,1,499.000,0,n/a
+499,500.000,happy mole,go,2,3,6,3,3,653,hit,1,500.000,0,n/a
+500,501.000,molerat,nogo,3,2,8,2,n/a,n/a,correct_rejection,1,501.000,0,2
+501,502.000,happy mole,go,1,2,2,2,2,522,hit,1,502.000,0,n/a
+502,503.000,happy mole,go,1,1,1,1,1,648,hit,1,503.000,0,n/a
+503,504.000,happy mole,go,2,2,5,2,n/a,n/a,omission,0,504.000,0,n/a
+504,505.000,sad mole,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,505.000,0,3
+505,506.000,happy mole,go,1,2,2,2,2,361,hit,1,506.000,0,n/a
+506,507.000,molerat,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,507.000,0,1
+507,508.000,happy mole,go,1,1,1,1,1,481,hit,1,508.000,0,n/a
+508,509.000,happy mole,go,2,3,6,3,3,454,hit,1,509.000,0,n/a
+509,510.000,happy mole,go,1,2,2,2,2,501,hit,1,510.000,0,n/a
+510,511.000,happy mole,go,2,1,4,1,1,595,hit,1,511.000,0,n/a
+511,512.000,molerat,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,512.000,0,4
+512,513.000,happy mole,go,1,2,2,2,2,364,hit,1,513.000,0,n/a
+513,514.000,sad mole,nogo,3,2,8,2,2,450,commission,0,514.000,0,1
+514,515.000,happy mole,go,1,1,1,1,1,234,hit,1,515.000,0,n/a
+515,516.000,molerat,nogo,2,1,4,1,1,591,commission,0,516.000,0,1
+516,517.000,happy mole,go,2,2,5,2,2,438,hit,1,517.000,0,n/a
+517,518.000,happy mole,go,3,1,7,1,1,519,hit,1,518.000,0,n/a
+518,519.000,happy mole,go,1,3,3,3,3,322,hit,1,519.000,0,n/a
+519,520.000,sad mole,nogo,1,1,1,1,1,603,commission,0,520.000,0,3
+520,521.000,happy mole,go,2,2,5,2,2,727,hit,1,521.000,0,n/a
+521,522.000,happy mole,go,1,1,1,1,1,334,hit,1,522.000,0,n/a
+522,523.000,happy mole,go,3,2,8,2,2,554,hit,1,523.000,0,n/a
+523,524.000,happy mole,go,3,3,9,3,3,454,hit,1,524.000,0,n/a
+524,525.000,happy mole,go,1,3,3,3,n/a,n/a,omission,0,525.000,0,n/a
+525,526.000,happy mole,go,2,2,5,2,2,424,hit,1,526.000,0,n/a
+526,527.000,happy mole,go,1,3,3,3,3,370,hit,1,527.000,0,n/a
+527,528.000,sad mole,nogo,1,2,2,2,2,651,commission,0,528.000,0,7
+528,529.000,happy mole,go,2,1,4,1,1,469,hit,1,529.000,0,n/a
+529,530.000,happy mole,go,2,2,5,2,2,356,hit,1,530.000,0,n/a
+530,531.000,happy mole,go,3,2,8,2,2,553,hit,1,531.000,0,n/a
+531,532.000,molerat,nogo,1,2,2,2,2,464,commission,0,532.000,0,3
+532,533.000,happy mole,go,3,3,9,3,3,413,hit,1,533.000,0,n/a
+533,534.000,happy mole,go,1,2,2,2,2,577,hit,1,534.000,0,n/a
+534,535.000,happy mole,go,2,3,6,3,3,492,hit,1,535.000,0,n/a
+535,536.000,happy mole,go,1,1,1,1,1,490,hit,1,536.000,0,n/a
+536,537.000,happy mole,go,2,2,5,2,2,501,hit,1,537.000,0,n/a
+537,538.000,happy mole,go,2,3,6,3,3,452,hit,1,538.000,0,n/a
+538,539.000,happy mole,go,1,2,2,2,2,627,hit,1,539.000,0,n/a
+539,540.000,happy mole,go,1,1,1,1,1,308,hit,1,540.000,0,n/a
+540,541.000,happy mole,go,2,2,5,2,2,498,hit,1,541.000,0,n/a
+541,542.000,molerat,nogo,2,1,4,1,1,372,commission,0,542.000,0,9
+542,543.000,happy mole,go,3,2,8,2,2,310,hit,1,543.000,0,n/a
+543,544.000,happy mole,go,1,1,1,1,1,468,hit,1,544.000,0,n/a
+544,545.000,happy mole,go,2,2,5,2,2,474,hit,1,545.000,0,n/a
+545,546.000,happy mole,go,3,1,7,1,1,468,hit,1,546.000,0,n/a
+546,547.000,happy mole,go,3,2,8,2,2,410,hit,1,547.000,0,n/a
+547,548.000,molerat,nogo,2,3,6,3,n/a,n/a,correct_rejection,1,548.000,0,5
+548,549.000,happy mole,go,1,1,1,1,1,606,hit,1,549.000,0,n/a
+549,550.000,molerat,nogo,2,3,6,3,3,36,commission,0,550.000,0,1
+550,551.000,happy mole,go,2,2,5,2,2,491,hit,1,551.000,0,n/a
+551,552.000,happy mole,go,1,3,3,3,3,430,hit,1,552.000,0,n/a
+552,553.000,molerat,nogo,2,3,6,3,3,552,commission,0,553.000,0,2
+553,554.000,happy mole,go,1,1,1,1,1,371,hit,1,554.000,0,n/a
+554,555.000,molerat,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,555.000,0,1
+555,556.000,happy mole,go,1,2,2,2,2,482,hit,1,556.000,0,n/a
+556,557.000,sad mole,nogo,2,1,4,1,n/a,n/a,correct_rejection,1,557.000,0,1
+557,558.000,happy mole,go,2,2,5,2,2,120,hit,1,558.000,0,n/a
+558,559.000,happy mole,go,2,3,6,3,3,347,hit,1,559.000,0,n/a
+559,560.000,happy mole,go,1,1,1,1,n/a,n/a,omission,0,560.000,0,n/a
+560,561.000,happy mole,go,2,1,4,1,1,295,hit,1,561.000,0,n/a
+561,562.000,happy mole,go,2,3,6,3,3,570,hit,1,562.000,0,n/a
+562,563.000,sad mole,nogo,2,1,4,1,n/a,n/a,correct_rejection,1,563.000,0,5
+563,564.000,happy mole,go,1,2,2,2,2,412,hit,1,564.000,0,n/a
+564,565.000,happy mole,go,3,1,7,1,1,529,hit,1,565.000,0,n/a
+565,566.000,happy mole,go,1,2,2,2,n/a,n/a,omission,0,566.000,0,n/a
+566,567.000,happy mole,go,3,1,7,1,1,593,hit,1,567.000,0,n/a
+567,568.000,molerat,nogo,2,1,4,1,1,371,commission,0,568.000,0,4
+568,569.000,happy mole,go,1,1,1,1,1,437,hit,1,569.000,0,n/a
+569,570.000,sad mole,nogo,1,3,3,3,3,476,commission,0,570.000,0,1
+570,571.000,happy mole,go,2,2,5,2,2,413,hit,1,571.000,0,n/a
+571,572.000,molerat,nogo,3,2,8,2,n/a,n/a,correct_rejection,1,572.000,0,1
+572,573.000,happy mole,go,1,3,3,3,3,343,hit,1,573.000,0,n/a
+573,574.000,happy mole,go,3,2,8,2,2,514,hit,1,574.000,0,n/a
+574,575.000,sad mole,nogo,2,2,5,2,n/a,n/a,correct_rejection,1,575.000,0,2
+575,576.000,happy mole,go,1,3,3,3,3,362,hit,1,576.000,0,n/a
+576,577.000,happy mole,go,1,1,1,1,1,593,hit,1,577.000,0,n/a
+577,578.000,happy mole,go,1,2,2,2,2,304,hit,1,578.000,0,n/a
+578,579.000,happy mole,go,2,2,5,2,2,383,hit,1,579.000,0,n/a
+579,580.000,molerat,nogo,1,3,3,3,3,430,commission,0,580.000,0,4
+580,581.000,happy mole,go,3,3,9,3,3,314,hit,1,581.000,0,n/a
+581,582.000,molerat,nogo,3,2,8,2,2,324,commission,0,582.000,0,1
+582,583.000,happy mole,go,1,3,3,3,3,358,hit,1,583.000,0,n/a
+583,584.000,happy mole,go,3,3,9,3,3,439,hit,1,584.000,0,n/a
+584,585.000,happy mole,go,2,1,4,1,1,323,hit,1,585.000,0,n/a
+585,586.000,happy mole,go,3,2,8,2,2,369,hit,1,586.000,0,n/a
+586,587.000,happy mole,go,2,2,5,2,2,507,hit,1,587.000,0,n/a
+587,588.000,happy mole,go,1,3,3,3,3,493,hit,1,588.000,0,n/a
+588,589.000,molerat,nogo,3,1,7,1,n/a,n/a,correct_rejection,1,589.000,0,6
+589,590.000,happy mole,go,3,2,8,2,2,475,hit,1,590.000,0,n/a
+590,591.000,happy mole,go,1,2,2,2,2,345,hit,1,591.000,0,n/a
+591,592.000,happy mole,go,3,1,7,1,1,423,hit,1,592.000,0,n/a
+592,593.000,happy mole,go,2,2,5,2,2,460,hit,1,593.000,0,n/a
+593,594.000,happy mole,go,1,1,1,1,1,705,hit,1,594.000,0,n/a
+594,595.000,happy mole,go,2,1,4,1,1,393,hit,1,595.000,0,n/a
+595,596.000,sad mole,nogo,3,3,9,3,3,244,commission,0,596.000,0,6
+596,597.000,happy mole,go,2,2,5,2,2,378,hit,1,597.000,0,n/a
+597,598.000,happy mole,go,3,1,7,1,1,499,hit,1,598.000,0,n/a
+598,599.000,happy mole,go,3,3,9,3,3,432,hit,1,599.000,0,n/a
+599,600.000,happy mole,go,2,1,4,1,1,336,hit,1,600.000,0,n/a
+600,601.000,molerat,nogo,1,1,1,1,n/a,n/a,correct_rejection,1,601.000,0,4

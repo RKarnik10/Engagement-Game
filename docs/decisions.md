@@ -1,30 +1,52 @@
 # Decisions log
 
 Dated answers to the open questions in README section 2. Until a row has a
-decision, the code uses the "Assumed for now" value. Each assumption is marked
-in the source with a `TODO(Qn)` comment so it can be found with
-`grep -rn "TODO(Q" src/`.
+decision, the code uses the "Assumed for now" value. Assumptions still open
+are marked in the source with `TODO(Qn)`; settled ones with `DECIDED(Qn)`.
+Find them with `grep -rn "TODO(Q\|DECIDED(Q" src/`.
 
-| # | Question | Assumed for now (where in code) | Decision | Date |
-|---|----------|----------------------------------|----------|------|
-| Q1 | Construct: attention fluctuations, engagement/motivation, or both? | Both. RT-variability time course for attention; self-report probes optional (not built). | pending | |
-| Q2 | Response device and button count? | One hand, 4 buttons: `layout: "row4"`, `keys: ["1","2","3","4"]` in `src/config.js`. | pending | |
-| Q3 | Presentation software for scanning? | Browser build now; scanner platform decided in Phase 4. | pending | |
-| Q4 | TR, run length, number of runs, trigger key, dummy scans? | `trS: 1.0`, `durationS: 60`, `triggerKey: "t"`, `firstOnsetMs: 2000` in `src/config.js`. Rehaan expects real runs of about 10 to 15 minutes (noted September 18, 2026, to confirm); the settings panel's run-length limit is 600 s and must be raised for 15-minute runs. | pending | |
-| Q5 | Continuous play or blocks? | Continuous with jittered gaps (`src/schedule.js`). | pending | |
-| Q6 | Show a score or feedback? | Configurable, on for piloting: `showScore: true`; hit +1, false press -1 (`src/engine.js`). | pending | |
-| Q7 | Adaptive difficulty? | Off. Fixed timing from config; nothing adapts. | pending | |
-| Q8 | Mole art vs. neutral art? | Build both; mole skin only in Phase 1 (`src/render/skin-mole.js`). | pending | |
-| Q9 | Participant population? | Healthy adults. | pending | |
-| Q10 | Eye tracking and visual angle? | Unknown. Hole spacing is a placeholder (`src/render/board.js`). | pending | |
-| Q11 | Different-hole press during a no-go target: commission or wrong-hole? | Logged as `wrong_hole`, trial continues (`src/classify.js`). | pending | |
+## Answers from Dr. Song, September 21, 2026
 
-## Other placeholders not tied to a numbered question
+Relayed by Rehaan Karnik from Dr. Song's written feedback.
 
-| Item | Assumed for now (where in code) | Decision | Date |
-|------|----------------------------------|----------|------|
-| Go proportion | 0.8, exact per run (`goProb`) | pending | |
-| Schedule constraints | First 3 trials go; no two no-go in a row; same hole never twice in a row (`src/schedule.js`) | pending | |
-| Target up time | 900 ms (`holdMs`) | pending | |
-| Gap between targets | uniform 500 to 1200 ms (`isiMinMs`, `isiMaxMs`) | pending | |
-| Pop-up vs. gradual onset | `onset: "instant"` by default; `"gradual"` uses `rampMs: 350` each way (README 3.5) | pending | |
+| # | Question | Decision | Where it lives in the code | Date |
+|---|----------|----------|-----------------------------|------|
+| Q1 | Construct: attention fluctuations, engagement, or both? | **Both.** | Attention measures are built. Engagement probes are still not built. | 2026-09-21 |
+| Q2 | Response device and button count? | **One hand, 3 buttons. Nine holes in a 3 by 3 grid; a button is a column.** | `LAYOUTS.grid3x3` in `src/config.js`; `holeResponse` maps each hole to its column's button. | 2026-09-21 |
+| Q3 | Presentation software? | **Browser is fine.** Psychtoolbox was the lab's tool but is now behind a paywall; PsychoPy is the fallback if the browser build is not good enough. | No change; the browser build stands. | 2026-09-21 |
+| Q4 | TR, run length, number of runs, trigger key, dummy scans? | **Still undetermined; will discuss.** Run length is settled at 600 trials, about 10 minutes. | `nTrials: 600`, `trialMs: 1000`. `trS`, `triggerKey`, `firstOnsetMs` remain placeholders. | partly 2026-09-21 |
+| Q5 | Continuous play or blocks? | **Continuous.** A trial every second, no rest blocks. | `trialMs` in `src/schedule.js`; onsets are fixed, not jittered. | 2026-09-21 |
+| Q6 | Show a score or feedback? | **No.** The participant sees nothing in response to a press: no score, no hole lighting up, no white ring. Moles only pop in and out. | `showScore: false`, `feedback: false`; `src/render/board.js` has no flash code at all. | 2026-09-21 |
+| Q7 | Adaptive difficulty? | **No, non-adaptive.** | Nothing in `src/engine.js` adapts to performance. | 2026-09-21 |
+| Q8 | Mole art vs. neutral art? | **Moles, no eggplants.** Go is a happy mole. The two skip stimuli are a sad mole and a molerat. | `src/render/skin-mole.js`. | 2026-09-21 |
+| Q9 | Participant population? | **All adults.** | Affects instructions and IRB only. | 2026-09-21 |
+| Q10 | Eye tracking and visual angle? | **No eye tracking available.** Visual angle still unknown. | Hole spacing in `src/styles.css` is still a placeholder. | 2026-09-21 |
+| Q11 | Wrong-hole press during a skip trial: commission or wrong-hole? | **Wrong-hole is fine.** Logged as `wrong_hole`; the trial continues. | `src/classify.js`. Now means the wrong *column*. | 2026-09-21 |
+
+## Other decisions from the same feedback
+
+| Item | Decision | Where | Date |
+|------|----------|-------|------|
+| Trial rate | One trial per second, fixed, not jittered | `trialMs: 1000` | 2026-09-21 |
+| Trials per run | 600, so a run is about 10 minutes | `nTrials: 600` | 2026-09-21 |
+| Stimulus mix | 80 / 10 / 10 | `goProb: 0.8`, `nogoSadShare: 0.5` | 2026-09-21 |
+| Experimenter and participant screens | Settings hidden from the participant; a full-screen participant display on a separate screen | "Participant display" button in `src/main.js`, `body.participant-view` in `src/styles.css` | 2026-09-21 |
+| Where the run happens | Recorded per run as scanner = 1 or behavioral suite = 0 | `setting` in `src/config.js`, `in_scanner` in the JSON metadata | 2026-09-21 |
+| Which inputs are recorded | Only the mapped response buttons; every other key is ignored | `src/input.js` | 2026-09-21 |
+| Output columns | Which mole appeared (row and column), what should have been pressed, what was pressed, and the reaction time | `buildRunCSV` in `src/export.js` | 2026-09-21 |
+
+## Still open, and how the code reads the feedback today
+
+These are the places where the written feedback could be read more than one
+way, or where a value had to be picked to make the build run. Each needs a
+one-line confirmation.
+
+| # | Open point | What the code does now | Why it needs confirming |
+|---|------------|------------------------|--------------------------|
+| A | "Try some trials with correct, trials with incorrect, and both (80-10-10)" | 80% happy mole (press), 10% sad mole (hold back), 10% molerat (hold back). Go/no-go stays 80/20. | Three shares and three pictures line up, but "and both" is ambiguous. If instead it means three *runs* to compare, or a different three-way split, only `goProb` and `nogoSadShare` change. |
+| B | "Record the 1 and 2 inputs rather than any other input" | All three mapped buttons (1, 2, 3) are recorded as responses; every other key is ignored and never stored. | Q2 settled on three buttons, so "1 and 2" may be shorthand, or may name the exact codes the button box sends. |
+| C | Sad mole and molerat: one skip stimulus or two? | Two, at 10% each, logged separately in `stimulus`. | If they are meant as alternative designs rather than both at once, set `nogoSadShare` to 1 or 0. |
+| D | How long a mole stays up inside the 1 s cycle | 800 ms up, then 200 ms empty before the next trial. | The 1 s cycle is settled; the split inside it is not. |
+| E | Whether the on-screen button labels stay | Shown under each column. | Useful for piloting; the scanner participant uses a button box. |
+| F | Q4 remainder | TR 1 s, trigger key `t`, 2 s lead-in, one run. | Needed before any scan. Dr. Song said this is still to be discussed. |
+| G | Same-hole and same-column repeats | The same hole never repeats on consecutive trials; the same column may. | Carried over from v0.1 and never confirmed. |

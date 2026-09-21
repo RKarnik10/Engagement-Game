@@ -1,19 +1,23 @@
 # How to review this project without reading code
 
-*For Dr. Song, and for anyone looking at this repository for the first time. Written September 18, 2026 by Rehaan Karnik with AI assistance. Plain language on purpose; the technical detail is in the [README](../README.md).*
+*For Dr. Song, and for anyone looking at this repository for the first time. Written September 18, 2026 by Rehaan Karnik with AI assistance; updated September 21, 2026 to match her feedback. Plain language on purpose; the technical detail is in the [README](../README.md).*
 
 ## What this is, in one paragraph
 
-A short game for the MRI scanner. Moles pop up from holes, one at a time. The participant presses the button for each mole and holds back when an eggplant appears instead. Every appearance and every button press is time-stamped from the scanner's start signal. From those time stamps we can compute how attention rises and falls during the scan and line that up with the brain data. The aim is the engagement of a game with the measurement quality of a standard attention task.
+A short game for the MRI scanner. Moles pop up from nine holes arranged in a three-by-three grid, one at a time, one every second for ten minutes. The participant has three buttons, one per column. When a happy mole appears they press the button for the column it is in; the row does not matter. When a sad mole or a molerat appears they do nothing. Every appearance and every button press is time-stamped from the scanner's start signal. From those time stamps we can compute how attention rises and falls during the scan and line that up with the brain data. The aim is the engagement of a game with the measurement quality of a standard attention task.
+
+One thing to expect: **the screen never reacts to a button press.** There is no score, no flash, and no confirmation. That is deliberate, decided on September 21, 2026. It may feel frustrating to play; that is worth noticing during piloting.
 
 ## Try it in two minutes
 
 1. Open the live page: https://rkarnik10.github.io/Engagement-Game/ . If it does not load, GitHub Pages is not switched on yet. Instead, on the repository page click the green **Code** button, choose **Download ZIP**, unzip it, and double-click `index.html`.
 2. Press **T**. That key stands in for the scanner's start pulse. Every time in the data is measured from this moment.
-3. Press **1**, **2**, **3**, or **4** for the hole a mole comes out of. Do nothing for eggplants. The run lasts 60 seconds. **Esc** ends it early.
-4. Scroll down for the attention trace, the event log, and the two data downloads.
+3. Press **1**, **2**, or **3** for the *column* a happy mole comes out of. Do nothing for sad moles or molerats. **Esc** ends the run early.
+4. Scroll down for the attention trace, the event log, and the three data downloads.
 
-The newer, modular build lives in the `src/` folder and looks the same. Browsers block it when it is opened by double-click, so it needs a small local server. From the repository folder, run `npm run serve`, then open http://localhost:8000/ . If Pages is on, it is also at https://rkarnik10.github.io/Engagement-Game/src/ .
+Note that the live page at the link above is still the older four-hole version from September 18. The current design is the one in the `src/` folder, described below.
+
+The current build lives in the `src/` folder. Browsers block it when it is opened by double-click, so it needs a small local server. From the repository folder, run `npm run serve`, then open http://localhost:8000/ . It defaults to the full 600-trial, ten-minute run; lower "Number of trials" in the settings panel to try a short one. The **Participant display** button hides the settings and fills the screen, which is what the participant would see on a second monitor.
 
 ## What is on the page
 
@@ -32,7 +36,8 @@ The newer, modular build lives in the `src/` folder and looks the same. Browsers
 | `research-notes.md` | Summaries of the papers behind the design, with links. | Yes, if you want the evidence. |
 | `docs/decisions.md` | The open questions with an empty Decision column. | Yes. This is where answers go, with the date. |
 | `docs/analysis-plan.md` | What we will compute from the data, in plain language. | Yes. |
-| `index.html` | The original prototype. One file, runs anywhere. | Only to play it. |
+| `index.html` | The original September 18 prototype, four holes. Kept as the published demo. | Only for reference. |
+| `examples/` | A complete ten-minute example run, with notes on what to look for. | **Yes, start with `example_run.csv`.** |
 | `src/` | The same game split into small files so each part can be tested. | See the list below. |
 | `tests/` | Automated checks of the rules. | No, but see "What the tests prove". |
 | `analysis/` | Empty until Phase 3, the analysis script. | Not yet. |
@@ -47,46 +52,63 @@ Inside `src/`, in case you want to look at one thing:
 | `engine.js` | Runs the clock, shows targets on time, and records what happens. |
 | `input.js` | Turns key presses and screen taps into hole numbers. |
 | `logger.js`, `export.js` | The event log and the two output files. |
-| `render/` | Drawing only: the holes, the mole and eggplant art, the trace chart. Swapping the art does not touch the rest. |
+| `render/` | Drawing only: the holes, the three mole drawings, the trace chart. Swapping the art does not touch the rest. |
 | `main.js`, `index.html`, `styles.css` | The web page that connects the pieces. |
 
-## The two data files
+## The three data files
 
-**Events table** (`..._events.tsv`). One row per target that appeared. It follows the BIDS convention for fMRI event files, with times in seconds from the start pulse. It opens in Excel or any spreadsheet program.
+A complete example of all three, from a ten-minute run, is in the `examples/`
+folder. No person took part: a simulated participant played the real game.
+
+**Run table** (`..._run.csv`). The one to open first. One row per mole, opens
+in Excel.
 
 | Column | Meaning |
 |---|---|
-| `onset` | When the target appeared, in seconds from the start pulse. |
-| `duration` | How long it stayed up. |
-| `trial_type` | `go` (mole) or `nogo` (eggplant). |
-| `hole` | Which hole, 1 to 4 from left to right. |
-| `key` | The key for that hole. |
-| `outcome` | `hit`, `omission` (missed mole), `commission` (pressed on an eggplant), `correct_rejection` (left the eggplant alone), or `truncated` (the run ended while it was up). |
-| `response_time` | Seconds from appearance to the press, when there was one. `n/a` otherwise. |
-| `scheduled_onset` | When it was planned to appear. The difference from `onset` measures display lateness. |
-| `preceding_go` | For eggplants only: how many moles came before it since the last eggplant. |
+| `trial` | 1 to 600, in order. |
+| `onset_s` | When the mole appeared, in seconds from the start pulse. |
+| `stimulus` | `happy mole`, `sad mole`, or `molerat`. |
+| `trial_type` | `go` (press) or `nogo` (do nothing). |
+| `mole_row`, `mole_col` | Where it appeared in the grid, 1 to 3 each. |
+| `hole` | The same position as one number, 1 to 9, reading order. |
+| `expected_button` | The button that should have been pressed. Always equals `mole_col`. |
+| `pressed_button` | The button actually pressed, or `n/a` if none. |
+| `response_time_ms` | Milliseconds from the mole appearing to the press. `n/a` if none. |
+| `outcome` | `hit`, `omission` (missed a happy mole), `commission` (pressed on a skip trial), `correct_rejection` (correctly did nothing), or `truncated` (the run ended while it was up). |
+| `correct` | 1 or 0. `n/a` for a truncated trial. |
+| `scheduled_onset_s` | When it was planned to appear. |
+| `onset_lag_ms` | How late it actually was. Should be under about 17 ms. |
+| `preceding_go` | For skip trials only: how many happy moles came before it since the last skip trial. |
 
-Three example rows from a test run:
+Three example rows:
 
 ```
-onset   duration  trial_type  hole  key  outcome     response_time  scheduled_onset  preceding_go
-2.000   0.250     go          1     1    hit         0.250          2.000            n/a
-3.901   0.278     go          4     4    hit         0.278          3.892            n/a
-9.135   0.308     nogo        1     1    commission  0.308          9.133            4
+trial,onset_s,stimulus,trial_type,mole_row,mole_col,hole,expected_button,pressed_button,response_time_ms,outcome,correct
+1,2.000,happy mole,go,1,1,1,1,1,507,hit,1
+11,12.017,happy mole,go,3,3,9,3,,,omission,0
+549,550.000,molerat,nogo,2,3,6,3,3,36,commission,0
 ```
 
-**Full log** (`..._log.json`). Everything, for the record, in three parts: `meta` (the settings used, the browser, and display-timing health), `trials` (the same table in milliseconds), and `events` (every single thing that happened, including the start pulse, each simulated scanner pulse, wrong-hole presses, and presses when nothing was up).
+**Events table** (`..._events.tsv`). The same trials in the BIDS layout for
+fMRI, with `onset` and `duration` in seconds from the start pulse.
+
+**Full log** (`..._log.json`). Everything, in three parts: `meta` (the settings
+used, whether the run was in the scanner, the browser, and display-timing
+health), `trials` (the same table in milliseconds), and `events` (every single
+thing that happened, including each simulated scanner pulse, wrong-column
+presses, and presses when nothing was up).
 
 ## What the tests prove
 
 Running `npm test` in the repository folder runs 55 automatic checks in under a second. In plain terms, they confirm that:
 
-- the same seed number always gives the identical target list, so a run can be reproduced exactly, and the modular build gives the same list as the prototype;
-- the mole and eggplant split is exactly the configured share (80/20 by default), the first three targets are moles, no two eggplants come in a row, and the same hole is never used twice in a row, checked across more than a thousand seeds;
+- the same seed number always gives the identical target list, so a run can be reproduced exactly;
+- the mix is exactly 80% happy moles, 10% sad moles, and 10% molerats, the first three targets are happy moles, no two skip trials come in a row, and the same hole is never used twice in a row, checked across more than a thousand seeds;
 - targets never overlap in time;
 - each of the seven outcomes is produced in exactly the situation the README describes;
 - the engine shows targets on time, takes them down on time, and records display timing;
-- the events table and full log have the expected shape and can be read by standard tools.
+- a press counts as correct for any row in the right column, and as a wrong-column press otherwise;
+- all three output files have the expected shape and can be read by standard tools.
 
 The tests do not check what the screen looks like, and they cannot check the real timing of a specific computer and projector. That is the hardware check in Phase 4.
 
@@ -98,16 +120,16 @@ The tests do not check what the screen looks like, and they cannot check the rea
 
 ## Glossary in plain language
 
-- **Go/no-go task.** Respond to most things (go), hold back for a few (no-go). Here: moles are go, eggplants are no-go.
-- **Hit, omission, commission, correct rejection.** Pressed for a mole; missed a mole; pressed for an eggplant; left an eggplant alone.
-- **Reaction time (RT).** Time from a mole appearing to the press.
+- **Go/no-go task.** Respond to most things (go), hold back for a few (no-go). Here: happy moles are go; sad moles and molerats are no-go.
+- **Hit, omission, commission, correct rejection.** Pressed for a happy mole; missed a happy mole; pressed on a skip trial; correctly did nothing on a skip trial.
+- **Reaction time (RT).** Time from a happy mole appearing to the press.
 - **Trigger, or start pulse.** The signal the scanner sends when it starts. Time zero for everything.
 - **TR and volume.** The scanner takes one whole-brain picture (a volume) every TR, for example every second. Lining up behavior with the brain means lining it up with these pictures.
 - **BIDS.** A shared convention for organising brain-imaging data. Following it means the events table drops into standard tools.
 - **Seed.** A number that fixes the random choices in a run. Same seed, same run, every time.
 - **Frame.** One screen refresh, usually 60 per second. Targets appear on a frame, so onset times are accurate to about a sixtieth of a second.
-- **Hold time and gap.** How long a target stays up (0.9 s for now) and the pause before the next one (0.5 to 1.2 s, chosen at random so the brain responses to separate targets can be told apart).
-- **Skin.** The look of the targets. Moles and eggplants, or neutral shapes. Changing the skin changes only the drawings.
+- **Hold time and trial rate.** How long a mole stays up (0.8 s for now) and how often a trial starts (every 1 s exactly).
+- **Skin.** The look of the targets. Changing the skin changes only the drawings, never the timing or the schedule.
 - **gradCPT.** The lab's existing attention task, where pictures fade gradually into one another instead of popping up.
 - **Variance time course (VTC).** The attention curve: how erratic reaction times are over the run. Explained in the analysis plan.
-- **d′ (d-prime).** One number for how well someone told moles from eggplants, combining hits and false presses. Explained in the analysis plan.
+- **d′ (d-prime).** One number for how well someone told happy moles from the ones to skip, combining hits and false presses. Explained in the analysis plan.

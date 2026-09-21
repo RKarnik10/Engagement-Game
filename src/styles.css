@@ -47,22 +47,28 @@ a{color:inherit}
 .stage{position:relative;aspect-ratio:16/10;background:#808080;border-radius:4px;overflow:hidden;outline:none;touch-action:manipulation;-webkit-user-select:none;user-select:none;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
 .stage:focus-visible{box-shadow:0 0 0 3px var(--signal)}
 
-/* Board (render/board.js). Layout geometry per hole layout; TODO(Q10): spacing depends on visual angle. */
-.holes{position:absolute;display:grid;justify-items:center;align-items:center}
-.holes.row4{inset:22% 5% 16%;grid-template-columns:repeat(4,1fr);column-gap:3%}
-.holes.grid9{inset:8% 29% 5%;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);column-gap:6%}
-.hole{width:100%;max-width:170px;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+/* Board (render/board.js). TODO(Q10): spacing depends on visual angle. */
+.holes{position:absolute;display:grid;justify-items:center;align-items:center;
+  grid-template-columns:repeat(var(--cols,3),1fr);grid-template-rows:repeat(var(--rows,3),1fr)}
+.holes.grid3x3{inset:6% 24% 16%;column-gap:4%;row-gap:1%}
+.holes.grid9{inset:6% 24% 16%;column-gap:4%;row-gap:1%}
+.holes.row4{inset:22% 5% 22%;column-gap:3%}
+.hole{width:100%;max-width:150px;display:flex;flex-direction:column;align-items:center}
 .hole .art{width:100%}
 .hole svg{width:100%;height:auto;display:block;overflow:visible}
-.keycap{margin-top:2px;font-size:.8rem;font-weight:700;line-height:1;padding:4px 7px;border-radius:3px;background:#B9B9B9;color:#262626;font-variant-numeric:tabular-nums}
-.holes.grid9 .keycap{font-size:.7rem;padding:3px 6px}
-.fx{fill:none;stroke:transparent;stroke-width:4}
-.hole.fx-hit .fx{stroke:#F2F2F2}
-.hole.fx-com .fx{stroke:#C0392B}
-.hole.fx-wrong .fx{stroke:#1E1E1E}
-.shape-go,.shape-nogo{display:none}
-.hole[data-type="go"] .shape-go{display:inline}
-.hole[data-type="nogo"] .shape-nogo{display:inline}
+
+/* Only the active stimulus is drawn. No hole ever reacts to a press. */
+.stim{display:none}
+.hole[data-stim="mole_happy"] .stim[data-stim="mole_happy"],
+.hole[data-stim="mole_sad"]   .stim[data-stim="mole_sad"],
+.hole[data-stim="molerat"]    .stim[data-stim="molerat"]{display:inline}
+
+/* Button labels under the board, one per column. */
+.keycaps{position:absolute;left:24%;right:24%;bottom:4%;display:grid;
+  grid-template-columns:repeat(var(--cols,3),1fr);justify-items:center}
+.keycaps.row4{left:5%;right:5%}
+.keycap{font-size:.8rem;font-weight:700;line-height:1;padding:4px 9px;border-radius:3px;
+  background:#B9B9B9;color:#262626;font-variant-numeric:tabular-nums}
 
 .hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:10px 14px;font-weight:700;color:#1C1C1C;font-variant-numeric:tabular-nums;font-size:.95rem;pointer-events:none}
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:6%;background:rgba(128,128,128,.6)}
@@ -138,3 +144,16 @@ textarea{width:100%;min-height:300px;font-family:var(--mono);font-size:.78rem;li
 .notes{margin-top:30px;max-width:72ch;border-top:1px solid var(--line);padding-top:16px}
 
 @media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto !important} }
+
+/* ---- Participant display mode ----
+   Decided September 21, 2026: the participant sees only the grey panel.
+   The experimenter console lives on the other screen. */
+body.participant-view .wrap > *:not(.layout),
+body.participant-view .console,
+body.participant-view .caption{display:none !important}
+body.participant-view .wrap{max-width:none;padding:0}
+body.participant-view .layout{display:block}
+body.participant-view .stage{border-radius:0;aspect-ratio:auto;height:100vh;box-shadow:none}
+#stage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0}
+.stage-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+body.participant-view .stage-tools{display:none}

@@ -2,17 +2,21 @@
  * Response classification: README section 3.3.
  *
  * PURE. No DOM, no clock. The engine calls these with the active trial (or
- * null) and the pressed hole; the renderer never decides outcomes.
+ * null) and the button that was pressed; the renderer never decides outcomes.
  *
- * | Situation                                   | Outcome             |
- * |---------------------------------------------|---------------------|
- * | Go target up, matching key pressed          | hit                 |
- * | Go target goes down, no matching press      | omission            |
- * | No-go target up, matching key pressed       | commission          |
- * | No-go target goes down, no press            | correct_rejection   |
- * | Target up, key for a different hole pressed | wrong_hole          |
- * | No target up, any mapped key pressed        | no_target_press     |
- * | Run ends while a target is up               | truncated           |
+ * Since September 21, 2026 a button is a COLUMN, not a single hole: each
+ * trial carries `response`, the 0-based button expected for its hole. In the
+ * 3x3 grid the row a mole appears in does not change the correct button.
+ *
+ * | Situation                                     | Outcome             |
+ * |-----------------------------------------------|---------------------|
+ * | Happy mole up, its column's button pressed    | hit                 |
+ * | Happy mole goes down, no press                | omission            |
+ * | Sad mole or molerat up, its button pressed    | commission          |
+ * | Sad mole or molerat goes down, no press       | correct_rejection   |
+ * | Target up, a different column's button pressed| wrong_hole          |
+ * | No target up, any mapped button pressed       | no_target_press     |
+ * | Run ends while a target is up                 | truncated           |
  */
 
 export const OUTCOME = Object.freeze({
@@ -32,7 +36,7 @@ const TRIAL_ENDING = new Set([
   OUTCOME.HIT, OUTCOME.OMISSION, OUTCOME.COMMISSION, OUTCOME.CORRECT_REJECTION, OUTCOME.TRUNCATED,
 ]);
 
-/** Outcomes that carry a reaction time (a press on the target's own hole). */
+/** Outcomes that carry a reaction time (a press on the target's own button). */
 const WITH_RT = new Set([OUTCOME.HIT, OUTCOME.COMMISSION]);
 
 function assertType(trial) {
@@ -42,28 +46,30 @@ function assertType(trial) {
 }
 
 /**
- * Classify a key/pointer press.
+ * Classify a button press.
  *
- * @param {{type: 'go'|'nogo', hole: number} | null | undefined} active
+ * @param {{type: 'go'|'nogo', response: number} | null | undefined} active
  *        The trial currently up, or null when no target is up.
- * @param {number} pressedHole  0-based hole index that was pressed.
+ * @param {number} pressedButton  0-based button index that was pressed.
  * @returns {'hit'|'commission'|'wrong_hole'|'no_target_press'}
  */
-export function classifyPress(active, pressedHole) {
-  if (!Number.isInteger(pressedHole)) {
-    throw new Error(`classify: pressedHole must be an integer, got ${pressedHole}`);
+export function classifyPress(active, pressedButton) {
+  if (!Number.isInteger(pressedButton)) {
+    throw new Error(`classify: pressedButton must be an integer, got ${pressedButton}`);
   }
   if (!active) return OUTCOME.NO_TARGET_PRESS;
   assertType(active);
-  // TODO(Q11): a different-hole press while a no-go target is up is logged as
-  // wrong_hole (not a commission). The trial continues.
-  if (pressedHole !== active.hole) return OUTCOME.WRONG_HOLE;
+  if (!Number.isInteger(active.response)) {
+    throw new Error('classify: the active trial needs an integer `response` (expected button)');
+  }
+  // DECIDED(Q11): a press on another column while any target is up is logged
+  // as wrong_hole, not a commission. The trial continues.
+  if (pressedButton !== active.response) return OUTCOME.WRONG_HOLE;
   return active.type === TRIAL_TYPE.GO ? OUTCOME.HIT : OUTCOME.COMMISSION;
 }
 
 /**
- * Classify a target that went down without a press on its own hole.
- *
+ * Classify a target that went down without a press on its own button.
  * @param {{type: 'go'|'nogo'}} active
  * @returns {'omission'|'correct_rejection'}
  */
@@ -75,8 +81,6 @@ export function classifyTimeout(active) {
 
 /**
  * Classify the active trial when the run ends.
- *
- * @param {object|null|undefined} active
  * @returns {'truncated'|null}  null when no target was up.
  */
 export function classifyRunEnd(active) {

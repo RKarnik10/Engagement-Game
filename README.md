@@ -1,15 +1,15 @@
 # Engagement Game: a whac-a-mole attention task for fMRI
 
-**Status:** Blueprint v0.1, drafted September 18, 2026 for discussion in the Song Lab. Nothing here has been reviewed by Dr. Song yet.
-Every value marked *(placeholder)* is a starting guess to be confirmed, not a decision.
+**Status:** Blueprint v0.2. Drafted September 18, 2026; revised September 21, 2026 after Dr. Song's first round of feedback.
+The open questions in section 2 now carry her answers. Values still marked *(placeholder)* are starting guesses, not decisions.
 
 **Author:** Rehaan Karnik (undergraduate RA). Drafted with AI assistance; references were pulled from search and are listed in section 10 with notes on what was and was not verified.
 
-**Build status (September 18, 2026):** Phases 0 and 1 of section 7 are done. The modular build in `src/` reproduces the prototype exactly and has automated tests (`npm test`). **Section 11** lists next steps and what we need from Dr. Song, in plain language.
+**Build status (September 21, 2026):** Phases 0 and 1 of section 7 are done, and the build in `src/` has been revised to Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, happy moles to press and sad moles or molerats to skip, and no on-screen feedback. 61 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
 
 **Contributors and AI disclosure:** see [section 12](#12-contributors-and-ai-disclosure). Code and documentation in this repository were written by an AI assistant under the author's direction, as recorded there.
 
-**Companion documents:** [research-notes.md](research-notes.md) (the reading behind sections 8 and 10), [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [docs/decisions.md](docs/decisions.md) (where answers to the open questions are recorded).
+**Companion documents:** [examples/](examples/) (a full 600-trial example run and what to look for in it), [research-notes.md](research-notes.md) (the reading behind sections 8 and 10), [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [docs/decisions.md](docs/decisions.md) (where answers to the open questions are recorded).
 
 ---
 
@@ -35,23 +35,26 @@ To run locally, open `index.html` in any browser. For the modular build in `src/
 
 ---
 
-## 2. Open questions for Dr. Song (and what this blueprint assumes until answered)
+## 2. Questions for Dr. Song, and her answers
 
-| # | Question | Assumed for now | Why it matters |
-|---|----------|-----------------|----------------|
-| Q1 | What construct is the game meant to capture: moment-to-moment **attention fluctuations**, **engagement/motivation**, or both? | Both. RT-variability time course for attention; optional self-report probes for engagement. | Decides which measures we build and whether we need probes. |
-| Q2 | What **response device** is available in the scanner, and how many buttons? | One hand, 4 buttons. | Decides hole count (4 in a row vs. a 3×3 grid). |
-| Q3 | What **presentation software** does the lab use or prefer for scanning (PsychoPy, Psychtoolbox, browser)? | Browser prototype now; scanner platform decided in Phase 4. | Timing precision differs across platforms (section 4.4). |
-| Q4 | **TR, run length, number of runs, trigger key**, and any dummy scans? | TR 1.0 s *(placeholder)*, trigger key `t` in development. | Needed to align events to volumes. |
-| Q5 | **Continuous** play or **blocks** with rest/fixation? | Continuous with jittered gaps. | Changes schedule generation and analysis. |
-| Q6 | Should the player see a **score** or feedback? | Configurable; on for piloting. | Score is a reward signal and could add its own brain response. |
-| Q7 | **Adaptive difficulty** (speed up when the player does well)? | Off (fixed difficulty). | Adaptive keeps engagement up but makes runs less comparable. |
-| Q8 | **Mole art vs. neutral art** (see section 8)? | Build both; same schedule under each. | Content confound question. |
-| Q9 | **Participant population** (adults, adolescents, children, clinical)? | Healthy adults. | Affects the violence question, instructions, and IRB. |
-| Q10 | Is **eye tracking** available, and what is the display's visual angle? | Unknown. | Targets spread across the screen cause eye movements, which also show up in fMRI. |
-| Q11 | When a no-go target is up and the player presses a **different** hole's key, is that a commission error or a wrong-hole error? | Logged as `wrong_hole` (not a commission). | Changes the commission-error rate. |
+Answered September 21, 2026 unless noted. Full detail, including the points
+that still need a one-line confirmation, is in [docs/decisions.md](docs/decisions.md).
 
-Answers should be recorded in `docs/decisions.md` with the date.
+| # | Question | Answer |
+|---|----------|--------|
+| Q1 | What construct is the game meant to capture: **attention fluctuations**, **engagement/motivation**, or both? | **Both.** |
+| Q2 | What **response device** is available, and how many buttons? | **One hand, 3 buttons.** Nine holes in a 3 by 3 grid; each button is a column. |
+| Q3 | What **presentation software** should the scanner version use? | **Browser is fine.** Psychtoolbox was the lab's tool but is now paywalled; PsychoPy is the fallback. |
+| Q4 | **TR, run length, number of runs, trigger key**, dummy scans? | **Still to be discussed**, except run length: 600 trials, about 10 minutes. |
+| Q5 | **Continuous** play or **blocks** with rest? | **Continuous.** One trial per second, no rest blocks. |
+| Q6 | Should the player see a **score** or feedback? | **No.** Nothing on screen reacts to a press. |
+| Q7 | **Adaptive difficulty**? | **No.** |
+| Q8 | **Mole art vs. neutral art**? | **Moles.** No eggplants: a happy mole to press, a sad mole and a molerat to skip. |
+| Q9 | **Participant population**? | **Adults.** |
+| Q10 | Is **eye tracking** available, and what is the visual angle? | **No eye tracking.** Visual angle still unknown. |
+| Q11 | A press on a **different hole** while a target is up: commission or wrong-hole? | **Wrong-hole**, and the trial continues. Now means the wrong column. |
+
+Points from the same feedback that could be read more than one way are listed at the end of [docs/decisions.md](docs/decisions.md) with what the code does today. Further answers should be recorded there with the date.
 
 ---
 
@@ -60,10 +63,11 @@ Answers should be recorded in `docs/decisions.md` with the date.
 ### 3.1 Core loop
 
 1. The scanner trigger (or `t` during development) sets **t = 0**. All timestamps are milliseconds from this moment.
-2. Targets appear one at a time, at pre-scheduled times, in one of N holes.
-3. **Go target** (mole, or a round light in the neutral look): press that hole's key before it goes back down.
-4. **No-go target** (eggplant, or a diamond in the neutral look): do not press.
-5. The schedule **never depends on the participant's responses**. A hit makes the target drop early, but the next target still appears at its scheduled time. This means the timing design (and therefore the fMRI design matrix) is fixed before the run starts.
+2. Targets appear one at a time, at pre-scheduled times, in one of nine holes arranged in a 3 by 3 grid. One trial starts every second.
+3. **Go target** (happy mole): press the button for the **column** it popped up in, before it goes back down. There are three buttons, one per column, so the row does not change the correct answer.
+4. **No-go target** (sad mole or molerat): do not press.
+5. Nothing on screen reacts to a press. The participant gets no confirmation, no score, and no highlight.
+6. The schedule **never depends on the participant's responses**. A hit makes the target drop early, but the next target still appears at its scheduled time. This means the timing design (and therefore the fMRI design matrix) is fixed before the run starts.
 
 ### 3.2 Why go/no-go
 
@@ -75,28 +79,38 @@ Answers should be recorded in `docs/decisions.md` with the date.
 
 | Situation | Outcome code | Meaning |
 |-----------|--------------|---------|
-| Go target up, matching key pressed | `hit` | Correct; reaction time (RT) recorded |
-| Go target goes down, no matching press | `omission` | Miss; likely attention lapse |
-| No-go target up, matching key pressed | `commission` | False press; inhibition failure |
-| No-go target goes down, no press | `correct_rejection` | Correct skip |
-| Target up, key for a *different* hole pressed | `wrong_hole` | Error; trial continues (see Q11) |
-| No target up, any mapped key pressed | `no_target_press` | Anticipatory or stray press |
+| Happy mole up, its column's button pressed | `hit` | Correct; reaction time (RT) recorded |
+| Happy mole goes down, no matching press | `omission` | Miss; likely attention lapse |
+| Sad mole or molerat up, its column's button pressed | `commission` | False press; inhibition failure |
+| Sad mole or molerat goes down, no press | `correct_rejection` | Correct skip |
+| Target up, a *different* column's button pressed | `wrong_hole` | Error; trial continues (Q11) |
+| No target up, any mapped button pressed | `no_target_press` | Anticipatory or stray press |
 | Run ends while a target is up | `truncated` | Excluded from measures |
 
 `e.repeat` key events (holding a key down) are ignored.
 
-### 3.4 Timing parameters (all placeholders)
+### 3.4 Task parameters
 
-| Parameter | Default | Notes |
-|-----------|---------|-------|
-| Holes | 4 in a row | One per finger on a 4-button box (Q2). 9-hole grid kept for desktop piloting only. |
-| Go proportion | 80% | Exact proportion per run, shuffled. The gradCPT uses a higher go share (roughly 90%; verify). |
-| Constraints | First 3 trials go; no two no-go in a row; same hole never twice in a row | Placeholder rules; confirm with PI. |
-| Target up time | 900 ms | How long a target stays up if not hit. |
-| Gap between targets | uniform 500 to 1200 ms | Jittered so the fMRI response to each event can be separated. |
-| First target | 2000 ms after trigger | Placeholder; depends on dummy scans (Q4). |
-| Run length | 60 s in demo | Real runs likely several minutes (Q4). |
-| Gradual rise/sink | 350 ms each way | Only when `onset: "gradual"` (section 3.5). |
+Settled values are marked **decided**; the rest are still placeholders.
+
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| Holes | 9, in a 3 by 3 grid | **Decided (Q2).** |
+| Buttons | 3, one per column | **Decided (Q2).** The row a mole appears in does not change the correct button. |
+| Trials per run | 600 | **Decided.** About 10 minutes. |
+| Trial rate | one every 1000 ms, fixed | **Decided (Q5).** Not jittered, so onsets are exact. |
+| Stimulus mix | 80% happy mole, 10% sad mole, 10% molerat | **Decided.** Go/no-go is still 80/20. |
+| Target up time | 800 ms *(placeholder)* | Inside the 1000 ms cycle, leaving 200 ms empty. The split inside the cycle is not settled. |
+| Constraints | First 3 trials go; no two no-go in a row; same hole never twice in a row | Placeholder rules carried over from v0.1; never confirmed. |
+| Feedback | none | **Decided (Q6).** No score, no highlight, no sound. |
+| First target | 2000 ms after trigger *(placeholder)* | Depends on dummy scans (Q4). |
+| Gradual rise/sink | 350 ms each way *(placeholder)* | Only when `onset: "gradual"` (section 3.5). Does not fit a 1 s cycle without a shorter up time. |
+
+Fixed one-second trials are a change from v0.1, which jittered the gaps so
+that the fMRI response to each target could be separated. A fixed rate matches
+the lab's gradCPT and suits the variance-time-course analysis (section 5), but
+it means the events are evenly spaced, which is worth keeping in mind when the
+design matrix is built.
 
 ### 3.5 How targets appear: pop-up vs. gradual rise
 
@@ -106,17 +120,17 @@ Implication: a pop-up whack-a-mole might be *less* sensitive to attention lapses
 
 ### 3.6 Looks ("skins")
 
-A skin changes **only the drawings**. Schedule, positions, sizes, timing, keys, and scoring are identical across skins, so the same seed produces the same run under either look.
+A skin changes **only the drawings**. Schedule, positions, sizes, timing, and keys are identical across skins, so the same seed produces the same run under either look. Decided (Q8): the mole skin is the one to build. Go is a happy mole; the two skip stimuli are a sad mole and a molerat.
 
 | Skin | Go target | No-go target |
 |------|-----------|--------------|
-| `mole` | Mole | Eggplant (from the original research task's variant) |
-| `neutral` | Round light | Diamond |
+| `mole` | Happy mole | Sad mole, and a molerat |
+| `neutral` | Round light | Diamond, and a second neutral shape |
 
 Requirements for the real build (not done in the demo):
 
 - Match the go and no-go drawings across skins for **size and average brightness (luminance)**, so any brain difference between skins comes from meaning, not from low-level visual properties.
-- Distinguish go from no-go by **shape**, not color alone, so color-blind participants can play.
+- Distinguish go from no-go by **shape**, not color alone, so color-blind participants can play. The happy mole's mouth curves up and the sad mole's curves down; the molerat has a bald head, big ears, and two front teeth.
 - Keep the "violence dial" at its lowest setting: no hammer, no impact animation, no sound. Adding those would be a separate, deliberate decision (section 8).
 
 ---
@@ -132,9 +146,10 @@ Requirements for the real build (not done in the demo):
 
 ### 4.2 Response device
 
-- The key-to-hole mapping lives in config, not in code.
+- The key-to-button mapping lives in config, not in code. A button is a column: `holeResponse` in `src/config.js` maps each of the nine holes to one of three buttons.
+- Only the mapped buttons are recorded as responses. Every other key is ignored and never stored.
 - Many MR-compatible button boxes present themselves to the computer as a keyboard, but which keys they send depends on the site's hardware. **Confirm the key codes at the scanner we will use.**
-- Known gotcha: some trigger boxes send the key `5`. That collides with the 9-hole number-pad layout, which is one more reason to default to 4 holes.
+- Known gotcha: some trigger boxes send the key `5`. The three response buttons are `1`, `2`, and `3`, so `5` is free, but the config refuses any trigger key that collides with a response key.
 
 ### 4.3 Display
 
@@ -149,10 +164,27 @@ Implication for us: the browser prototype is fine for design discussion and beha
 
 ### 4.5 Output files
 
-Each run writes two files:
+Each run writes three files. A complete example of all three is in
+[examples/](examples/).
 
-1. **Events table (TSV), BIDS-style.** One row per shown trial, with `onset` and `duration` in seconds from the trigger. Columns: `onset, duration, trial_type, hole, key, outcome, response_time, scheduled_onset, preceding_go`. Missing values are `n/a`. *(Column names beyond `onset`/`duration` should be checked against the current BIDS specification before we rely on them.)*
-2. **Full log (JSON).** Metadata (task version, config, user agent, frame-interval statistics), the trial table, and every raw event including trigger pulses, wrong-hole presses, and stray presses.
+1. **Run table (CSV).** The one to open first, and the one Dr. Song asked for
+   on September 21, 2026. One row per mole shown: `trial, onset_s, stimulus,
+   trial_type, mole_row, mole_col, hole, expected_button, pressed_button,
+   response_time_ms, outcome, correct, scheduled_onset_s, onset_lag_ms,
+   preceding_go`. Opens in Excel. Missing values are `n/a`.
+2. **Events table (TSV), BIDS-style.** The same trials with `onset` and
+   `duration` in seconds from the trigger, for the fMRI design matrix.
+   Columns: `onset, duration, trial_type, stimulus, hole, mole_row, mole_col,
+   expected_button, pressed_button, outcome, response_time, scheduled_onset,
+   preceding_go`. *(Column names beyond `onset`/`duration` should be checked
+   against the current BIDS specification before we rely on them.)*
+3. **Full log (JSON).** Metadata (task version, whether the run was in the
+   scanner, config, user agent, frame-interval statistics), the trial table,
+   and every raw event including trigger pulses, wrong-column presses, and
+   stray presses.
+
+Every run records whether it happened in the scanner (`in_scanner: 1`) or in
+the behavioral suite (`in_scanner: 0`).
 
 Frame-interval statistics (mean, max, count over 20 ms) are a cheap health check: many long frames mean onsets may be late.
 
@@ -186,6 +218,9 @@ Engagement-Game/
 ├── README.md               # this blueprint
 ├── research-notes.md       # literature notes behind sections 8 and 10
 ├── index.html              # v0.1 single-file prototype (served by GitHub Pages)
+├── examples/               # a full 600-trial example run, generated without a browser
+│   ├── simulate-run.mjs
+│   └── example_run.csv, example_events.tsv, example_log.json
 ├── package.json            # {"type": "module"}, test script only, no dependencies
 ├── src/
 │   ├── index.html          # page shell; loads main.js as an ES module
@@ -202,8 +237,8 @@ Engagement-Game/
 │   └── render/
 │       ├── board.js        # hole layout shared by all skins
 │       ├── trace.js        # attention-trace chart, experimenter view only
-│       ├── skin-mole.js
-│       └── skin-neutral.js
+│       ├── skin-mole.js    # happy mole, sad mole, molerat
+│       └── skin-neutral.js # not built
 ├── tests/
 │   ├── schedule.test.js
 │   ├── classify.test.js
@@ -231,24 +266,30 @@ Engagement-Game/
 
 ```json
 {
-  "version": "0.1",
+  "version": "0.2",
   "skin": "mole",
-  "layout": "row4",
-  "keys": ["1", "2", "3", "4"],
+  "layout": "grid3x3",
+  "keys": ["1", "2", "3"],
   "triggerKey": "t",
+  "setting": "behavioral",
   "onset": "instant",
   "rampMs": 350,
-  "goProb": 0.8,
-  "holdMs": 900,
-  "isiMinMs": 500,
-  "isiMaxMs": 1200,
+  "nTrials": 600,
+  "trialMs": 1000,
+  "holdMs": 800,
   "firstOnsetMs": 2000,
-  "durationS": 60,
+  "goProb": 0.8,
+  "nogoSadShare": 0.5,
   "trS": 1.0,
-  "showScore": true,
+  "showScore": false,
+  "feedback": false,
   "seed": 1234
 }
 ```
+
+`durationS` is derived, not set: 600 trials of 1000 ms plus a 2000 ms lead-in
+is 602 seconds. `nogoSadShare` splits the no-go trials between the sad mole
+and the molerat, so 0.5 gives the 80 / 10 / 10 mix.
 
 ### 6.2 Trial record
 
@@ -256,18 +297,22 @@ Engagement-Game/
 |-------|------|-------|
 | `trial` | int | 1-based |
 | `type` | `"go"` or `"nogo"` | |
+| `stim` | `"mole_happy"`, `"mole_sad"`, `"molerat"` | The picture drawn |
 | `hole` | int | 1-based, reading order (left to right, top to bottom) |
+| `row`, `col` | int | 1-based position in the grid |
+| `response` | int | 0-based button the trial expects; equals `col - 1` in the 3 by 3 layout |
 | `scheduled_onset_ms` | number | From the schedule |
 | `actual_onset_ms` | number | Frame on which it was first drawn |
 | `offset_ms` | number | When it went down (hit, timeout, or run end) |
 | `outcome` | string | Codes in section 3.3 |
 | `rt_ms` | number or null | Only for `hit` and `commission` |
+| `pressed` | int or null | 0-based button actually pressed |
 | `preceding_go` | int or null | Only for no-go trials |
 | `input` | string or null | For example `"key 3"` or `"pointer"` |
 
 ### 6.3 Event record
 
-Every event has `t_ms` (from trigger) and `event` (one of `trigger`, `volume`, `target_on`, the outcome codes, `run_end`), plus relevant fields such as `trial`, `hole`, `target_hole`, `rt_ms`, `lag_ms`, `source`.
+Every event has `t_ms` (from trigger) and `event` (one of `trigger`, `volume`, `target_on`, the outcome codes, `run_end`), plus relevant fields such as `trial`, `hole`, `row`, `col`, `stim`, `expected_button`, `pressed_button`, `rt_ms`, `lag_ms`, `source`.
 
 ---
 
@@ -279,17 +324,21 @@ Every event has `t_ms` (from trigger) and `event` (one of `trigger`, `volume`, `
 
 ### Phase 1: Desktop prototype (match the demo)
 - Seeded schedule, engine loop, keyboard and pointer input, mole skin, logging, both exports as downloads.
-- **Done when:**
+- **Done (September 18, 2026), revised to Dr. Song's feedback September 21:**
   - Same seed produces an identical schedule (test).
-  - Go/no-go counts are exact for the configured proportion, first 3 trials are go, no consecutive no-go, no repeated hole (tests, over many seeds).
+  - Go/no-go counts and the 80 / 10 / 10 picture mix are exact, first 3 trials are go, no consecutive no-go, no repeated hole (tests, over 1,200 seeds).
   - Every row of the classification table in section 3.3 has a test.
-  - Target windows never overlap.
-  - The TSV loads cleanly in pandas and the JSON parses.
+  - Target windows never overlap, at 1 s per trial.
+  - The CSV and TSV load cleanly in pandas and the JSON parses.
   - Frame statistics are recorded in the JSON metadata.
+  - A full 600-trial example run is in [examples/](examples/).
 
-### Phase 2: Neutral skin and presets
-- `skin-neutral.js`, luminance-matching notes, config presets, optional between-run engagement probe screen (only if Q1 says so).
-- **Done when:** switching skin with the same seed yields byte-identical schedules and TSV timing columns.
+### Phase 2: Matched art and presets
+- Match the three mole drawings for size and average brightness (section 3.6). This is required before scanning and is not done.
+- Participant and run identifiers in the file names and metadata, and a per-run seed rule so every run differs but stays reproducible.
+- Save the three files automatically when a run ends, so ten minutes of data never depends on a click.
+- `skin-neutral.js` only if Q8 is revisited.
+- **Done when:** switching skin with the same seed yields byte-identical schedules and timing columns, and a finished run writes its files without being asked.
 
 ### Phase 3: Analysis script
 - `analysis/compute_measures.py`: read TSV/JSON, compute section 5 measures, resample VTC onto the TR grid, plot.
@@ -371,64 +420,54 @@ Verification notes are in brackets. "Checked" means I saw the abstract or publis
 
 ---
 
-## 11. Next steps and what we need from Dr. Song
+## 11. Where things stand and what is still open
 
-*Written September 18, 2026, in plain language. Companion documents: [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [research-notes.md](research-notes.md) (the reading behind sections 8 and 10).*
+*Updated September 21, 2026, in plain language. Companion documents:
+[examples/](examples/) (a full example run), [docs/decisions.md](docs/decisions.md)
+(every answer, dated), [docs/review-guide.md](docs/review-guide.md) (how to look
+around this repository without reading code),
+[docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute).*
 
-### 11.1 Where things stand
+### 11.1 Done
 
-- This blueprint is drafted but not yet reviewed.
-- The prototype (`index.html`) works in any browser.
-- The modular build (`src/`) reproduces the prototype exactly, is split into small files, and has 55 automated checks. Phases 0 and 1 of section 7 are done.
-- Nothing has been decided. Every number is a placeholder until Dr. Song weighs in.
-- Rehaan expects real runs of about 10 to 15 minutes. The game handles that; the one change needed is raising the run-length limit in the settings panel, which currently stops at 10 minutes.
+- Dr. Song reviewed the v0.1 prototype and answered the questions in section 2.
+- The build in `src/` now matches that feedback: nine holes in a three-by-three
+  grid, three buttons (one per column), a fixed one-second trial, 600 trials for
+  a ten-minute run, happy moles to press and sad moles or molerats to skip, and
+  no on-screen feedback of any kind.
+- A ten-minute example run, played by a simulated participant through the real
+  engine, is in [examples/](examples/) as all three output files.
+- 61 automated tests pass (`npm test`).
 
-### 11.2 Step 1: try the game (about 10 minutes)
+### 11.2 Still open
 
-1. Open the live page, or download the repository and double-click `index.html`. Press **T** to start. The T key stands in for the scanner's start pulse.
-2. Play the 60-second run. Press the key under each mole (keys 1 to 4). Do not press for eggplants.
-3. In the settings panel, switch "How targets appear" to "Rise and sink gradually" and play again. This is the version closer to the lab's gradCPT, where nothing pops up suddenly.
-4. Scroll down. The attention trace is a first look at reaction-time steadiness over the run. The two downloads (events table, full log) are the files the analysis would use.
+Seven points need a one-line answer. The full version, with what the code does
+today for each, is at the end of [docs/decisions.md](docs/decisions.md).
 
-What we want to know: does this feel like the right task, and are these the outputs you would want to work with?
+1. **The 80 / 10 / 10 split.** Read as 80% happy mole, 10% sad mole, 10%
+   molerat. Confirm that is what was meant.
+2. **Which inputs to record.** All three buttons are recorded; every other key
+   is ignored. The note said "the 1 and 2 inputs", which may name exact codes
+   the button box sends.
+3. **Sad mole and molerat: both, or pick one?** Both are in, at 10% each.
+4. **How long a mole stays up** inside the one-second cycle. Currently 800 ms
+   up, 200 ms empty.
+5. **The on-screen button labels** under each column: keep for piloting, or
+   remove?
+6. **The rest of Q4:** TR, number of runs, trigger key, dummy scans.
+7. **Repeats:** the same hole never repeats on consecutive trials, but the same
+   column can. Carried over from v0.1 and never confirmed.
 
-### 11.3 Step 2: decide the open questions
+### 11.3 Next
 
-Each row below is a row of section 2 and of `docs/decisions.md`. A one-line answer per row is enough.
-
-| # | Question, in plain terms | What the code assumes today |
-|---|---|---|
-| Q1 | What are we trying to measure: how attention drifts moment to moment, how engaged the person feels, or both? | Both. Steadiness of reaction times for attention; optional "how focused were you?" questions for engagement. |
-| Q2 | What button box does the scanner have, and how many buttons? | One hand, four buttons, keys 1 to 4. |
-| Q3 | Which software should the scanner version run on? | Browser for now; decide before scanning (Phase 4). |
-| Q4 | Scan settings: TR (how often the scanner takes one brain picture), run length, number of runs, the key the scanner sends at each picture, and how many throwaway pictures at the start. | TR 1 s, 60 s demo runs, key `t`, first target 2 s after the start. |
-| Q5 | One continuous run, or blocks with rest in between? | Continuous, with random gaps between targets. |
-| Q6 | Should the player see a score? | Yes, for piloting. A score is a reward and may add its own brain response. |
-| Q7 | Should the game speed up when someone does well? | No. Fixed speed keeps runs comparable. |
-| Q8 | Moles and eggplants, or neutral shapes? | Build both; moles first. |
-| Q9 | Who are the participants? | Healthy adults. |
-| Q10 | Is eye tracking available, and how big is the screen at the viewing distance? | Unknown. |
-| Q11 | If an eggplant is up and the player presses the key for a *different* hole, is that a false press or just a wrong-hole press? | Wrong-hole; the target stays up. |
-
-### 11.4 Step 3: check the design details
-
-1. The outcome table in section 3.3: do the seven outcomes and their names match how you want targets scored?
-2. The timing values in section 3.4: 80% moles, each target up for 0.9 s, gaps of 0.5 to 1.2 s, first three targets always moles, never two eggplants in a row, never the same hole twice in a row.
-3. The events file columns in section 4.5: are these the columns your fMRI pipeline expects, and are the names right for BIDS?
-4. The measures in section 5, especially how the attention trace is computed. The details to confirm are listed in section 10 of `docs/analysis-plan.md`.
-5. Pop-up or gradual rise (section 3.5): which one, or pilot both?
-
-### 11.5 Lab logistics
-
-- Does this fall under an existing IRB protocol, or does it need an amendment?
-- Who will validate timing on the scanner computer (Phase 4), and which display and button box will be used?
-- Is a public GitHub repository acceptable for this project?
-
-### 11.6 After the answers
-
-Answers go in `docs/decisions.md` with the date. Then, in order: the neutral look (Phase 2), the analysis script (Phase 3), participant and run numbering in the data files, a full-screen participant view, automatic saving at the end of a run, and the scanner-readiness work (Phase 4).
-
----
+1. Look at [examples/example_run.csv](examples/) together, as Dr. Song
+   suggested, and confirm the columns are what the analysis needs.
+2. Try the ten-minute run in a browser to check it feels right, especially
+   whether no feedback at all is too frustrating.
+3. Build the analysis script (Phase 3) and run it on the example file.
+4. Match the three drawings for size and brightness (Phase 2).
+5. Confirm whether this falls under an existing IRB protocol or needs an
+   amendment, and who will validate timing on the scanner computer (Phase 4).
 
 ## 12. Contributors and AI disclosure
 
@@ -437,12 +476,12 @@ This is research software that may be used with human participants, so how it wa
 | Contributor | Role |
 |---|---|
 | Rehaan Karnik (undergraduate RA, Song Lab) | Human author. Defined the task, wrote the blueprint (sections 1 to 10) and `research-notes.md` with AI assistance, directed and reviewed the AI-written work, and is responsible for this repository. |
-| Claude, an AI assistant made by Anthropic (model Claude Fable 5.1, id `claude-fable-5-1`, used through the Claude Code tool) | AI contributor. On September 18, 2026, under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, README sections 11 and 12, and the README edits that link them. Also checked that `src/` reproduces the prototype's schedule and that the exported files load in pandas. |
+| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. Also checked that the exported files load in pandas. |
 
-**What the AI did not do.** It did not run the game in a real browser, did not validate timing on any hardware, and its work has not yet been checked by a second person. No part of this repository has been used with participants.
+**What the AI did not do.** It did not run the game in a real browser, did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
 
 **Commit history.** Commits `640cd1b` and `464ba6a` were generated by Claude in Claude Code and committed under Rehaan Karnik's git identity without a co-author line. From the commit that adds this section onward, commits containing AI-written changes carry a `Co-Authored-By: Claude <noreply@anthropic.com>` trailer.
 
 **Responsibility.** AI tools cannot take responsibility for research outputs, so this is a disclosure of how the work was produced rather than a claim of authorship in the academic sense. The human authors are responsible for reviewing, validating, and approving everything here before it is used with participants, and for disclosing AI use in any publication, protocol, or IRB submission according to that venue's policy.
 
-Suggested one-sentence disclosure for a methods section or IRB document: "The task software and its documentation were written with the assistance of Claude (Anthropic; model Claude Fable 5.1, via Claude Code) under the direction of the authors, who reviewed and validated all outputs."
+Suggested one-sentence disclosure for a methods section or IRB document: "The task software and its documentation were written with the assistance of Claude (Anthropic; models Claude Fable 5.1 and Claude Opus 5, via Claude Code) under the direction of the authors, who reviewed and validated all outputs."
