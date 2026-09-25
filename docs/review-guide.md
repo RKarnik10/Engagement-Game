@@ -32,6 +32,18 @@ for the experimenter, one for the participant.
 The run defaults to 600 trials, ten minutes. Lower "Number of trials" in the
 console to try a short one.
 
+**If something looks wrong:**
+
+- *A red box says the code has not loaded, or the page looks like an older
+  version, or the button does nothing.* The browser is using old copies of the
+  files. Press **Cmd+Shift+R** (Windows: Ctrl+Shift+R) in that tab, or open
+  the page in a private window.
+- *The terminal says port 8000 is already in use.* An earlier server is still
+  running. Press Ctrl+C in its terminal and run `npm run serve` again.
+- *No new tab opens.* Open one yourself and go to
+  http://localhost:8000/display.html . The two tabs find each other on their
+  own.
+
 The live page at https://rkarnik10.github.io/Engagement-Game/ (if GitHub Pages
 is switched on) is still the older four-hole prototype from September 18.
 

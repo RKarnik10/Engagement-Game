@@ -11,20 +11,31 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="load-check" id="load-check" role="alert">
+    <strong>The console's code has not loaded.</strong> Most often the browser is reusing old copies of the files. Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Windows: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) to reload without the cache, or open this page in a private window. If you opened the file by double-clicking it, run <code>npm run serve</code> in the repository folder and use http://localhost:8000/ instead.
+  </div>
   <header>
     <h1>Whac-a-mole attention task: experimenter console</h1>
-    <p>Version 0.3. The participant sees a separate display tab; this tab controls it and collects the data. Each trial shows a good (happy) mole to press, a bad mole to leave alone, or both at once in different columns, at 80 / 10 / 10.</p>
+    <p>Version 0.3. <strong>This tab is for the experimenter.</strong> The participant sees a separate display tab, opened with the button below; this tab controls it and collects the data. A run is 480 happy moles to hit, 60 distractors to leave alone, and 60 trials with a happy mole and a distractor together, in random order.</p>
   </header>
 
   <div class="layout">
     <section aria-label="Participant display">
       <div class="link-bar">
-        <button type="button" class="primary" id="open-display">Open participant display</button>
+        <a class="button primary" id="open-display" href="./display.html" target="engagement-game-display">Open participant display</a>
         <p id="link-status" class="link-status" role="status">Participant display: not open.</p>
       </div>
-      <p class="small muted">The display opens in a new tab. Drag that tab out to its own window and move it to the participant's screen, then press <kbd>F</kbd> in it for full screen. <strong>Keep the display visible during a run:</strong> browsers pause hidden tabs, which stops the game's clock.</p>
-      <h2 class="mirror-title">What the participant sees</h2>
-      <div class="stage mirror" id="stage" aria-label="Mirror of the participant display">
+      <div class="connect-card" id="connect-card">
+        <h2>Set up the participant's screen</h2>
+        <ol>
+          <li>Click <strong>Open participant display</strong>. A new tab opens showing only the grey screen and the moles. If nothing opens, open a new tab yourself and go to <a href="./display.html" target="engagement-game-display">localhost:8000/display.html</a>.</li>
+          <li>Drag that tab out of this window, so it becomes its own window, and move it to the participant's screen. Press <kbd>F</kbd> in it for full screen.</li>
+          <li>Come back to this tab. The line above turns to "connected", and <strong>Start run</strong> becomes available. You can also start by pressing <kbd>T</kbd> in the display, as the scanner's trigger would.</li>
+        </ol>
+        <p class="small muted">Keep the display visible during a run: browsers pause hidden tabs, which stops the game's clock.</p>
+      </div>
+      <h2 class="mirror-title" id="mirror-title" hidden>Mirror of the participant's screen</h2>
+      <div class="stage mirror" id="stage" aria-label="Mirror of the participant display" hidden>
         <div class="holes grid3x3 skin-mole" id="holes"></div>
         <div class="keycaps grid3x3" id="keycaps"></div>
         <div class="overlay" id="overlay" aria-live="polite">
@@ -34,7 +45,7 @@
           </div>
         </div>
       </div>
-      <p class="caption small muted">A mirror of the display, updated as events arrive. It shows every mole but not the smooth rise in "gradual" mode. The real display is always the same fixed mid-grey and never reacts to a press.</p>
+      <p class="caption small muted" id="mirror-caption" hidden>A copy of the display, updated as events arrive. The participant sees the other tab, not this one. It shows every mole but not the smooth rise in "gradual" mode. The real display is always the same fixed mid-grey and never reacts to a press.</p>
     </section>
 
     <aside class="console" aria-label="Experimenter console">
@@ -50,13 +61,13 @@
           </fieldset>
           <fieldset>
             <legend>Trial mix (%)</legend>
-            <div class="row"><label for="goodPct">Good mole only</label><input type="number" id="goodPct" name="goodPct" min="0" max="100" step="5" value="80"></div>
-            <div class="row"><label for="badPct">Bad mole only</label><input type="number" id="badPct" name="badPct" min="0" max="100" step="5" value="10"></div>
-            <div class="row"><label for="bothPct">Both at once</label><input type="number" id="bothPct" name="bothPct" min="0" max="100" step="5" value="10"></div>
+            <div class="row"><label for="goodPct">Happy mole only (hit)</label><input type="number" id="goodPct" name="goodPct" min="0" max="100" step="5" value="80"></div>
+            <div class="row"><label for="badPct">Distractor only (don't hit)</label><input type="number" id="badPct" name="badPct" min="0" max="100" step="5" value="10"></div>
+            <div class="row"><label for="bothPct">Happy mole + distractor</label><input type="number" id="bothPct" name="bothPct" min="0" max="100" step="5" value="10"></div>
             <p class="small muted" id="mix-note"></p>
           </fieldset>
           <fieldset>
-            <legend>Bad mole picture</legend>
+            <legend>Distractor picture</legend>
             <div class="opts">
               <label><input type="radio" name="badStim" value="mole_sad" checked> Sad mole</label>
               <label><input type="radio" name="badStim" value="molerat"> Molerat</label>

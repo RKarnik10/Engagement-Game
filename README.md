@@ -31,7 +31,7 @@ Attention and engagement measures are computed from those logs offline (section 
 
 `index.html` is the v0.1 prototype: one self-contained HTML file with no dependencies. It implements sections 3 and 4.5 of this document with placeholder parameters. The modular build described in sections 6 and 7 will live in `src/` and should not replace `index.html` until it matches the prototype's behavior.
 
-To run locally, open `index.html` in any browser. For the current build in `src/`, run `npm run serve` from the repository folder, open http://localhost:8000/ (the experimenter console), and click **Open participant display**. It needs a local server because browsers block ES modules opened straight from disk.
+To run locally, open `index.html` in any browser. For the current build in `src/`, run `npm run serve` from the repository folder, open http://localhost:8000/ (the experimenter console), and click **Open participant display**. It needs a local server because browsers block ES modules opened straight from disk. `npm run serve` starts one that tells the browser not to cache, so a reload always shows the latest code. If a page shows a red "code has not loaded" box, press Cmd+Shift+R to reload without the cache.
 
 ---
 
@@ -254,7 +254,9 @@ Engagement-Game/
 ├── examples/               # a full 600-trial example run, generated without a browser
 │   ├── simulate-run.mjs
 │   └── example_run.csv, example_events.tsv, example_log.json
-├── package.json            # {"type": "module"}, test script only, no dependencies
+├── package.json            # {"type": "module"}, test and serve scripts, no dependencies
+├── scripts/
+│   └── serve.mjs           # `npm run serve`: local server for src/ that disables caching
 ├── src/
 │   ├── index.html          # experimenter console page; loads main.js
 │   ├── display.html        # participant display page; loads display.js
@@ -491,8 +493,9 @@ around this repository without reading code),
 
 ### 11.2 Still open
 
-Seven points need a one-line answer. The full version, with what the code does
-today for each, is at the end of [docs/decisions.md](docs/decisions.md).
+Six points need a one-line answer. The full version, with what the code does
+today for each, is at the end of [docs/decisions.md](docs/decisions.md). (Decided September 25: the
+button labels under each column stay.)
 
 1. **The bad mole's picture.** A sad mole by default; a molerat is the
    alternative. The notes mention both.
@@ -504,10 +507,8 @@ today for each, is at the end of [docs/decisions.md](docs/decisions.md).
    the button box sends.
 4. **How long a mole stays up** inside the one-second cycle. Currently 800 ms
    up, 200 ms empty.
-5. **The on-screen button labels** under each column: keep for piloting, or
-   remove?
-6. **The rest of Q4:** TR, number of runs, trigger key, dummy scans.
-7. **Repeats:** no hole is reused from one trial to the next, but the same
+5. **The rest of Q4:** TR, number of runs, trigger key, dummy scans.
+6. **Repeats:** no hole is reused from one trial to the next, but the same
    column can be. Carried over from v0.1 and never confirmed.
 
 ### 11.3 Next
@@ -528,7 +529,7 @@ This is research software that may be used with human participants, so how it wa
 | Contributor | Role |
 |---|---|
 | Rehaan Karnik (undergraduate RA, Song Lab) | Human author. Defined the task, wrote the blueprint (sections 1 to 10) and `research-notes.md` with AI assistance, directed and reviewed the AI-written work, and is responsible for this repository. |
-| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. Also checked that the exported files load in pandas. |
+| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. Also checked that the exported files load in pandas. |
 
 **What the AI did not do.** It did not run the game in a real browser (the pages were exercised under a simulated page in Node, and the drawings were checked as rendered images), did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
 

@@ -69,13 +69,14 @@ function renderLinkState(st) {
   startBtn.disabled = !st.connected || running || !config;
   stopBtn.disabled = !running;
   setFormDisabled(running);
+  // Setup steps until a display connects; the mirror after.
+  $('connect-card').hidden = st.connected;
+  for (const id of ['mirror-title', 'stage', 'mirror-caption']) $(id).hidden = !st.connected;
   if (!running && !live) mirrorIdle(st);
 }
 
-$('open-display').addEventListener('click', () => {
-  const w = window.open('./display.html', 'engagement-game-display');
-  if (!w) linkStatus.textContent = 'The browser blocked the new tab. Allow pop-ups for this page, or open display.html yourself.';
-});
+// "Open participant display" is a plain link (index.html), so it opens the
+// display tab even if this script failed to load.
 startBtn.addEventListener('click', () => link.start());
 stopBtn.addEventListener('click', () => link.stop());
 
@@ -120,7 +121,7 @@ function syncSettings() {
   }
   showSettingsError('');
   const c = trialCounts(config.nTrials, config);
-  $('mix-note').textContent = `${c.good} good only, ${c.bad} bad only, ${c.both} with both.`;
+  $('mix-note').textContent = `${c.good} happy moles, ${c.bad} distractors, ${c.both} happy + distractor.`;
   $('run-length').textContent =
     `Run length ${(runDurationMs(config) / 60000).toFixed(1)} minutes (${config.nTrials} trials every ` +
     `${config.trialMs} ms, plus a ${config.firstOnsetMs} ms lead-in). ${LAYOUTS[config.layout].label}.`;
@@ -338,3 +339,5 @@ copyBtn.addEventListener('click', async () => {
 syncSettings();
 // Find any display already open, and recover its last run if this tab was reloaded.
 link.hello();
+// Everything loaded: hide the "code has not loaded" warning.
+$('load-check').hidden = true;

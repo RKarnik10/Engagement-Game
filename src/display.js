@@ -116,6 +116,9 @@ holesEl.addEventListener('pointerdown', (e) => {
   session.press(Number(h.dataset.btn), 'pointer');
 });
 
+// Everything loaded: hide the "code has not loaded" warning.
+$('load-check').hidden = true;
+
 // A hidden tab stops drawing, so timing breaks. Log it so the data shows it.
 document.addEventListener('visibilitychange', () => session.visibility(document.hidden));
 window.addEventListener('pagehide', () => session.bye());

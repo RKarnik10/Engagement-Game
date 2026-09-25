@@ -41,9 +41,10 @@ Relayed by Rehaan Karnik from Dr. Song's written feedback.
 |------|----------|-------|------|
 | What "80-10-10" means | Three **trial types**, not three pictures: 80% **good** (one good mole: press its column, it gets killed), 10% **bad** (one bad mole: do not press, it is not killed), 10% **both** (a good and a bad mole at once, in different columns: press only the good one). Rehaan first wrote 70 / 20 / 10, then corrected it to Dr. Song's 80 / 10 / 10 the same day. | `goodShare: 0.8`, `badShare: 0.1`, `bothShare: 0.1` in `src/config.js`; `src/schedule.js`, `src/classify.js`, `src/engine.js` | 2026-09-25 |
 | Participant display in its own tab | The display opens as a separate browser tab, which can be dragged to its own window on the participant's screen. The console controls it. | `src/display.html`, `src/display.js`, `src/session.js`, `src/link.js` | 2026-09-25 |
+| Button labels | The 1, 2, 3 labels under the columns **stay**, in the scanner too. | `renderKeycaps` in `src/render/board.js` | 2026-09-25 |
 | Drawing fixes | The molerat's two outlined front teeth read as a pause symbol; they are now one solid block. The sad mole's brows slanted down toward the middle and read as angry; they now rise toward the middle. | `src/render/skin-mole.js` | 2026-09-25 |
 
-This resolves open points A and C from September 21.
+This resolves open points A, C, and E from September 21.
 
 ## Checklist against the September 21 feedback notes
 
@@ -75,6 +76,5 @@ one-line confirmation.
 | B | "Record the 1 and 2 inputs rather than any other input" | All three mapped buttons (1, 2, 3) are recorded as responses; every other key is ignored and never stored. | Q2 settled on three buttons, so "1 and 2" may be shorthand, or may name the exact codes the button box sends. |
 | C | Both trials, after the good mole is hit | The bad mole stays up until the window ends; pressing it later still counts as a commission, and the trial's outcome is then `commission`. | The alternative is to take both moles down on the first press, which would make any second press a stray press instead. |
 | D | How long a mole stays up inside the 1 s cycle | 800 ms up, then 200 ms empty before the next trial. | The 1 s cycle is settled; the split inside it is not. |
-| E | Whether the on-screen button labels stay | Shown under each column. | Useful for piloting; the scanner participant uses a button box. |
 | F | Q4 remainder | TR 1 s, trigger key `t`, 2 s lead-in, one run. | Needed before any scan. Dr. Song said this is still to be discussed. |
 | G | Same-hole and same-column repeats | The same hole never repeats on consecutive trials; the same column may. | Carried over from v0.1 and never confirmed. |

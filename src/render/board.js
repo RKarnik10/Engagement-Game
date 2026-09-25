@@ -60,9 +60,8 @@ export function renderBoard(holesEl, config, skin) {
 
 /**
  * Draw the button labels under the board. One per button, aligned with the
- * column it controls.
- * TODO(Q2): in the scanner the participant uses a button box, so these
- * labels may be for desktop piloting only. Confirm whether to show them.
+ * column it controls. DECIDED (Rehaan Karnik, September 25, 2026): the
+ * labels stay, in the scanner too.
  */
 export function renderKeycaps(capsEl, config) {
   const layout = LAYOUTS[config.layout];

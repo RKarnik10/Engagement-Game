@@ -162,3 +162,19 @@ body.display-page{background:#808080;margin:0;overflow:hidden}
 .display-page .hole{max-width:24vh}
 .display-page .keycap{font-size:1.1rem;padding:6px 12px}
 .display-hint{position:absolute;left:0;right:0;bottom:1%;margin:0;text-align:center;font-size:.8rem;color:#2B2B2B}
+
+/* Links that look like buttons ("Open participant display"). */
+a.button{display:inline-block;font:inherit;font-weight:700;font-size:.95rem;padding:9px 14px;border-radius:4px;
+  border:1px solid var(--ink);color:var(--ink);text-decoration:none;cursor:pointer}
+a.button.primary{background:var(--signal);border-color:var(--signal);color:var(--signal-ink)}
+
+/* Setup steps shown in the console until a display connects. */
+.connect-card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--signal);border-radius:4px;padding:14px 18px;margin:10px 0 0}
+.connect-card h2{margin-top:0}
+.connect-card ol{margin:0 0 8px;padding-left:1.3em}
+.connect-card li{margin-bottom:6px}
+.connect-card a{color:inherit}
+
+/* Shown until a page's script runs and hides it: catches stale caches and file:// opens. */
+.load-check{background:#FBE3DC;color:#5A1A0C;border:1px solid #B4432C;border-radius:4px;padding:12px 16px;margin-bottom:16px}
+.display-load-check{position:fixed;top:12px;left:12px;right:12px;z-index:10}

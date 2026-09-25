@@ -9,6 +9,9 @@
 <body class="display-page">
 <!-- The participant's screen. Only the grey field and the moles; the
      experimenter controls everything from the console tab. -->
+<div class="load-check display-load-check" id="load-check" role="alert">
+  <strong>The display's code has not loaded.</strong> Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Windows: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) to reload without the cache. If you opened the file by double-clicking it, run <code>npm run serve</code> and use http://localhost:8000/display.html instead.
+</div>
 <div class="stage display-stage" id="stage" tabindex="0">
   <div class="holes grid3x3 skin-mole" id="holes"></div>
   <div class="keycaps grid3x3" id="keycaps"></div>
