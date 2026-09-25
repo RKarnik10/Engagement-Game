@@ -1,13 +1,14 @@
 /**
  * Run configuration: defaults, validation, presets (README 6.1).
  *
- * Values answered by Dr. Song on September 21, 2026 are marked DECIDED(Qn)
- * and recorded in docs/decisions.md. Values still open are marked TODO(Qn).
+ * Values answered by Dr. Song on September 21, 2026, and clarified by
+ * Rehaan Karnik on September 25, 2026, are marked DECIDED and recorded in
+ * docs/decisions.md. Values still open are marked TODO.
  *
  * Pure: no DOM, no clock.
  */
 
-export const VERSION = '0.2';
+export const VERSION = '0.3';
 
 /**
  * Hole layouts.
@@ -46,6 +47,8 @@ export const LAYOUTS = Object.freeze({
 });
 
 export const SKINS = Object.freeze(['mole', 'neutral']); // neutral: not built
+/** Pictures the "bad" mole can use. The good mole is always the happy mole. */
+export const BAD_STIMS = Object.freeze(['mole_sad', 'molerat']);
 export const ONSETS = Object.freeze(['instant', 'gradual']);
 /** Where the run is happening. Logged with the data as 1 (scanner) or 0 (behavioral). */
 export const SETTINGS = Object.freeze(['scanner', 'behavioral']);
@@ -66,9 +69,12 @@ export const DEFAULTS = Object.freeze({
   holdMs: 800,                  // TODO: how long the mole stays up inside the 1 s cycle.
   firstOnsetMs: 2000,           // TODO(Q4): depends on dummy scans.
 
-  // Stimulus mix. DECIDED: 80 / 10 / 10.
-  goProb: 0.8,                  // Happy mole: press the column's button.
-  nogoSadShare: 0.5,            // Half the no-go trials are a sad mole, half a molerat.
+  // Trial mix. DECIDED (Dr. Song, confirmed September 25, 2026): 80 / 10 / 10.
+  goodShare: 0.8,               // One good mole: press its column (it gets "killed").
+  badShare: 0.1,                // One bad mole: do nothing (it is not killed).
+  bothShare: 0.1,               // A good and a bad mole at once, in different columns:
+                                // press the good one's column only.
+  badStim: 'mole_sad',          // TODO: sad mole or molerat as the bad picture.
 
   trS: 1.0,                     // TODO(Q4): TR, used for simulated volume events.
   showScore: false,             // DECIDED(Q6): no score.
@@ -152,8 +158,14 @@ export function validateConfig(config) {
   }
   if (typeof c.triggerKey !== 'string' || c.triggerKey.length === 0) problems.push('triggerKey must be a non-empty string');
 
-  if (!(typeof c.goProb === 'number' && c.goProb > 0 && c.goProb <= 1)) problems.push('goProb must be in (0, 1]');
-  if (!(typeof c.nogoSadShare === 'number' && c.nogoSadShare >= 0 && c.nogoSadShare <= 1)) problems.push('nogoSadShare must be in [0, 1]');
+  const shares = ['goodShare', 'badShare', 'bothShare'];
+  const sharesOk = shares.every((k) => typeof c[k] === 'number' && c[k] >= 0 && c[k] <= 1);
+  if (!sharesOk) problems.push('goodShare, badShare, and bothShare must each be in [0, 1]');
+  else if (Math.abs(c.goodShare + c.badShare + c.bothShare - 1) > 1e-9) {
+    problems.push(`goodShare + badShare + bothShare must add up to 1, got ${+(c.goodShare + c.badShare + c.bothShare).toFixed(6)}`);
+  }
+  if (!BAD_STIMS.includes(c.badStim)) problems.push(`badStim must be one of ${BAD_STIMS.join(', ')}`);
+  if (layout && c.bothShare > 0 && buttonCount(c.layout) < 2) problems.push('"both" trials need at least 2 buttons');
   if (!(isInt(c.nTrials) && c.nTrials > 0)) problems.push('nTrials must be a positive integer');
   if (!(isInt(c.trialMs) && c.trialMs > 0)) problems.push('trialMs must be a positive integer (ms)');
   if (!(isInt(c.holdMs) && c.holdMs > 0)) problems.push('holdMs must be a positive integer (ms)');

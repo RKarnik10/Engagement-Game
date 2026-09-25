@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Whac-a-mole attention task: modular build</title>
+<title>Whac-a-mole: experimenter console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -12,27 +12,29 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Whac-a-mole attention task</h1>
-    <p>Version 0.2, built to Dr. Song's feedback of September 21, 2026: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, happy moles to press and sad moles or molerats to skip, and no on-screen feedback of any kind.</p>
+    <h1>Whac-a-mole attention task: experimenter console</h1>
+    <p>Version 0.3. The participant sees a separate display tab; this tab controls it and collects the data. Each trial shows a good (happy) mole to press, a bad mole to leave alone, or both at once in different columns, at 80 / 10 / 10.</p>
   </header>
 
   <div class="layout">
     <section aria-label="Participant display">
-      <div class="stage" id="stage" tabindex="0">
-        <div class="hud"><span id="hud-score" hidden>Score 0</span><span id="hud-time"></span></div>
+      <div class="link-bar">
+        <button type="button" class="primary" id="open-display">Open participant display</button>
+        <p id="link-status" class="link-status" role="status">Participant display: not open.</p>
+      </div>
+      <p class="small muted">The display opens in a new tab. Drag that tab out to its own window and move it to the participant's screen, then press <kbd>F</kbd> in it for full screen. <strong>Keep the display visible during a run:</strong> browsers pause hidden tabs, which stops the game's clock.</p>
+      <h2 class="mirror-title">What the participant sees</h2>
+      <div class="stage mirror" id="stage" aria-label="Mirror of the participant display">
         <div class="holes grid3x3 skin-mole" id="holes"></div>
         <div class="keycaps grid3x3" id="keycaps"></div>
         <div class="overlay" id="overlay" aria-live="polite">
           <div class="overlay-card">
-            <h3 id="ov-title">Ready</h3>
-            <div id="ov-body"></div>
+            <h3 id="ov-title">Not connected</h3>
+            <div id="ov-body"><p>Open the participant display to start.</p></div>
           </div>
         </div>
       </div>
-      <div class="stage-tools">
-        <button type="button" id="participant-view">Participant display (full screen)</button>
-      </div>
-      <p class="caption small muted">The grey panel is what a participant would see. It stays the same mid-grey in light and dark mode because screen brightness changes show up in visual cortex. Nothing on the panel reacts to a button press: that is deliberate. Keys work on a keyboard; taps work on a touch screen. <kbd>Esc</kbd> ends a run early.</p>
+      <p class="caption small muted">A mirror of the display, updated as events arrive. It shows every mole but not the smooth rise in "gradual" mode. The real display is always the same fixed mid-grey and never reacts to a press.</p>
     </section>
 
     <aside class="console" aria-label="Experimenter console">
@@ -47,6 +49,20 @@
             </div>
           </fieldset>
           <fieldset>
+            <legend>Trial mix (%)</legend>
+            <div class="row"><label for="goodPct">Good mole only</label><input type="number" id="goodPct" name="goodPct" min="0" max="100" step="5" value="80"></div>
+            <div class="row"><label for="badPct">Bad mole only</label><input type="number" id="badPct" name="badPct" min="0" max="100" step="5" value="10"></div>
+            <div class="row"><label for="bothPct">Both at once</label><input type="number" id="bothPct" name="bothPct" min="0" max="100" step="5" value="10"></div>
+            <p class="small muted" id="mix-note"></p>
+          </fieldset>
+          <fieldset>
+            <legend>Bad mole picture</legend>
+            <div class="opts">
+              <label><input type="radio" name="badStim" value="mole_sad" checked> Sad mole</label>
+              <label><input type="radio" name="badStim" value="molerat"> Molerat</label>
+            </div>
+          </fieldset>
+          <fieldset>
             <legend>Layout</legend>
             <div class="opts">
               <label><input type="radio" name="layout" value="grid3x3" checked> 3 by 3 holes, 3 buttons, one per column</label>
@@ -55,39 +71,38 @@
             </div>
           </fieldset>
           <fieldset>
-            <legend>How targets appear</legend>
+            <legend>How moles appear</legend>
             <div class="opts">
               <label><input type="radio" name="onset" value="instant" checked> Pop up instantly</label>
               <label><input type="radio" name="onset" value="gradual"> Rise and sink gradually</label>
             </div>
           </fieldset>
-          <div class="range-row">
-            <div class="top"><label for="goProb">Share of happy moles</label><output id="goProb-out" for="goProb">80%</output></div>
-            <input type="range" id="goProb" name="goProb" min="50" max="95" step="5" value="80">
-          </div>
-          <p class="small muted" id="mix-note"></p>
           <div class="row"><label for="nTrials">Number of trials</label><input type="number" id="nTrials" name="nTrials" min="10" max="3000" step="10" value="600"></div>
           <div class="row"><label for="trialMs">Trial every (ms)</label><input type="number" id="trialMs" name="trialMs" min="400" max="4000" step="50" value="1000"></div>
           <div class="row"><label for="holdMs">Mole up for (ms)</label><input type="number" id="holdMs" name="holdMs" min="200" max="3500" step="50" value="800"></div>
           <div class="row"><label for="tr">TR, simulated (s)</label><input type="number" id="tr" name="tr" min="0.3" max="5" step="0.1" value="1"></div>
           <div class="row"><label for="seed">Schedule seed</label><input type="number" id="seed" name="seed" step="1" value="1234"></div>
           <p class="small muted" id="run-length"></p>
+          <p class="small error-text" id="settings-error" hidden></p>
         </form>
         <div class="buttons">
-          <button type="button" class="primary" id="start">Start run</button>
+          <button type="button" class="primary" id="start" disabled>Start run</button>
           <button type="button" id="stop" disabled>End run</button>
         </div>
+        <p class="small muted">Start here, or press <kbd>T</kbd> in the display tab, as the scanner's trigger would.</p>
       </section>
       <section>
         <h2>Live measures</h2>
         <dl class="measures">
-          <dt>Happy moles hit</dt><dd id="m-hit">–</dd>
+          <dt>Good moles hit</dt><dd id="m-hit">–</dd>
           <dt>Hit rate</dt><dd id="m-hitrate">–</dd>
-          <dt>Presses on skip trials</dt><dd id="m-com">–</dd>
+          <dt>Bad moles pressed</dt><dd id="m-com">–</dd>
+          <dt>"Both" trials fully right</dt><dd id="m-both">–</dd>
           <dt>Wrong-column presses</dt><dd id="m-wrong">–</dd>
           <dt>Presses with no mole up</dt><dd id="m-early">–</dd>
           <dt>Mean reaction time</dt><dd id="m-rt">–</dd>
           <dt>RT variability (SD ÷ mean)</dt><dd id="m-cv">–</dd>
+          <dt>Display hidden during run</dt><dd id="m-hidden">–</dd>
         </dl>
       </section>
     </aside>
@@ -95,7 +110,7 @@
 
   <section class="timeline" aria-label="Attention trace">
     <h2>Attention trace</h2>
-    <p class="small muted">Each dot is a hit. Its height is how far that reaction time strayed from the run's average, smoothed across neighbouring hits. This is a simplified version of the variance time course in Esterman et al. (2013). Above the dashed median line counts as less stable responding. Yellow ticks mark simulated scan volumes, and red marks show errors.</p>
+    <p class="small muted">Each dot is a good mole that was hit. Its height is how far that reaction time strayed from the run's average, smoothed across neighbouring hits. This is a simplified version of the variance time course in Esterman et al. (2013). Above the dashed median line counts as less stable responding. Yellow ticks mark simulated scan volumes, and red marks show errors.</p>
     <div class="chart-wrap">
       <svg id="chart" viewBox="0 0 1000 198" role="img" aria-label="Reaction-time variability over the run, with scan volumes and errors marked">
         <g id="chart-data"><text class="axis" x="522" y="72" text-anchor="middle">Start a run to see the trace.</text></g>
@@ -106,8 +121,8 @@
       <li><span class="sw sw-line"></span>Smoothed RT deviation</li>
       <li><span class="sw sw-med"></span>Median split</li>
       <li><span class="sw sw-tr"></span>Scan volume (simulated)</li>
-      <li><span class="sw sw-tri"></span>Press on a skip trial</li>
-      <li><span class="sw sw-ring"></span>Missed happy mole</li>
+      <li><span class="sw sw-tri"></span>Bad mole pressed</li>
+      <li><span class="sw sw-ring"></span>Good mole missed</li>
     </ul>
   </section>
 
@@ -119,7 +134,8 @@
     </section>
     <section aria-label="Run data">
       <h2>Run data</h2>
-      <p class="small muted">The run table is the one to open first: one row per mole, with its row and column, the button that should have been pressed, the button that was pressed, and the reaction time. The events table is the same run in the BIDS layout for the fMRI model. The full log keeps every event, the settings, and display-timing stats.</p>
+      <p id="run-summary" class="small"></p>
+      <p class="small muted">The run table is the one to open first: one row per trial, with where each mole appeared, what should have been pressed, every button that was pressed, and the reaction times. The events table is the same run in the BIDS layout for the fMRI model. The full log keeps every event, the settings, and display-timing stats. Downloads go to the browser's usual downloads folder.</p>
       <div class="export-bar">
         <button type="button" class="primary" id="dl-csv" disabled>Download run table (CSV)</button>
         <button type="button" id="dl-tsv" disabled>Events (TSV)</button>
@@ -138,7 +154,7 @@
 
   <section class="notes small muted">
     <h2>What is real here and what is not</h2>
-    <p>The schedule, response rules, timestamps, and export format follow the project blueprint as amended on September 21, 2026. The trigger and scan volumes are simulated (further presses of <kbd>T</kbd> during a run are logged as real trigger pulses), the three mole drawings are not yet matched for size and brightness, and browser timing is tied to screen refresh rather than validated against scanner hardware.</p>
+    <p>The schedule, response rules, timestamps, and export format follow the project blueprint as amended on September 21 and 25, 2026. The trigger and scan volumes are simulated (further presses of <kbd>T</kbd> in the display during a run are logged as real trigger pulses), the drawings are not yet matched for size and brightness, and browser timing is tied to screen refresh rather than validated against scanner hardware.</p>
     <p>Source code and the full project blueprint: <a href="https://github.com/RKarnik10/Engagement-Game">github.com/RKarnik10/Engagement-Game</a></p>
   </section>
 </div>

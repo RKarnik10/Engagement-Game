@@ -145,15 +145,20 @@ textarea{width:100%;min-height:300px;font-family:var(--mono);font-size:.78rem;li
 
 @media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto !important} }
 
-/* ---- Participant display mode ----
-   Decided September 21, 2026: the participant sees only the grey panel.
-   The experimenter console lives on the other screen. */
-body.participant-view .wrap > *:not(.layout),
-body.participant-view .console,
-body.participant-view .caption{display:none !important}
-body.participant-view .wrap{max-width:none;padding:0}
-body.participant-view .layout{display:block}
-body.participant-view .stage{border-radius:0;aspect-ratio:auto;height:100vh;box-shadow:none}
-#stage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0}
-.stage-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-body.participant-view .stage-tools{display:none}
+/* ---- Experimenter console: link to the display, and the mirror ---- */
+.link-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.link-status{margin:0;font-weight:700}
+.link-status.warn{color:var(--bad)}
+.mirror-title{margin-top:14px}
+.stage.mirror{max-width:640px}
+.error-text{color:var(--bad);white-space:pre-wrap}
+
+/* ---- Participant display page (display.html) ----
+   Decided September 21, 2026: the participant sees only the grey field and
+   the moles, in its own tab or window, separate from the console. */
+body.display-page{background:#808080;margin:0;overflow:hidden}
+.display-stage{position:fixed;inset:0;aspect-ratio:auto;border-radius:0;box-shadow:none}
+.display-stage:focus-visible{box-shadow:none}
+.display-page .hole{max-width:24vh}
+.display-page .keycap{font-size:1.1rem;padding:6px 12px}
+.display-hint{position:absolute;left:0;right:0;bottom:1%;margin:0;text-align:center;font-size:.8rem;color:#2B2B2B}

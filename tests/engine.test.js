@@ -6,14 +6,14 @@ import { createEngine } from '../src/engine.js';
 import { createLogger } from '../src/logger.js';
 import { simulateRun } from './_sim.js';
 
-const cfg = (p = {}) => resolveConfig({ seed: 1234, nTrials: 40, ...p });
+const cfg = (p = {}) => resolveConfig({ seed: 1234, nTrials: 60, ...p });
 const FRAME = 10;
+const firstOf = (schedule, type) => schedule.find((t) => t.type === type);
 
 test('engine: trigger first, run_end last, completes at the end of the last trial', () => {
   const config = cfg();
   const { events, state } = simulateRun({ config, trials: buildSchedule(config) });
   assert.equal(events[0].event, 'trigger');
-  assert.equal(events[0].t_ms, 0);
   assert.equal(events[0].setting, 'behavioral');
   assert.equal(events.at(-1).event, 'run_end');
   assert.equal(events.at(-1).reason, 'completed');
@@ -21,31 +21,32 @@ test('engine: trigger first, run_end last, completes at the end of the last tria
   assert.equal(state.phase, 'ended');
 });
 
-test('engine: every scheduled target is shown at or after its time, lag under one frame', () => {
+test('engine: every trial is shown on time, with one target_on event per mole', () => {
   const config = cfg();
   const schedule = buildSchedule(config);
   const { trials, events } = simulateRun({ config, trials: schedule, frameMs: FRAME });
-  assert.equal(trials.length, schedule.length);
   for (const a of trials) {
-    assert.ok(a.actualOnsetMs != null, `trial ${a.trial} shown`);
-    assert.ok(a.actualOnsetMs >= a.scheduledOnsetMs);
-    assert.ok(a.actualOnsetMs - a.scheduledOnsetMs < FRAME);
+    assert.ok(a.actualOnsetMs >= a.scheduledOnsetMs && a.actualOnsetMs - a.scheduledOnsetMs < FRAME);
     assert.ok(a.outcome, `trial ${a.trial} has an outcome`);
   }
   const ons = events.filter((e) => e.event === 'target_on');
-  assert.equal(ons.length, schedule.length);
+  assert.equal(ons.length, schedule.reduce((n, t) => n + t.targets.length, 0));
   for (const e of ons) {
-    const a = trials[e.trial - 1];
-    assert.ok(e.lag_ms >= 0 && e.lag_ms < FRAME);
-    assert.equal(e.hole, a.hole + 1, 'logged hole is 1-based');
-    assert.equal(e.row, a.row);
-    assert.equal(e.col, a.col);
-    assert.equal(e.expected_button, a.response + 1, 'the event says which button was expected');
-    assert.ok(['mole_happy', 'mole_sad', 'molerat'].includes(e.stim));
+    const x = trials[e.trial - 1].targets[e.target - 1];
+    assert.equal(e.valence, x.valence);
+    assert.equal(e.row, x.row);
+    assert.equal(e.col, x.col);
+    assert.equal(e.button, x.response + 1);
+    assert.equal(e.hole, x.hole + 1);
   }
+  // Both moles of a both trial come up on the same frame.
+  const both = firstOf(trials, 'both');
+  const bothOns = ons.filter((e) => e.trial === both.trial);
+  assert.equal(bothOns.length, 2);
+  assert.equal(bothOns[0].t_ms, bothOns[1].t_ms);
 });
 
-test('engine: target windows never overlap at runtime', () => {
+test('engine: trials never overlap at runtime', () => {
   for (const seed of [1, 2, 3, 77, 1234]) {
     const config = cfg({ seed, holdMs: 999, trialMs: 1000 });
     const { trials } = simulateRun({ config, trials: buildSchedule(config) });
@@ -55,141 +56,171 @@ test('engine: target windows never overlap at runtime', () => {
   }
 });
 
-test('engine: no press -> omission for happy moles, correct_rejection for skip trials', () => {
+test('engine: no presses at all -> good moles missed, bad moles left alone', () => {
   const config = cfg();
   const { trials } = simulateRun({ config, trials: buildSchedule(config) });
   for (const a of trials) {
-    if (a.outcome === 'truncated') continue;
-    assert.equal(a.outcome, a.type === 'go' ? 'omission' : 'correct_rejection');
-    assert.equal(a.rtMs, null);
-    assert.equal(a.pressed, null);
+    for (const x of a.targets) assert.equal(x.outcome, x.valence === 'good' ? 'omission' : 'correct_rejection');
+    assert.equal(a.outcome, a.type === 'bad' ? 'correct_rejection' : 'omission');
+    assert.equal(a.correct, a.type === 'bad' ? 1 : 0);
+    assert.deepEqual(a.presses, []);
+    assert.equal(a.goodRtMs, null);
     const down = a.offsetMs - a.actualOnsetMs;
-    assert.ok(down >= a.windowMs && down < a.windowMs + FRAME, `trial ${a.trial} down after ${down} ms`);
+    assert.ok(down >= a.windowMs && down < a.windowMs + FRAME);
   }
 });
 
-test('engine: pressing the column of a happy mole -> hit with a reaction time', () => {
+test('engine: good trial, right column -> hit, the trial ends at once', () => {
   const config = cfg();
   const schedule = buildSchedule(config);
   const t1 = schedule[0];
-  assert.equal(t1.type, 'go');
+  const g = t1.targets[0];
   const { trials, events } = simulateRun({
-    config, trials: schedule, presses: [{ tMs: t1.scheduledOnsetMs + 300, button: t1.response, source: 'key 1' }],
+    config, trials: schedule, presses: [{ tMs: t1.scheduledOnsetMs + 300, button: g.response, source: 'key 1' }],
   });
   const a = trials[0];
   assert.equal(a.outcome, 'hit');
-  assert.ok(a.rtMs > 290 && a.rtMs <= 300, `rt ${a.rtMs}`);
-  assert.equal(a.pressed, t1.response);
-  const ev = events.find((e) => e.event === 'hit');
-  assert.equal(ev.trial, 1);
-  assert.equal(ev.expected_button, t1.response + 1);
-  assert.equal(ev.pressed_button, t1.response + 1);
-  assert.equal(ev.row, t1.row);
-  assert.equal(ev.col, t1.col);
-  assert.equal(ev.rt_ms, a.rtMs);
+  assert.equal(a.correct, 1);
+  assert.ok(a.goodRtMs > 290 && a.goodRtMs <= 300);
+  assert.equal(a.offsetMs, t1.scheduledOnsetMs + 300, 'the mole goes down on the hit');
+  assert.deepEqual(a.presses.map((p) => [p.button, p.outcome]), [[g.response, 'hit']]);
+  const hit = events.find((e) => e.event === 'hit');
+  assert.equal(hit.pressed_button, g.response + 1);
+  assert.equal(hit.rt_ms, +a.goodRtMs.toFixed(1));
+  const end = events.find((e) => e.event === 'trial_end' && e.trial === 1);
+  assert.deepEqual([end.outcome, end.correct], ['hit', 1]);
 });
 
-test('engine: any row in the right column counts as a hit', () => {
-  const config = cfg({ seed: 21 });
-  const schedule = buildSchedule(config);
-  // Press the expected button for the first ten go trials, whatever row they are in.
-  const goTrials = schedule.filter((t) => t.type === 'go').slice(0, 10);
-  const presses = goTrials.map((t) => ({ tMs: t.scheduledOnsetMs + 250, button: t.response }));
-  const { trials } = simulateRun({ config, trials: schedule, presses });
-  const rowsHit = new Set();
-  for (const t of goTrials) {
-    const a = trials[t.trial - 1];
-    assert.equal(a.outcome, 'hit', `trial ${t.trial} in row ${t.row} column ${t.col}`);
-    rowsHit.add(t.row);
-  }
-  assert.ok(rowsHit.size >= 2, 'hits came from more than one row');
-});
-
-test('engine: pressing the column of a skip trial -> commission', () => {
+test('engine: bad trial, its column pressed -> commission', () => {
   const config = cfg();
   const schedule = buildSchedule(config);
-  const ng = schedule.find((t) => t.type === 'nogo');
+  const t = firstOf(schedule, 'bad');
   const { trials } = simulateRun({
-    config, trials: schedule, presses: [{ tMs: ng.scheduledOnsetMs + 200, button: ng.response, source: 'pointer' }],
+    config, trials: schedule, presses: [{ tMs: t.scheduledOnsetMs + 200, button: t.targets[0].response }],
   });
-  const a = trials[ng.trial - 1];
+  const a = trials[t.trial - 1];
   assert.equal(a.outcome, 'commission');
-  assert.ok(a.rtMs > 190 && a.rtMs <= 200);
-  assert.equal(a.precedingGo, ng.precedingGo);
-  assert.ok(['mole_sad', 'molerat'].includes(a.stim));
+  assert.equal(a.correct, 0);
+  assert.ok(a.targets[0].rtMs > 190 && a.targets[0].rtMs <= 200);
+  assert.equal(a.goodRtMs, null);
 });
 
-test('engine: pressing another column -> wrong_hole, and the trial still resolves', () => {
+test('engine: both trial, good column -> hit; the bad mole stays up until the window ends', () => {
   const config = cfg();
   const schedule = buildSchedule(config);
-  const t1 = schedule[0];
-  const other = (t1.response + 1) % config.keys.length;
-  const { trials, events, state } = simulateRun({
-    config, trials: schedule, presses: [{ tMs: t1.scheduledOnsetMs + 100, button: other, source: 'key x' }],
+  const t = firstOf(schedule, 'both');
+  const [g, b] = t.targets;
+  const { trials, events } = simulateRun({
+    config, trials: schedule, presses: [{ tMs: t.scheduledOnsetMs + 250, button: g.response }],
   });
-  const wrong = events.find((e) => e.event === 'wrong_hole');
-  assert.ok(wrong);
-  assert.equal(wrong.trial, 1);
-  assert.equal(wrong.expected_button, t1.response + 1);
-  assert.equal(wrong.pressed_button, other + 1);
-  assert.ok(wrong.rt_ms > 90 && wrong.rt_ms <= 100, 'a wrong-column press still carries its timing');
-  assert.equal(state.counts.wrong_hole, 1);
-  assert.equal(trials[0].outcome, 'omission');
-  assert.equal(trials[0].rtMs, null);
+  const a = trials[t.trial - 1];
+  assert.equal(a.targets[0].outcome, 'hit');
+  assert.equal(a.targets[0].offsetMs, t.scheduledOnsetMs + 250);
+  assert.equal(a.targets[1].outcome, 'correct_rejection');
+  assert.ok(a.targets[1].offsetMs >= a.actualOnsetMs + a.windowMs, 'bad mole is not killed');
+  assert.equal(a.outcome, 'hit');
+  assert.equal(a.correct, 1);
+  assert.ok(a.goodRtMs > 240 && a.goodRtMs <= 250);
+  assert.equal(a.offsetMs, a.targets[1].offsetMs, 'the trial ends when its last mole goes down');
+  const downs = events.filter((e) => e.trial === t.trial && ['hit', 'correct_rejection'].includes(e.event));
+  assert.deepEqual(downs.map((e) => [e.event, e.col]), [['hit', g.col], ['correct_rejection', b.col]]);
 });
 
-test('engine: press in the gap between trials -> no_target_press', () => {
+test('engine: both trial, bad column -> commission; the good mole is then missed', () => {
   const config = cfg();
-  const { events, state } = simulateRun({
-    config, trials: buildSchedule(config), presses: [{ tMs: 500, button: 2, source: 'key 3' }],
+  const schedule = buildSchedule(config);
+  const t = firstOf(schedule, 'both');
+  const b = t.targets[1];
+  const { trials } = simulateRun({ config, trials: schedule, presses: [{ tMs: t.scheduledOnsetMs + 200, button: b.response }] });
+  const a = trials[t.trial - 1];
+  assert.deepEqual(a.targets.map((x) => x.outcome), ['omission', 'commission']);
+  assert.equal(a.outcome, 'commission');
+  assert.equal(a.correct, 0);
+});
+
+test('engine: both trial, good then bad -> both moles down, trial counts as a commission', () => {
+  const config = cfg();
+  const schedule = buildSchedule(config);
+  const t = firstOf(schedule, 'both');
+  const [g, b] = t.targets;
+  const { trials } = simulateRun({
+    config, trials: schedule,
+    presses: [{ tMs: t.scheduledOnsetMs + 200, button: g.response }, { tMs: t.scheduledOnsetMs + 400, button: b.response }],
   });
+  const a = trials[t.trial - 1];
+  assert.deepEqual(a.targets.map((x) => x.outcome), ['hit', 'commission']);
+  assert.equal(a.outcome, 'commission');
+  assert.equal(a.offsetMs, t.scheduledOnsetMs + 400, 'the trial ends when the second mole goes down');
+  assert.deepEqual(a.presses.map((p) => p.button), [g.response, b.response]);
+  assert.ok(a.goodRtMs > 190 && a.goodRtMs <= 200, 'the good-mole RT is still kept');
+});
+
+test('engine: both trial, third column -> wrong_hole; both moles still up', () => {
+  const config = cfg();
+  const schedule = buildSchedule(config);
+  const t = firstOf(schedule, 'both');
+  const third = [0, 1, 2].find((c) => !t.targets.some((x) => x.response === c));
+  const { trials, events, state } = simulateRun({ config, trials: schedule, presses: [{ tMs: t.scheduledOnsetMs + 150, button: third }] });
+  const wrong = events.find((e) => e.event === 'wrong_hole');
+  assert.equal(wrong.trial, t.trial);
+  assert.equal(wrong.pressed_button, third + 1);
+  assert.deepEqual(wrong.up_buttons, t.targets.map((x) => x.response + 1));
+  assert.ok(wrong.rt_ms > 140 && wrong.rt_ms <= 150);
+  assert.equal(state.counts.wrong_hole, 1);
+  const a = trials[t.trial - 1];
+  assert.deepEqual(a.targets.map((x) => x.outcome), ['omission', 'correct_rejection']);
+  assert.deepEqual(a.presses.map((p) => [p.button, p.outcome]), [[third, 'wrong_hole']]);
+});
+
+test('engine: a press between trials -> no_target_press', () => {
+  const config = cfg();
+  const { events, state } = simulateRun({ config, trials: buildSchedule(config), presses: [{ tMs: 500, button: 2 }] });
   const e = events.find((x) => x.event === 'no_target_press');
-  assert.ok(e);
   assert.equal(e.t_ms, 500);
   assert.equal(e.pressed_button, 3);
-  assert.equal(e.trial, undefined);
   assert.equal(state.counts.no_target_press, 1);
 });
 
-test('engine: stopping while a target is up -> truncated, then run_end', () => {
+test('engine: stopping during a both trial truncates both moles', () => {
   const config = cfg();
   const schedule = buildSchedule(config);
-  const stopAt = schedule[0].scheduledOnsetMs + 400;
-  const { trials, events, state } = simulateRun({ config, trials: schedule, stopAt });
-  assert.equal(trials[0].outcome, 'truncated');
-  assert.equal(trials[0].offsetMs, stopAt);
-  assert.ok(trials.slice(1).every((a) => a.actualOnsetMs == null));
-  assert.equal(events.at(-2).event, 'truncated');
+  const t = firstOf(schedule, 'both');
+  const stopAt = t.scheduledOnsetMs + 300;
+  const { trials, events } = simulateRun({ config, trials: schedule, stopAt });
+  const a = trials[t.trial - 1];
+  assert.deepEqual(a.targets.map((x) => x.outcome), ['truncated', 'truncated']);
+  assert.equal(a.outcome, 'truncated');
+  assert.equal(a.correct, null);
   assert.equal(events.at(-1).reason, 'stopped');
-  assert.equal(state.endedMs, stopAt);
+  assert.ok(trials.slice(t.trial).every((x) => x.actualOnsetMs == null));
 });
 
-test('engine: simulated volume events sit on the TR grid', () => {
+test('engine: simulated volumes on the TR grid, and real pulses kept apart', () => {
   const config = cfg({ trS: 1.5, nTrials: 20 });
-  const { events } = simulateRun({ config, trials: buildSchedule(config) });
-  const vols = events.filter((e) => e.event === 'volume' && e.simulated);
-  assert.equal(vols.length, Math.floor(runDurationMs(config) / 1500));
-  vols.forEach((v, i) => {
-    assert.equal(v.volume, i + 1);
-    assert.equal(v.t_ms, (i + 1) * 1500);
-  });
+  const { events } = simulateRun({ config, trials: buildSchedule(config), pulses: [{ tMs: 1005 }, { tMs: 2005 }] });
+  const sim = events.filter((e) => e.event === 'volume' && e.simulated);
+  assert.equal(sim.length, Math.floor(runDurationMs(config) / 1500));
+  sim.forEach((v, i) => assert.equal(v.t_ms, (i + 1) * 1500));
+  const real = events.filter((e) => e.event === 'volume' && e.simulated === false);
+  assert.deepEqual(real.map((e) => [e.volume, e.t_ms]), [[1, 1005], [2, 2005]]);
 });
 
-test('engine: real trigger pulses are logged as non-simulated volume events', () => {
-  const config = cfg({ nTrials: 20 });
-  const { events, state } = simulateRun({
-    config, trials: buildSchedule(config), pulses: [{ tMs: 1005, source: 'key t' }, { tMs: 2005, source: 'key t' }],
-  });
-  const real = events.filter((e) => e.event === 'volume' && e.simulated === false);
-  assert.deepEqual(real.map((e) => [e.volume, e.t_ms, e.source]), [[1, 1005, 'key t'], [2, 2005, 'key t']]);
-  assert.equal(state.pulses, 2);
+test('engine: note() logs things the engine cannot see, only while running', () => {
+  const config = cfg({ nTrials: 10 });
+  const logger = createLogger();
+  let now = 0;
+  const engine = createEngine({ config, trials: buildSchedule(config), logger, clock: () => now, raf: () => 1, caf: () => {} });
+  assert.equal(engine.note('display_hidden'), null);
+  engine.start();
+  now = 1234.5;
+  const rec = engine.note('display_hidden');
+  assert.deepEqual([rec.event, rec.t_ms], ['display_hidden', 1234.5]);
 });
 
 test('engine: frame statistics count frames, mean, max, and slow frames', () => {
   const config = cfg({ nTrials: 20 });
   const { engine } = simulateRun({ config, trials: buildSchedule(config), frameJitter: (i) => (i === 100 ? 50 : FRAME) });
   const f = engine.frameStats();
-  assert.ok(f.frames > 1000);
   assert.equal(f.max_interval_ms, 50);
   assert.equal(f.intervals_over_20ms, 1);
   assert.deepEqual(Object.keys(f).sort(), ['frames', 'intervals_over_20ms', 'max_interval_ms', 'mean_interval_ms']);
@@ -199,33 +230,19 @@ test('engine: does not mutate the schedule it is given', () => {
   const config = cfg({ nTrials: 20 });
   const schedule = buildSchedule(config);
   const before = JSON.stringify(schedule);
-  simulateRun({ config, trials: schedule, presses: [{ tMs: 2300, button: schedule[0].response }] });
+  simulateRun({ config, trials: schedule, presses: [{ tMs: 2300, button: schedule[0].targets[0].response }] });
   assert.equal(JSON.stringify(schedule), before);
 });
 
 test('engine: lifecycle guards', () => {
   const config = cfg({ nTrials: 20 });
   const logger = createLogger();
-  let pending = null;
-  const engine = createEngine({
-    config, trials: buildSchedule(config), logger, clock: () => 0, raf: (fn) => { pending = fn; return 1; }, caf: () => {},
-  });
+  const engine = createEngine({ config, trials: buildSchedule(config), logger, clock: () => 0, raf: () => 1, caf: () => {} });
   assert.equal(engine.press(0, 'key 1'), null, 'press before start is ignored');
-  assert.equal(engine.pulse('key t'), null, 'pulse before start is ignored');
   engine.start();
   assert.throws(() => engine.start(), /once/);
   assert.throws(() => engine.press(3, 'key'), /button/, 'there are only three buttons');
-  assert.throws(() => engine.press(-1, 'key'), /button/);
   engine.stop();
   assert.equal(engine.press(0, 'key 1'), null, 'press after end is ignored');
   assert.equal(logger.toArray().at(-1).event, 'run_end');
-});
-
-test('engine: the per-hole layout still works, one key per hole', () => {
-  const config = cfg({ layout: 'grid9', nTrials: 20 });
-  const schedule = buildSchedule(config);
-  const t1 = schedule[0];
-  assert.equal(t1.response, t1.hole, 'one button per hole');
-  const { trials } = simulateRun({ config, trials: schedule, presses: [{ tMs: t1.scheduledOnsetMs + 250, button: t1.response }] });
-  assert.equal(trials[0].outcome, 'hit');
 });

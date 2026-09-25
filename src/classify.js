@@ -1,22 +1,28 @@
 /**
  * Response classification: README section 3.3.
  *
- * PURE. No DOM, no clock. The engine calls these with the active trial (or
- * null) and the button that was pressed; the renderer never decides outcomes.
+ * PURE. No DOM, no clock. The engine calls these with the moles currently
+ * up and the button that was pressed; the renderer never decides outcomes.
  *
- * Since September 21, 2026 a button is a COLUMN, not a single hole: each
- * trial carries `response`, the 0-based button expected for its hole. In the
- * 3x3 grid the row a mole appears in does not change the correct button.
+ * A button is a COLUMN. Each mole ("target") carries `response`, the 0-based
+ * button for its column, and `valence`, "good" or "bad". A trial shows one
+ * mole, or two at once ("both" trials) in different columns.
  *
- * | Situation                                     | Outcome             |
- * |-----------------------------------------------|---------------------|
- * | Happy mole up, its column's button pressed    | hit                 |
- * | Happy mole goes down, no press                | omission            |
- * | Sad mole or molerat up, its button pressed    | commission          |
- * | Sad mole or molerat goes down, no press       | correct_rejection   |
- * | Target up, a different column's button pressed| wrong_hole          |
- * | No target up, any mapped button pressed       | no_target_press     |
- * | Run ends while a target is up                 | truncated           |
+ * Per mole:
+ * | Situation                                        | Outcome             |
+ * |--------------------------------------------------|---------------------|
+ * | Good mole up, its column's button pressed        | hit                 |
+ * | Good mole goes down with no press                | omission            |
+ * | Bad mole up, its column's button pressed         | commission          |
+ * | Bad mole goes down with no press                 | correct_rejection   |
+ * | Run ends while a mole is up                      | truncated           |
+ *
+ * Per press that does not land on a mole:
+ * | Mole(s) up, a column with no mole pressed        | wrong_hole          |
+ * | Nothing up, any mapped button pressed            | no_target_press     |
+ *
+ * A hit or commission takes that mole down. In a "both" trial the other mole
+ * stays up until its own press or the end of the window.
  */
 
 export const OUTCOME = Object.freeze({
@@ -29,70 +35,84 @@ export const OUTCOME = Object.freeze({
   TRUNCATED: 'truncated',
 });
 
-export const TRIAL_TYPE = Object.freeze({ GO: 'go', NOGO: 'nogo' });
-
-/** Outcomes that end the active trial (the target goes down). */
-const TRIAL_ENDING = new Set([
-  OUTCOME.HIT, OUTCOME.OMISSION, OUTCOME.COMMISSION, OUTCOME.CORRECT_REJECTION, OUTCOME.TRUNCATED,
-]);
-
-/** Outcomes that carry a reaction time (a press on the target's own button). */
+const VALENCES = new Set(['good', 'bad']);
 const WITH_RT = new Set([OUTCOME.HIT, OUTCOME.COMMISSION]);
 
-function assertType(trial) {
-  if (trial.type !== TRIAL_TYPE.GO && trial.type !== TRIAL_TYPE.NOGO) {
-    throw new Error(`classify: unknown trial type "${trial.type}"`);
+function assertTarget(t) {
+  if (!t || !VALENCES.has(t.valence)) {
+    throw new Error(`classify: unknown mole valence "${t && t.valence}"`);
+  }
+  if (!Number.isInteger(t.response)) {
+    throw new Error('classify: each mole needs an integer `response` (its column button)');
   }
 }
 
 /**
- * Classify a button press.
+ * Classify a button press against the moles currently up.
  *
- * @param {{type: 'go'|'nogo', response: number} | null | undefined} active
- *        The trial currently up, or null when no target is up.
- * @param {number} pressedButton  0-based button index that was pressed.
- * @returns {'hit'|'commission'|'wrong_hole'|'no_target_press'}
+ * @param {Array<{valence: 'good'|'bad', response: number}>|null|undefined} upTargets
+ * @param {number} pressedButton  0-based button index.
+ * @returns {{outcome: string, target: object|null}}
+ *          `target` is the mole the press landed on, or null.
  */
-export function classifyPress(active, pressedButton) {
+export function classifyPress(upTargets, pressedButton) {
   if (!Number.isInteger(pressedButton)) {
     throw new Error(`classify: pressedButton must be an integer, got ${pressedButton}`);
   }
-  if (!active) return OUTCOME.NO_TARGET_PRESS;
-  assertType(active);
-  if (!Number.isInteger(active.response)) {
-    throw new Error('classify: the active trial needs an integer `response` (expected button)');
-  }
-  // DECIDED(Q11): a press on another column while any target is up is logged
-  // as wrong_hole, not a commission. The trial continues.
-  if (pressedButton !== active.response) return OUTCOME.WRONG_HOLE;
-  return active.type === TRIAL_TYPE.GO ? OUTCOME.HIT : OUTCOME.COMMISSION;
+  const up = upTargets || [];
+  if (!up.length) return { outcome: OUTCOME.NO_TARGET_PRESS, target: null };
+  up.forEach(assertTarget);
+  const target = up.find((t) => t.response === pressedButton);
+  // DECIDED(Q11): a press on a column with no mole, while a mole is up, is
+  // wrong_hole, never a commission.
+  if (!target) return { outcome: OUTCOME.WRONG_HOLE, target: null };
+  return { outcome: target.valence === 'good' ? OUTCOME.HIT : OUTCOME.COMMISSION, target };
 }
 
-/**
- * Classify a target that went down without a press on its own button.
- * @param {{type: 'go'|'nogo'}} active
- * @returns {'omission'|'correct_rejection'}
- */
-export function classifyTimeout(active) {
-  if (!active) throw new Error('classify: classifyTimeout needs an active trial');
-  assertType(active);
-  return active.type === TRIAL_TYPE.GO ? OUTCOME.OMISSION : OUTCOME.CORRECT_REJECTION;
+/** A mole that went down with no press on its column. */
+export function classifyTimeout(target) {
+  assertTarget(target);
+  return target.valence === 'good' ? OUTCOME.OMISSION : OUTCOME.CORRECT_REJECTION;
 }
 
-/**
- * Classify the active trial when the run ends.
- * @returns {'truncated'|null}  null when no target was up.
- */
-export function classifyRunEnd(active) {
-  return active ? OUTCOME.TRUNCATED : null;
-}
-
-/** True when the outcome ends the active trial. */
-export function endsTrial(outcome) {
-  return TRIAL_ENDING.has(outcome);
+/** A mole still up when the run ends. */
+export function classifyRunEnd(target) {
+  return target ? OUTCOME.TRUNCATED : null;
 }
 
 /** True when the outcome carries a reaction time. */
 export function hasResponseTime(outcome) {
   return WITH_RT.has(outcome);
+}
+
+/**
+ * One outcome for the whole trial, from its moles' outcomes.
+ *   good trial: the good mole's outcome (hit or omission);
+ *   bad trial:  the bad mole's outcome (commission or correct_rejection);
+ *   both trial: commission if the bad mole was pressed, whatever happened to
+ *               the good one; otherwise hit or omission for the good mole.
+ *   Any mole truncated: truncated.
+ * TODO: confirm that pressing the bad mole in a "both" trial should count as
+ * a commission even when the good mole was also hit.
+ */
+export function classifyTrial(trial) {
+  const outs = trial.targets.map((t) => t.outcome);
+  if (outs.some((o) => !o)) throw new Error(`classify: trial ${trial.trial} still has a mole up`);
+  if (outs.includes(OUTCOME.TRUNCATED)) return OUTCOME.TRUNCATED;
+  const good = trial.targets.find((t) => t.valence === 'good');
+  const bad = trial.targets.find((t) => t.valence === 'bad');
+  if (bad && bad.outcome === OUTCOME.COMMISSION) return OUTCOME.COMMISSION;
+  if (good) return good.outcome;
+  return bad.outcome;
+}
+
+/**
+ * Whether the trial was answered correctly: 1, 0, or null when truncated.
+ * Correct means every good mole hit and every bad mole left alone.
+ */
+export function trialCorrect(trial) {
+  const outcome = classifyTrial(trial);
+  if (outcome === OUTCOME.TRUNCATED) return null;
+  return trial.targets.every((t) =>
+    (t.valence === 'good' ? t.outcome === OUTCOME.HIT : t.outcome === OUTCOME.CORRECT_REJECTION)) ? 1 : 0;
 }

@@ -26,33 +26,52 @@ const schedule = buildSchedule(config);
 
 /* ---- a simulated participant ----
    Reaction times drift slowly over the run and jitter trial to trial, so the
-   variance time course has something to show. Rates are in the range a
-   healthy adult typically gives on an 80/20 go/no-go task. */
+   variance time course has something to show. "Both" trials are slower,
+   because the participant has to pick the right mole. Rates are in the range
+   a healthy adult typically gives on this kind of task. */
 const rnd = mulberry32(seed ^ 0x5eed);
 const gauss = () => {
   const u = Math.max(rnd(), 1e-9);
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rnd());
 };
-const P_OMISSION = 0.04;      // happy moles missed
-const P_COMMISSION = 0.26;    // presses on skip trials
-const P_WRONG_COLUMN = 0.015; // right timing, wrong column
+const P_OMISSION = 0.04;       // good moles missed
+const P_WRONG_COLUMN = 0.02;   // right timing, empty column
+const P_CORRECTS = 0.6;        // ...then presses the right column
+const P_COMMISSION = 0.26;     // bad-only trials pressed
+const P_BOTH_WRONG_MOLE = 0.12;// both trials: pressed the bad mole instead of the good one
+const P_BOTH_TWICE = 0.08;     // both trials: pressed the good one, then the bad one too
 
 const plan = [];
 for (const t of schedule) {
   const minute = t.scheduledOnsetMs / 60000;
-  // Slow drift plus a wandering stretch in the second half of the run.
   const drift = 30 * Math.sin(minute * 1.7) + (minute > 6 ? 45 : 0);
   const spread = 55 + (minute > 6 ? 35 : 0);
-  const rt = Math.round(Math.max(120, 400 + drift + gauss() * spread));
-  if (rt >= config.holdMs) continue;                       // too slow: the mole is gone
-  if (t.type === 'go') {
+  const rtFor = (extra = 0) => Math.round(Math.max(120, 400 + extra + drift + gauss() * spread));
+  const good = t.targets.find((x) => x.valence === 'good');
+  const bad = t.targets.find((x) => x.valence === 'bad');
+  const at = (rt, button) => { if (rt < config.holdMs) plan.push({ tMs: t.scheduledOnsetMs + rt, button }); };
+
+  if (t.type === 'good') {
     if (rnd() < P_OMISSION) continue;
-    const button = rnd() < P_WRONG_COLUMN
-      ? (t.response + 1 + Math.floor(rnd() * 2)) % config.keys.length
-      : t.response;
-    plan.push({ tMs: t.scheduledOnsetMs + rt, button });
-  } else if (rnd() < P_COMMISSION) {
-    plan.push({ tMs: t.scheduledOnsetMs + rt, button: t.response });
+    const empty = [0, 1, 2].filter((c) => c !== good.response);
+    const rt = rtFor();
+    if (rnd() < P_WRONG_COLUMN) {
+      at(rt, empty[Math.floor(rnd() * empty.length)]);
+      if (rnd() < P_CORRECTS) at(rt + 170, good.response);   // notices and corrects
+    } else {
+      at(rt, good.response);
+    }
+  } else if (t.type === 'bad') {
+    if (rnd() < P_COMMISSION) at(rtFor(), bad.response);
+  } else {
+    const r = rnd();
+    if (r < P_BOTH_WRONG_MOLE) at(rtFor(60), bad.response);
+    else if (r < P_BOTH_WRONG_MOLE + P_OMISSION) continue;
+    else {
+      const rt = rtFor(60);
+      at(rt, good.response);
+      if (rnd() < P_BOTH_TWICE) at(Math.min(rt + 150, config.holdMs - 20), bad.response);
+    }
   }
 }
 // A few stray presses when nothing is up.
@@ -107,15 +126,21 @@ for (const [name, text] of Object.entries(files)) {
   fs.writeFileSync(path.join(outDir, name), text);
 }
 
-const count = (o) => trials.filter((t) => t.outcome === o).length;
-const rts = trials.filter((t) => t.outcome === 'hit').map((t) => t.rtMs);
+const moles = trials.flatMap((t) => t.targets);
+const goodMoles = moles.filter((x) => x.valence === 'good');
+const badMoles = moles.filter((x) => x.valence === 'bad');
+const n = (list, o) => list.filter((x) => x.outcome === o).length;
+const byType = (type) => trials.filter((t) => t.type === type);
+const rts = trials.map((t) => t.goodRtMs).filter((r) => r != null);
 const mean = rts.reduce((a, b) => a + b, 0) / rts.length;
-const sd = Math.sqrt(rts.reduce((s, r) => s + (r - mean) ** 2, 0) / (rts.length - 1));
+const sd = Math.sqrt(rts.reduce((s2, r) => s2 + (r - mean) ** 2, 0) / (rts.length - 1));
 const lags = trials.map((t) => t.actualOnsetMs - t.scheduledOnsetMs);
-console.log(`trials shown      ${trials.filter((t) => t.actualOnsetMs != null).length} of ${config.nTrials}`);
+console.log(`trials shown      ${trials.filter((t) => t.actualOnsetMs != null).length} of ${config.nTrials}` +
+  ` (${byType('good').length} good, ${byType('bad').length} bad, ${byType('both').length} both)`);
 console.log(`run length        ${(engine.getState().endedMs / 60000).toFixed(2)} min, ${frames} frames`);
-console.log(`hits              ${count('hit')} / ${count('hit') + count('omission')} happy moles`);
-console.log(`presses on skips  ${count('commission')} / ${count('commission') + count('correct_rejection')}`);
+console.log(`good moles hit    ${n(goodMoles, 'hit')} / ${goodMoles.length}`);
+console.log(`bad moles pressed ${n(badMoles, 'commission')} / ${badMoles.length}`);
+console.log(`both trials right ${byType('both').filter((t) => t.correct === 1).length} / ${byType('both').length}`);
 console.log(`wrong column      ${engine.getState().counts.wrong_hole}`);
 console.log(`press, no mole    ${engine.getState().counts.no_target_press}`);
 console.log(`reaction time     mean ${mean.toFixed(0)} ms, SD ${sd.toFixed(0)} ms, CV ${(sd / mean).toFixed(2)}`);

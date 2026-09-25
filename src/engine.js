@@ -1,19 +1,23 @@
 /**
  * Run state machine and requestAnimationFrame loop (README 3.1, 4.1).
  *
- * The engine owns the clock (t = 0 at the trigger), starts targets at their
+ * The engine owns the clock (t = 0 at the trigger), puts moles up at their
  * scheduled times, resolves them through classify.js, and writes every event
- * to the logger. It never draws: the renderer subscribes through `onFrame`
+ * to the logger. It never draws: the display subscribes through `onFrame`
  * and `onEvent` and only draws what the engine reports.
  *
- * A "press" is a BUTTON index (a column in the 3x3 layout), not a hole.
+ * A trial shows one mole, or two at once ("both" trials). Each mole resolves
+ * on its own: a hit or commission takes it down; the rest go down at the end
+ * of the window. The trial ends when its last mole is down.
  *
+ * A "press" is a BUTTON index (a column in the 3x3 layout), not a hole.
  * `clock`, `raf`, and `caf` can be injected so the engine runs under a fake
  * clock in Node tests.
  */
 
 import {
-  classifyPress, classifyTimeout, classifyRunEnd, endsTrial, hasResponseTime, OUTCOME,
+  classifyPress, classifyTimeout, classifyRunEnd, classifyTrial, trialCorrect,
+  hasResponseTime, OUTCOME,
 } from './classify.js';
 import { runDurationMs } from './config.js';
 
@@ -23,9 +27,8 @@ const round1 = (x) => +x.toFixed(1);
 export const SLOW_FRAME_MS = 20;
 
 /**
- * Score deltas, kept for piloting outside the scanner. DECIDED(Q6): the
- * participant is shown nothing, so this never reaches the screen unless
- * showScore is turned back on.
+ * Score deltas, kept for piloting only. DECIDED(Q6): the participant is
+ * shown nothing, so this never reaches the screen unless showScore is on.
  */
 const SCORE_DELTA = Object.freeze({ [OUTCOME.HIT]: 1, [OUTCOME.COMMISSION]: -1 });
 
@@ -40,7 +43,16 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
   const eventHook = onEvent || (() => {});
 
   const records = trials.map((t) => ({
-    ...t, actualOnsetMs: null, offsetMs: null, outcome: null, rtMs: null, source: null, pressed: null,
+    ...t,
+    targets: t.targets.map((x, i) => ({
+      ...x, index: i + 1, outcome: null, rtMs: null, offsetMs: null, source: null,
+    })),
+    actualOnsetMs: null,
+    offsetMs: null,
+    outcome: null,
+    correct: null,
+    goodRtMs: null,
+    presses: [],
   }));
   const nButtons = config.keys.length;
   const durationMs = runDurationMs(config);
@@ -70,23 +82,35 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
   }
 
   const elapsed = () => now() - s.t0;
+  const upTargets = (a) => (a ? a.targets.filter((x) => !x.outcome) : []);
+  const moleFields = (a, x) => ({
+    trial: a.trial, type: a.type, target: x.index, valence: x.valence, stim: x.stim,
+    hole: x.hole + 1, row: x.row, col: x.col, button: x.response + 1,
+  });
 
-  function resolve(a, outcome, rtMs, t, source, pressed) {
-    a.outcome = outcome;
-    a.rtMs = rtMs;
-    a.offsetMs = t;
-    a.source = source;
-    a.pressed = pressed == null ? null : pressed;
-    s.active = null;
-    const d = {
-      trial: a.trial, hole: a.hole + 1, row: a.row, col: a.col,
-      type: a.type, stim: a.stim, expected_button: a.response + 1,
-    };
-    if (pressed != null) d.pressed_button = pressed + 1;
-    if (rtMs != null) d.rt_ms = round1(rtMs);
-    if (source) d.source = source;
+  function resolveTarget(a, x, outcome, t, press) {
+    x.outcome = outcome;
+    x.offsetMs = t;
+    const d = moleFields(a, x);
+    if (press) {
+      x.rtMs = press.rtMs;
+      x.source = press.source;
+      d.pressed_button = press.button + 1;
+      d.rt_ms = round1(press.rtMs);
+      d.source = press.source;
+    }
     if (SCORE_DELTA[outcome]) s.score += SCORE_DELTA[outcome];
     emit(outcome, d, t, a);
+  }
+
+  function endTrial(a, t) {
+    a.offsetMs = t;
+    a.outcome = classifyTrial(a);
+    a.correct = trialCorrect(a);
+    const good = a.targets.find((x) => x.valence === 'good');
+    a.goodRtMs = good && good.outcome === OUTCOME.HIT ? good.rtMs : null;
+    s.active = null;
+    emit('trial_end', { trial: a.trial, type: a.type, outcome: a.outcome, correct: a.correct }, t, a);
   }
 
   function tick() {
@@ -112,23 +136,24 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       emit('volume', { volume: s.volumes, simulated: true }, s.volumes * trMs);
     }
 
-    // Active target reaches the end of its window.
-    if (s.active) {
-      const el = t - s.active.actualOnsetMs;
-      if (el >= s.active.windowMs) resolve(s.active, classifyTimeout(s.active), null, t, null, null);
+    // The window closes: every mole still up goes down unpressed.
+    if (s.active && t - s.active.actualOnsetMs >= s.active.windowMs) {
+      const a = s.active;
+      for (const x of upTargets(a)) resolveTarget(a, x, classifyTimeout(x), t, null);
+      endTrial(a, t);
     }
 
-    // Next scheduled target. The onset logged is this frame's time: the frame
-    // on which the renderer first draws it (README 4.1).
+    // Next scheduled trial. The onset logged is this frame's time: the frame
+    // on which the display first draws it (README 4.1).
     if (!s.active && s.next < records.length && t >= records[s.next].scheduledOnsetMs) {
       const a = records[s.next++];
       a.actualOnsetMs = t;
       s.active = a;
-      emit('target_on', {
-        trial: a.trial, hole: a.hole + 1, row: a.row, col: a.col,
-        type: a.type, stim: a.stim, expected_button: a.response + 1,
-        scheduled_ms: a.scheduledOnsetMs, lag_ms: round1(t - a.scheduledOnsetMs),
-      }, t, a);
+      for (const x of a.targets) {
+        emit('target_on', {
+          ...moleFields(a, x), scheduled_ms: a.scheduledOnsetMs, lag_ms: round1(t - a.scheduledOnsetMs),
+        }, t, a);
+      }
     }
 
     frameHook({
@@ -153,8 +178,6 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
 
   /**
    * A button press (a column in the 3x3 layout).
-   * @param {number} button  0-based button index.
-   * @param {string} source  e.g. "key 2" or "pointer".
    * @returns {string|null}  The outcome code, or null if the run is not running.
    */
   function press(button, source) {
@@ -164,15 +187,19 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     }
     const t = elapsed();
     const a = s.active;
-    const outcome = classifyPress(a, button);
-    if (endsTrial(outcome)) {
-      resolve(a, outcome, hasResponseTime(outcome) ? t - a.actualOnsetMs : null, t, source, button);
+    const up = upTargets(a);
+    const { outcome, target } = classifyPress(up, button);
+    if (a) a.presses.push({ button, rtMs: t - a.actualOnsetMs, source, outcome });
+
+    if (target) {
+      const p = { button, rtMs: t - a.actualOnsetMs, source };
+      resolveTarget(a, target, outcome, t, hasResponseTime(outcome) ? p : null);
+      if (!upTargets(a).length) endTrial(a, t);
     } else if (outcome === OUTCOME.WRONG_HOLE) {
       s.counts.wrong_hole++;
       emit(outcome, {
-        trial: a.trial, hole: a.hole + 1, row: a.row, col: a.col,
-        expected_button: a.response + 1, pressed_button: button + 1,
-        rt_ms: round1(t - a.actualOnsetMs), source,
+        trial: a.trial, type: a.type, pressed_button: button + 1,
+        up_buttons: up.map((x) => x.response + 1), rt_ms: round1(t - a.actualOnsetMs), source,
       }, t, a);
     } else {
       s.counts.no_target_press++;
@@ -181,10 +208,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     return outcome;
   }
 
-  /**
-   * A real trigger pulse received while running (README 4.1: every later
-   * pulse is logged as a `volume` event). Distinct from simulated volumes.
-   */
+  /** A real trigger pulse received while running (README 4.1). */
   function pulse(source) {
     if (s.phase !== 'running') return null;
     const t = elapsed();
@@ -192,21 +216,24 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     return emit('volume', { volume: s.pulses, simulated: false, source }, t);
   }
 
-  /** End the run. A target that is still up becomes `truncated`. */
+  /**
+   * Log something the engine cannot see itself, such as the display tab
+   * being hidden. Only while running.
+   */
+  function note(event, data = {}) {
+    if (s.phase !== 'running') return null;
+    return emit(event, data, elapsed());
+  }
+
+  /** End the run. Any mole still up becomes `truncated`. */
   function end(reason) {
     if (s.phase !== 'running') return;
     const t = elapsed();
     cancelFrame(s.rafId);
     const a = s.active;
-    const outcome = classifyRunEnd(a);
-    if (outcome) {
-      a.outcome = outcome;
-      a.offsetMs = t;
-      s.active = null;
-      emit(outcome, {
-        trial: a.trial, hole: a.hole + 1, row: a.row, col: a.col,
-        type: a.type, stim: a.stim, expected_button: a.response + 1,
-      }, t, a);
+    if (a) {
+      for (const x of upTargets(a)) resolveTarget(a, x, classifyRunEnd(x), t, null);
+      endTrial(a, t);
     }
     s.phase = 'ended';
     s.endedMs = t;
@@ -246,6 +273,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     start,
     press,
     pulse,
+    note,
     stop: (reason = 'stopped') => end(reason),
     /** The live trial records (read them; do not modify). */
     trials: () => records,

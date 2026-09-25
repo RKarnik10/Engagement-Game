@@ -5,15 +5,18 @@ import {
   holeCount, buttonCount, responseForHole, holePosition, runDurationMs, trialWindowMs,
 } from '../src/config.js';
 
-test('config: defaults are the September 21, 2026 decisions', () => {
+test('config: defaults are the September 21 and 25, 2026 decisions', () => {
   const c = resolveConfig();
   assert.equal(c.layout, 'grid3x3');
   assert.deepEqual(c.keys, ['1', '2', '3']);
   assert.equal(c.nTrials, 600);
   assert.equal(c.trialMs, 1000);
   assert.equal(c.holdMs, 800);
-  assert.equal(c.goProb, 0.8);
-  assert.equal(c.nogoSadShare, 0.5);
+  assert.equal(c.goodShare, 0.8);
+  assert.equal(c.badShare, 0.1);
+  assert.equal(c.bothShare, 0.1);
+  assert.equal(c.badStim, 'mole_sad');
+  assert.equal(c.version, '0.3');
   assert.equal(c.showScore, false, 'no score');
   assert.equal(c.feedback, false, 'no on-screen feedback');
   assert.equal(c.setting, 'behavioral');
@@ -59,9 +62,9 @@ test('config: presets flip the scanner flag', () => {
 
 test('config: validation rejects bad values with a message naming each problem', () => {
   const bad = (p, re) => assert.throws(() => resolveConfig(p), re);
-  bad({ goProb: 0 }, /goProb/);
-  bad({ goProb: 1.5 }, /goProb/);
-  bad({ nogoSadShare: 1.2 }, /nogoSadShare/);
+  bad({ goodShare: 0.7 }, /add up to 1/);
+  bad({ goodShare: 1.5, badShare: -0.5 }, /each be in \[0, 1\]/);
+  bad({ badStim: 'eggplant' }, /badStim/);
   bad({ nTrials: 0 }, /nTrials/);
   bad({ nTrials: 10.5 }, /nTrials/);
   bad({ trialMs: 0 }, /trialMs/);
@@ -78,7 +81,7 @@ test('config: validation rejects bad values with a message naming each problem',
   bad({ keys: ['1', '1', '2'] }, /unique/);
   bad({ triggerKey: '' }, /triggerKey/);
   bad({ triggerKey: '2' }, /collides/);
-  assert.throws(() => resolveConfig({ goProb: 2, holdMs: -1 }), /goProb[\s\S]*holdMs/);
+  assert.throws(() => resolveConfig({ badStim: 'x', holdMs: -1 }), /badStim[\s\S]*holdMs/);
 });
 
 test('config: a target may never be up longer than the trial cycle', () => {

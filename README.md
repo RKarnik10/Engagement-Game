@@ -1,11 +1,11 @@
 # Engagement Game: a whac-a-mole attention task for fMRI
 
-**Status:** Blueprint v0.2. Drafted September 18, 2026; revised September 21, 2026 after Dr. Song's first round of feedback.
+**Status:** Blueprint v0.3. Drafted September 18, 2026; revised September 21 after Dr. Song's first round of feedback, and September 25 when the trial mix was clarified.
 The open questions in section 2 now carry her answers. Values still marked *(placeholder)* are starting guesses, not decisions.
 
 **Author:** Rehaan Karnik (undergraduate RA). Drafted with AI assistance; references were pulled from search and are listed in section 10 with notes on what was and was not verified.
 
-**Build status (September 21, 2026):** Phases 0 and 1 of section 7 are done, and the build in `src/` has been revised to Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, happy moles to press and sad moles or molerats to skip, and no on-screen feedback. 61 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
+**Build status (September 25, 2026):** Phases 0 and 1 of section 7 are done, and `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, and no on-screen feedback. Each trial shows a good (happy) mole to press, a bad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console. 76 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
 
 **Contributors and AI disclosure:** see [section 12](#12-contributors-and-ai-disclosure). Code and documentation in this repository were written by an AI assistant under the author's direction, as recorded there.
 
@@ -31,7 +31,7 @@ Attention and engagement measures are computed from those logs offline (section 
 
 `index.html` is the v0.1 prototype: one self-contained HTML file with no dependencies. It implements sections 3 and 4.5 of this document with placeholder parameters. The modular build described in sections 6 and 7 will live in `src/` and should not replace `index.html` until it matches the prototype's behavior.
 
-To run locally, open `index.html` in any browser. For the modular build in `src/`, run `npm run serve` from the repository folder and open http://localhost:8000/ (it needs a local server because browsers block ES modules opened straight from disk).
+To run locally, open `index.html` in any browser. For the current build in `src/`, run `npm run serve` from the repository folder, open http://localhost:8000/ (the experimenter console), and click **Open participant display**. It needs a local server because browsers block ES modules opened straight from disk.
 
 ---
 
@@ -49,7 +49,7 @@ that still need a one-line confirmation, is in [docs/decisions.md](docs/decision
 | Q5 | **Continuous** play or **blocks** with rest? | **Continuous.** One trial per second, no rest blocks. |
 | Q6 | Should the player see a **score** or feedback? | **No.** Nothing on screen reacts to a press. |
 | Q7 | **Adaptive difficulty**? | **No.** |
-| Q8 | **Mole art vs. neutral art**? | **Moles.** No eggplants: a happy mole to press, a sad mole and a molerat to skip. |
+| Q8 | **Mole art vs. neutral art**? | **Moles.** No eggplants. A happy mole to press; a sad mole (or a molerat) to leave alone. |
 | Q9 | **Participant population**? | **Adults.** |
 | Q10 | Is **eye tracking** available, and what is the visual angle? | **No eye tracking.** Visual angle still unknown. |
 | Q11 | A press on a **different hole** while a target is up: commission or wrong-hole? | **Wrong-hole**, and the trial continues. Now means the wrong column. |
@@ -63,11 +63,14 @@ Points from the same feedback that could be read more than one way are listed at
 ### 3.1 Core loop
 
 1. The scanner trigger (or `t` during development) sets **t = 0**. All timestamps are milliseconds from this moment.
-2. Targets appear one at a time, at pre-scheduled times, in one of nine holes arranged in a 3 by 3 grid. One trial starts every second.
-3. **Go target** (happy mole): press the button for the **column** it popped up in, before it goes back down. There are three buttons, one per column, so the row does not change the correct answer.
-4. **No-go target** (sad mole or molerat): do not press.
-5. Nothing on screen reacts to a press. The participant gets no confirmation, no score, and no highlight.
-6. The schedule **never depends on the participant's responses**. A hit makes the target drop early, but the next target still appears at its scheduled time. This means the timing design (and therefore the fMRI design matrix) is fixed before the run starts.
+2. One trial starts every second, at a pre-scheduled time. Moles pop up from nine holes arranged in a 3 by 3 grid.
+3. The participant has three buttons, one per **column**. The row a mole is in never changes the correct button.
+4. Each trial is one of three types (decided with Dr. Song, confirmed September 25, 2026):
+   - **Good** (80%): one happy mole. Press its column's button. The mole goes down when hit ("killed").
+   - **Bad** (10%): one sad mole. Do not press. It is not killed; it goes down on its own.
+   - **Both** (10%): a happy mole and a sad mole at the same time, in different columns. Press only the happy mole's column.
+5. Nothing on screen reacts to a press. The participant gets no confirmation, no score, and no highlight. The only change is that a hit mole goes down.
+6. The schedule **never depends on the participant's responses**. A hit makes a mole drop early, but the next trial still starts at its scheduled time. This means the timing design (and therefore the fMRI design matrix) is fixed before the run starts.
 
 ### 3.2 Why go/no-go
 
@@ -77,15 +80,33 @@ Points from the same feedback that could be read more than one way are listed at
 
 ### 3.3 Response classification
 
+Each mole is scored on its own:
+
 | Situation | Outcome code | Meaning |
 |-----------|--------------|---------|
-| Happy mole up, its column's button pressed | `hit` | Correct; reaction time (RT) recorded |
-| Happy mole goes down, no matching press | `omission` | Miss; likely attention lapse |
-| Sad mole or molerat up, its column's button pressed | `commission` | False press; inhibition failure |
-| Sad mole or molerat goes down, no press | `correct_rejection` | Correct skip |
-| Target up, a *different* column's button pressed | `wrong_hole` | Error; trial continues (Q11) |
-| No target up, any mapped button pressed | `no_target_press` | Anticipatory or stray press |
-| Run ends while a target is up | `truncated` | Excluded from measures |
+| Good mole up, its column's button pressed | `hit` | Correct; reaction time (RT) recorded; the mole goes down |
+| Good mole goes down with no press on its column | `omission` | Miss; likely attention lapse |
+| Bad mole up, its column's button pressed | `commission` | False press; inhibition failure; the mole goes down |
+| Bad mole goes down with no press | `correct_rejection` | Correct skip |
+| Run ends while a mole is up | `truncated` | Excluded from measures |
+
+Presses that land on no mole:
+
+| Situation | Outcome code | Meaning |
+|-----------|--------------|---------|
+| Mole(s) up, a column with no mole pressed | `wrong_hole` | Error; the trial continues (Q11) |
+| No mole up, any mapped button pressed | `no_target_press` | Anticipatory or stray press |
+
+Each trial also gets one overall outcome. A good or bad trial takes its mole's outcome. A **both** trial is:
+
+| Good mole | Bad mole | Trial outcome | Correct |
+|-----------|----------|---------------|---------|
+| `hit` | `correct_rejection` | `hit` | yes |
+| `hit` | `commission` | `commission` | no |
+| `omission` | `correct_rejection` | `omission` | no |
+| `omission` | `commission` | `commission` | no |
+
+In a both trial, hitting the good mole takes only that mole down; the bad one stays up until the window ends, so a later press on it still counts as a commission. *(These two rules are a reading of the design, not yet confirmed by Dr. Song; see [docs/decisions.md](docs/decisions.md).)*
 
 `e.repeat` key events (holding a key down) are ignored.
 
@@ -99,9 +120,10 @@ Settled values are marked **decided**; the rest are still placeholders.
 | Buttons | 3, one per column | **Decided (Q2).** The row a mole appears in does not change the correct button. |
 | Trials per run | 600 | **Decided.** About 10 minutes. |
 | Trial rate | one every 1000 ms, fixed | **Decided (Q5).** Not jittered, so onsets are exact. |
-| Stimulus mix | 80% happy mole, 10% sad mole, 10% molerat | **Decided.** Go/no-go is still 80/20. |
+| Trial mix | 80% good, 10% bad, 10% both | **Decided** (confirmed September 25, 2026). A both trial shows a good and a bad mole at once, in different columns. |
+| Bad mole picture | sad mole *(placeholder)* | A molerat is the alternative (`badStim`). |
 | Target up time | 800 ms *(placeholder)* | Inside the 1000 ms cycle, leaving 200 ms empty. The split inside the cycle is not settled. |
-| Constraints | First 3 trials go; no two no-go in a row; same hole never twice in a row | Placeholder rules carried over from v0.1; never confirmed. |
+| Constraints | First 3 trials good; no two bad trials in a row; no hole reused from one trial to the next | Placeholder rules carried over from v0.1; never confirmed. |
 | Feedback | none | **Decided (Q6).** No score, no highlight, no sound. |
 | First target | 2000 ms after trigger *(placeholder)* | Depends on dummy scans (Q4). |
 | Gradual rise/sink | 350 ms each way *(placeholder)* | Only when `onset: "gradual"` (section 3.5). Does not fit a 1 s cycle without a shorter up time. |
@@ -120,17 +142,17 @@ Implication: a pop-up whack-a-mole might be *less* sensitive to attention lapses
 
 ### 3.6 Looks ("skins")
 
-A skin changes **only the drawings**. Schedule, positions, sizes, timing, and keys are identical across skins, so the same seed produces the same run under either look. Decided (Q8): the mole skin is the one to build. Go is a happy mole; the two skip stimuli are a sad mole and a molerat.
+A skin changes **only the drawings**. Schedule, positions, sizes, timing, and keys are identical across skins, so the same seed produces the same run under either look. Decided (Q8): the mole skin is the one to build. The good mole is a happy mole; the bad mole is a sad mole by default, or a molerat.
 
 | Skin | Go target | No-go target |
 |------|-----------|--------------|
-| `mole` | Happy mole | Sad mole, and a molerat |
+| `mole` | Happy mole | Sad mole (or a molerat) |
 | `neutral` | Round light | Diamond, and a second neutral shape |
 
 Requirements for the real build (not done in the demo):
 
 - Match the go and no-go drawings across skins for **size and average brightness (luminance)**, so any brain difference between skins comes from meaning, not from low-level visual properties.
-- Distinguish go from no-go by **shape**, not color alone, so color-blind participants can play. The happy mole's mouth curves up and the sad mole's curves down; the molerat has a bald head, big ears, and two front teeth.
+- Distinguish go from no-go by **shape**, not color alone, so color-blind participants can play. The happy mole's mouth curves up and the sad mole's curves down, with its inner brows raised; the molerat has a bald head, big ears, and buck teeth. (Fixed September 25, 2026: the first sad mole's brows read as angry, and the molerat's outlined teeth looked like a pause symbol.)
 - Keep the "violence dial" at its lowest setting: no hammer, no impact animation, no sound. Adding those would be a separate, deliberate decision (section 8).
 
 ---
@@ -153,6 +175,7 @@ Requirements for the real build (not done in the demo):
 
 ### 4.3 Display
 
+- The participant display runs in its own browser tab or window, separate from the experimenter console, so the participant never sees the settings or the data. See section 6.4.
 - Background is a fixed mid-grey in every theme. Large brightness changes on screen produce responses in visual cortex that we don't want mixed into the attention signal.
 - Confirm projector resolution, refresh rate, and visual angle (Q10) before finalizing hole spacing.
 
@@ -168,20 +191,30 @@ Each run writes three files. A complete example of all three is in
 [examples/](examples/).
 
 1. **Run table (CSV).** The one to open first, and the one Dr. Song asked for
-   on September 21, 2026. One row per mole shown: `trial, onset_s, stimulus,
-   trial_type, mole_row, mole_col, hole, expected_button, pressed_button,
-   response_time_ms, outcome, correct, scheduled_onset_s, onset_lag_ms,
-   preceding_go`. Opens in Excel. Missing values are `n/a`.
+   on September 21, 2026. One row per trial: `trial, onset_s, trial_type,
+   good_row, good_col, bad_row, bad_col, correct_action, expected_button,
+   pressed_buttons, first_press_ms, good_hit_ms, good_outcome, bad_outcome,
+   outcome, correct, scheduled_onset_s, onset_lag_ms, preceding_go`. Opens in
+   Excel. Missing values are `n/a`. `pressed_buttons` lists every button
+   pressed while the trial's moles were up, in order, separated by spaces
+   (for example `1 3`), so read it as text.
 2. **Events table (TSV), BIDS-style.** The same trials with `onset` and
    `duration` in seconds from the trigger, for the fMRI design matrix.
-   Columns: `onset, duration, trial_type, stimulus, hole, mole_row, mole_col,
-   expected_button, pressed_button, outcome, response_time, scheduled_onset,
-   preceding_go`. *(Column names beyond `onset`/`duration` should be checked
-   against the current BIDS specification before we rely on them.)*
+   Columns: `onset, duration, trial_type, good_row, good_col, bad_row,
+   bad_col, expected_button, pressed_buttons, outcome, response_time,
+   scheduled_onset, preceding_go`. *(Column names beyond `onset`/`duration`
+   should be checked against the current BIDS specification before we rely
+   on them.)*
 3. **Full log (JSON).** Metadata (task version, whether the run was in the
-   scanner, config, user agent, frame-interval statistics), the trial table,
-   and every raw event including trigger pulses, wrong-column presses, and
-   stray presses.
+   scanner, the trial mix and pictures, config, user agent, frame-interval
+   statistics), the trial table with each mole and each press, and every raw
+   event including trigger pulses, wrong-column presses, stray presses, and
+   any moment the participant display was hidden.
+
+The files are built by the experimenter console when the run ends and saved
+through the browser, so they land in the browser's downloads folder. File
+names carry the date, time, setting, and seed, for example
+`engagement-game_20260925-143012_behavioral_seed1234_run.csv`.
 
 Every run records whether it happened in the scanner (`in_scanner: 1`) or in
 the behavioral suite (`in_scanner: 0`).
@@ -223,17 +256,21 @@ Engagement-Game/
 │   └── example_run.csv, example_events.tsv, example_log.json
 ├── package.json            # {"type": "module"}, test script only, no dependencies
 ├── src/
-│   ├── index.html          # page shell; loads main.js as an ES module
+│   ├── index.html          # experimenter console page; loads main.js
+│   ├── display.html        # participant display page; loads display.js
 │   ├── styles.css
-│   ├── main.js             # wires config, engine, input, renderer, export
+│   ├── main.js             # console: settings, mirror, live measures, exports
+│   ├── display.js          # display: drawing, keys, full screen
+│   ├── link.js             # console <-> display messages (BroadcastChannel)
+│   ├── session.js          # runs the game inside the display tab
 │   ├── config.js           # defaults, validation, presets ("desktop-pilot", "scanner")
 │   ├── rng.js              # seeded PRNG (mulberry32)
 │   ├── schedule.js         # PURE: (config) -> trial list. No DOM.
-│   ├── classify.js         # PURE: (active trial, pressed hole) -> outcome. No DOM.
-│   ├── engine.js           # run state machine + requestAnimationFrame loop
+│   ├── classify.js         # PURE: (moles up, pressed button) -> outcome. No DOM.
+│   ├── engine.js           # run state machine + requestAnimationFrame loop; one or two moles per trial
 │   ├── input.js            # keyboard/pointer -> hole index; trigger detection
 │   ├── logger.js           # append-only event log
-│   ├── export.js           # events TSV + full JSON; download via Blob
+│   ├── export.js           # run CSV + events TSV + full JSON; download via Blob
 │   └── render/
 │       ├── board.js        # hole layout shared by all skins
 │       ├── trace.js        # attention-trace chart, experimenter view only
@@ -244,6 +281,7 @@ Engagement-Game/
 │   ├── classify.test.js
 │   ├── engine.test.js
 │   ├── export.test.js
+│   ├── link.test.js        # console and display over a real BroadcastChannel
 │   ├── input.test.js
 │   ├── config.test.js
 │   └── _sim.js             # fake-clock helper for the engine tests
@@ -266,7 +304,7 @@ Engagement-Game/
 
 ```json
 {
-  "version": "0.2",
+  "version": "0.3",
   "skin": "mole",
   "layout": "grid3x3",
   "keys": ["1", "2", "3"],
@@ -278,8 +316,10 @@ Engagement-Game/
   "trialMs": 1000,
   "holdMs": 800,
   "firstOnsetMs": 2000,
-  "goProb": 0.8,
-  "nogoSadShare": 0.5,
+  "goodShare": 0.8,
+  "badShare": 0.1,
+  "bothShare": 0.1,
+  "badStim": "mole_sad",
   "trS": 1.0,
   "showScore": false,
   "feedback": false,
@@ -288,31 +328,37 @@ Engagement-Game/
 ```
 
 `durationS` is derived, not set: 600 trials of 1000 ms plus a 2000 ms lead-in
-is 602 seconds. `nogoSadShare` splits the no-go trials between the sad mole
-and the molerat, so 0.5 gives the 80 / 10 / 10 mix.
+is 602 seconds. The three shares must add up to 1; 600 trials give exactly 480
+good, 60 bad, and 60 both. `badStim` is `mole_sad` or `molerat`.
 
 ### 6.2 Trial record
 
 | Field | Type | Notes |
 |-------|------|-------|
 | `trial` | int | 1-based |
-| `type` | `"go"` or `"nogo"` | |
-| `stim` | `"mole_happy"`, `"mole_sad"`, `"molerat"` | The picture drawn |
-| `hole` | int | 1-based, reading order (left to right, top to bottom) |
-| `row`, `col` | int | 1-based position in the grid |
-| `response` | int | 0-based button the trial expects; equals `col - 1` in the 3 by 3 layout |
+| `type` | `"good"`, `"bad"`, or `"both"` | |
+| `targets` | list | One mole, or two for `both` (good one first). Each has `valence` (`"good"`/`"bad"`), `stim`, `hole` (reading order), `row`, `col`, `response` (its column's button), and after the run `outcome`, `rt_ms`, `offset_ms`, `input` |
 | `scheduled_onset_ms` | number | From the schedule |
-| `actual_onset_ms` | number | Frame on which it was first drawn |
-| `offset_ms` | number | When it went down (hit, timeout, or run end) |
-| `outcome` | string | Codes in section 3.3 |
-| `rt_ms` | number or null | Only for `hit` and `commission` |
-| `pressed` | int or null | 0-based button actually pressed |
-| `preceding_go` | int or null | Only for no-go trials |
-| `input` | string or null | For example `"key 3"` or `"pointer"` |
+| `actual_onset_ms` | number | Frame on which the moles were first drawn |
+| `offset_ms` | number | When the last mole went down |
+| `outcome` | string | The trial's overall outcome (section 3.3) |
+| `correct` | 1, 0, or null | Null for a truncated trial |
+| `good_rt_ms` | number or null | RT of the press that hit the good mole |
+| `presses` | list | Every press while the moles were up: `button`, `rt_ms`, `outcome`, `input` |
+| `preceding_go` | int or null | On trials with a bad mole: trials in a row that needed a press since the last bad trial |
 
 ### 6.3 Event record
 
-Every event has `t_ms` (from trigger) and `event` (one of `trigger`, `volume`, `target_on`, the outcome codes, `run_end`), plus relevant fields such as `trial`, `hole`, `row`, `col`, `stim`, `expected_button`, `pressed_button`, `rt_ms`, `lag_ms`, `source`.
+Every event has `t_ms` (from trigger) and `event` (one of `trigger`, `volume`, `target_on`, the outcome codes, `run_end`), plus relevant fields such as `trial`, `type`, `target`, `valence`, `hole`, `row`, `col`, `stim`, `button`, `pressed_button`, `up_buttons`, `rt_ms`, `lag_ms`, `source`. Two more event types: `trial_end` (one per trial, with its overall outcome) and `display_hidden` / `display_visible` (the participant tab lost or regained visibility during a run).
+
+### 6.4 Two tabs: console and display
+
+The experimenter console (`index.html`) and the participant display (`display.html`) run in separate tabs of the same browser and talk over a BroadcastChannel (`link.js`). The game runs in the **display**, not the console, for two reasons: browsers pause animation frames in hidden tabs, and key presses (including the scanner's trigger and button box) go to the window in front, which is the participant's. The console sends settings and start/stop, mirrors what the display shows, and receives every event plus the finished run, from which it builds the three files.
+
+- The display must stay visible for the whole run. Drag its tab out into its own window on the participant's screen. If it is hidden anyway, the gap is logged as `display_hidden`.
+- The display keeps its last run. A console that is reloaded asks for it again, so data is not lost.
+- If two displays are open, the console warns and sends Start only to the newest.
+- BroadcastChannel is supported in all current major browsers (Safari since 15.4, 2022). Full screen uses `requestFullscreen`, with the `webkit` prefix for Safari before 16.4.
 
 ---
 
@@ -324,9 +370,10 @@ Every event has `t_ms` (from trigger) and `event` (one of `trigger`, `volume`, `
 
 ### Phase 1: Desktop prototype (match the demo)
 - Seeded schedule, engine loop, keyboard and pointer input, mole skin, logging, both exports as downloads.
-- **Done (September 18, 2026), revised to Dr. Song's feedback September 21:**
+- **Done (September 18, 2026), revised to Dr. Song's feedback September 21 and 25:**
   - Same seed produces an identical schedule (test).
-  - Go/no-go counts and the 80 / 10 / 10 picture mix are exact, first 3 trials are go, no consecutive no-go, no repeated hole (tests, over 1,200 seeds).
+  - The 80 / 10 / 10 good / bad / both counts are exact, the first 3 trials are good, no two bad trials in a row, no hole reused between trials, and both-trial moles are always in different columns (tests, over 1,200 seeds).
+  - The console and participant display run in separate tabs and talk over a BroadcastChannel (tests over a real channel).
   - Every row of the classification table in section 3.3 has a test.
   - Target windows never overlap, at 1 s per trial.
   - The CSV and TSV load cleanly in pandas and the JSON parses.
@@ -422,7 +469,7 @@ Verification notes are in brackets. "Checked" means I saw the abstract or publis
 
 ## 11. Where things stand and what is still open
 
-*Updated September 21, 2026, in plain language. Companion documents:
+*Updated September 25, 2026, in plain language. Companion documents:
 [examples/](examples/) (a full example run), [docs/decisions.md](docs/decisions.md)
 (every answer, dated), [docs/review-guide.md](docs/review-guide.md) (how to look
 around this repository without reading code),
@@ -431,41 +478,46 @@ around this repository without reading code),
 ### 11.1 Done
 
 - Dr. Song reviewed the v0.1 prototype and answered the questions in section 2.
-- The build in `src/` now matches that feedback: nine holes in a three-by-three
+- The build in `src/` follows that feedback: nine holes in a three-by-three
   grid, three buttons (one per column), a fixed one-second trial, 600 trials for
-  a ten-minute run, happy moles to press and sad moles or molerats to skip, and
-  no on-screen feedback of any kind.
+  a ten-minute run, and no on-screen feedback of any kind.
+- Trials are good (80%), bad (10%), or both at once in different columns (10%),
+  confirmed September 25, 2026.
+- The participant display runs in its own tab, separate from the experimenter
+  console, so the participant never sees settings or data.
 - A ten-minute example run, played by a simulated participant through the real
   engine, is in [examples/](examples/) as all three output files.
-- 61 automated tests pass (`npm test`).
+- 76 automated tests pass (`npm test`).
 
 ### 11.2 Still open
 
 Seven points need a one-line answer. The full version, with what the code does
 today for each, is at the end of [docs/decisions.md](docs/decisions.md).
 
-1. **The 80 / 10 / 10 split.** Read as 80% happy mole, 10% sad mole, 10%
-   molerat. Confirm that is what was meant.
-2. **Which inputs to record.** All three buttons are recorded; every other key
+1. **The bad mole's picture.** A sad mole by default; a molerat is the
+   alternative. The notes mention both.
+2. **Both trials, after the good mole is hit.** The bad mole stays up until the
+   window ends, and pressing it then still counts as a commission. The
+   alternative is to take both moles down on the first press.
+3. **Which inputs to record.** All three buttons are recorded; every other key
    is ignored. The note said "the 1 and 2 inputs", which may name exact codes
    the button box sends.
-3. **Sad mole and molerat: both, or pick one?** Both are in, at 10% each.
 4. **How long a mole stays up** inside the one-second cycle. Currently 800 ms
    up, 200 ms empty.
 5. **The on-screen button labels** under each column: keep for piloting, or
    remove?
 6. **The rest of Q4:** TR, number of runs, trigger key, dummy scans.
-7. **Repeats:** the same hole never repeats on consecutive trials, but the same
-   column can. Carried over from v0.1 and never confirmed.
+7. **Repeats:** no hole is reused from one trial to the next, but the same
+   column can be. Carried over from v0.1 and never confirmed.
 
 ### 11.3 Next
 
 1. Look at [examples/example_run.csv](examples/) together, as Dr. Song
    suggested, and confirm the columns are what the analysis needs.
-2. Try the ten-minute run in a browser to check it feels right, especially
-   whether no feedback at all is too frustrating.
+2. Try a full run with the display in its own window, to check it feels right,
+   especially whether no feedback at all is too frustrating.
 3. Build the analysis script (Phase 3) and run it on the example file.
-4. Match the three drawings for size and brightness (Phase 2).
+4. Match the drawings for size and brightness (Phase 2).
 5. Confirm whether this falls under an existing IRB protocol or needs an
    amendment, and who will validate timing on the scanner computer (Phase 4).
 
@@ -476,12 +528,12 @@ This is research software that may be used with human participants, so how it wa
 | Contributor | Role |
 |---|---|
 | Rehaan Karnik (undergraduate RA, Song Lab) | Human author. Defined the task, wrote the blueprint (sections 1 to 10) and `research-notes.md` with AI assistance, directed and reviewed the AI-written work, and is responsible for this repository. |
-| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. Also checked that the exported files load in pandas. |
+| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. Also checked that the exported files load in pandas. |
 
-**What the AI did not do.** It did not run the game in a real browser, did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
+**What the AI did not do.** It did not run the game in a real browser (the pages were exercised under a simulated page in Node, and the drawings were checked as rendered images), did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
 
 **Commit history.** Commits `640cd1b` and `464ba6a` were generated by Claude in Claude Code and committed under Rehaan Karnik's git identity without a co-author line. From the commit that adds this section onward, commits containing AI-written changes carry a `Co-Authored-By: Claude <noreply@anthropic.com>` trailer.
 
 **Responsibility.** AI tools cannot take responsibility for research outputs, so this is a disclosure of how the work was produced rather than a claim of authorship in the academic sense. The human authors are responsible for reviewing, validating, and approving everything here before it is used with participants, and for disclosing AI use in any publication, protocol, or IRB submission according to that venue's policy.
 
-Suggested one-sentence disclosure for a methods section or IRB document: "The task software and its documentation were written with the assistance of Claude (Anthropic; models Claude Fable 5.1 and Claude Opus 5, via Claude Code) under the direction of the authors, who reviewed and validated all outputs."
+Suggested one-sentence disclosure for a methods section or IRB document: "The task software and its documentation were written with the assistance of Claude (Anthropic; models Claude Fable 5.1, Claude Opus 5, and Claude Opus 5.5, via Claude Code) under the direction of the authors, who reviewed and validated all outputs."

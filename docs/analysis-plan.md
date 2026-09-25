@@ -16,30 +16,34 @@ For every mole, the game records when it appeared, which of the three pictures i
 
 | Outcome | Plain meaning |
 |---|---|
-| `hit` | Happy mole, the right column pressed in time. Gives a reaction time. |
-| `omission` | Happy mole, no press. Usually an attention lapse. |
-| `commission` | Sad mole or molerat, pressed anyway. A failure to hold back. Gives a reaction time. |
-| `correct_rejection` | Sad mole or molerat, correctly left alone. |
+| `hit` | Good (happy) mole, its column pressed in time. Gives a reaction time. |
+| `omission` | Good mole, no press. Usually an attention lapse. |
+| `commission` | Bad (sad) mole, pressed anyway. A failure to hold back. Gives a reaction time. |
+| `correct_rejection` | Bad mole, correctly left alone. |
 | `truncated` | The run ended while the target was up. Dropped from every measure. |
 
 Two more things are logged but do not end a trial: `wrong_hole` (pressed a different column while a mole was up) and `no_target_press` (pressed when nothing was up). They are counted as quality measures. Because a button is a column, pressing the right column in the wrong row is impossible: any press in the right column counts.
 
-**Two kinds of skip trial.** Sad moles and molerats are both no-go, so they are pooled for the rates below. They are logged separately in the `stimulus` column, so they can also be compared: a molerat is a different animal, while a sad mole differs from a happy one only by its face, which may be harder to spot. Whether that difference matters is worth one look early on.
+**Three kinds of trial.** 80% of trials show one good mole, 10% one bad mole, and 10% both at once in different columns. Every mole gets its own outcome from the table above, and every trial gets one overall outcome (`outcome` in the run table). On a both trial, pressing the bad mole makes the trial a `commission` even if the good one was hit too.
+
+Both trials are worth analysing separately as well as pooled. On a bad-only trial the participant only has to hold back. On a both trial they have to press *and* pick the right mole, so both-trial errors may measure something closer to selective attention than to inhibition.
 
 ## 3. Whole-run measures
 
-**Hit rate.** Happy moles pressed, divided by happy moles shown. **Omission rate** is the rest: happy moles missed.
+**Hit rate.** Good moles hit, divided by good moles shown, counting good moles in both trials too (`good_outcome` in the run table). **Omission rate** is the rest: good moles missed.
 
-**Commission rate.** Skip trials pressed, divided by skip trials shown. This is the classic measure of failing to hold back.
+**Commission rate.** Bad moles pressed, divided by bad moles shown, counting bad moles in both trials too (`bad_outcome`). This is the classic measure of failing to hold back.
 
-**d′ (say "d-prime").** Hit rate alone is not enough: someone who presses for everything scores 100% hits and 100% false presses. d′ combines hits and false presses into one number for how well the person told happy moles from the ones to skip. Zero means they could not tell them apart at all; larger is sharper. The formula is the difference between two z-scores (see the glossary): z(hit rate) minus z(false-press rate). Perfect rates of 0% or 100% break the formula, so a small correction is standard. We propose the **log-linear correction**: add 0.5 to each count and 1 to each total before dividing. Any correction works as long as it is written down.
+**Both-trial accuracy.** Both trials answered fully right (good hit, bad left alone), divided by both trials shown. Reported alongside the rates above, and also split into the four combinations of good and bad outcome.
 
-Worked example from a short simulated run (the ten-minute example in [../examples/](../examples/) gives a hit rate of 458/480 and 34 presses on 120 skip trials):
+**d′ (say "d-prime").** Hit rate alone is not enough: someone who presses for everything scores 100% hits and 100% false presses. d′ combines hits and false presses into one number for how well the person told good moles from bad ones. Zero means they could not tell them apart at all; larger is sharper. The formula is the difference between two z-scores (see the glossary): z(hit rate) minus z(false-press rate). Perfect rates of 0% or 100% break the formula, so a small correction is standard. We propose the **log-linear correction**: add 0.5 to each count and 1 to each total before dividing. Any correction works as long as it is written down.
+
+Worked example from a short simulated run (the ten-minute example in [../examples/](../examples/) gives 509 of 540 good moles hit and 23 of 120 bad moles pressed):
 
 | | Count | Rate | Corrected rate | z |
 |---|---|---|---|---|
-| Hits | 24 of 26 happy moles | 0.923 | 24.5 / 27 = 0.907 | 1.325 |
-| False presses | 1 of 6 skip trials | 0.167 | 1.5 / 7 = 0.214 | -0.792 |
+| Hits | 24 of 26 good moles | 0.923 | 24.5 / 27 = 0.907 | 1.325 |
+| False presses | 1 of 6 bad moles | 0.167 | 1.5 / 7 = 0.214 | -0.792 |
 
 d′ = 1.325 - (-0.792) = **2.12**.
 
@@ -51,10 +55,10 @@ This is the main attention signal, following Esterman et al. (2013) as summarise
 
 Steps, in order:
 
-1. **Take the reaction time of every hit.** Whether to include the reaction times of false presses too is a detail to confirm (section 10).
+1. **Take the reaction time of every hit** on a good mole (`good_hit_ms`), from good and both trials. Whether both-trial reaction times, which are slower because the participant has to choose, belong in the same curve is a detail to confirm (section 10), and so is whether to include false presses.
 2. **Convert each to a z-score.** How far it is from that person's own average, in units of their own spread. This removes "some people are just faster".
 3. **Take the absolute value.** We care about how far from typical, not which direction.
-4. **Fill the gaps.** Missed moles and skip trials have no reaction time. Fill each gap by interpolation, which means drawing a straight line between the neighbouring values, so every trial has a number. With a trial every second, the series is evenly spaced, which makes this simpler than it was in the jittered v0.1 design.
+4. **Fill the gaps.** Missed moles and bad-only trials have no reaction time. Fill each gap by interpolation, which means drawing a straight line between the neighbouring values, so every trial has a number. With a trial every second, the series is evenly spaced, which makes this simpler than it was in the jittered v0.1 design.
 5. **Smooth.** Replace each value with a weighted average of itself and its neighbours, weighting nearby targets most, using a bell-shaped (Gaussian) weighting. The curve then shows the trend rather than trial-to-trial noise. Esterman et al. specify the width of the bell; we will copy it.
 6. **Split at the median.** Targets below the run's median curve value are "in the zone" (steady); targets above it are "out of the zone" (erratic). Esterman et al. found more errors, and a different pattern of brain-network activity, out of the zone.
 
@@ -66,11 +70,11 @@ The scanner takes one whole-brain picture every TR (for example every 1 s). The 
 
 That list can be compared directly with per-picture brain measures, for example the sequence of brain states found with a hidden Markov model in Song, Shim & Rosenberg (2023). See the glossary for the term.
 
-Separately, the events table gives every trial's onset and duration in seconds, which is what the standard fMRI model (the design matrix) needs. Each happy mole, skip trial, and error can be an event type in that model. One caution: trials are now evenly spaced one second apart, which is good for the attention curve but leaves less room for the model to separate the brain response to one trial from the next. Worth raising before scanning.
+Separately, the events table gives every trial's onset and duration in seconds, which is what the standard fMRI model (the design matrix) needs. Good, bad, and both trials, and errors, can each be an event type in that model. One caution: trials are now evenly spaced one second apart, which is good for the attention curve but leaves less room for the model to separate the brain response to one trial from the next. Worth raising before scanning.
 
-## 6. Errors in context: what came before each skip trial
+## 6. Errors in context: what came before each bad mole
 
-The `preceding_go` column records how many happy moles came in a row before each skip trial. The more in a row, the stronger the habit of pressing, and the harder the skip trial is to resist. This is the manipulation the original whack-a-mole task was built around. We propose plotting the commission rate against the number of preceding happy moles, in bins such as 1 to 2, 3 to 4, and 5 or more.
+The `preceding_go` column records, for every trial with a bad mole, how many trials in a row needed a press before it. The more in a row, the stronger the habit of pressing, and the harder the bad mole is to resist. This is the manipulation the original whack-a-mole task was built around. We propose plotting the commission rate against `preceding_go`, in bins such as 1 to 2, 3 to 4, and 5 or more.
 
 ## 7. Data-quality checks
 
@@ -104,7 +108,7 @@ If we want to measure how engaged the person feels, not just how steady their at
 5. The minimum number of hits for a curve to be meaningful.
 6. For the per-picture list: the curve's value at the start of each picture, at its middle, or averaged over it.
 7. The column names her pipeline expects in the events table.
-8. Whether sad moles and molerats are pooled as one skip condition or compared.
+8. Whether both trials go into the same reaction-time curve as good trials, and whether their errors are pooled with bad-trial errors or reported separately.
 9. Whether the evenly spaced one-second trials cause a problem for the fMRI design matrix (section 5), since v0.1 jittered the gaps for exactly that reason.
 
 ## 11. Glossary

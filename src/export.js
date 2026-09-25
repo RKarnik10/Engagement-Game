@@ -2,9 +2,9 @@
  * Exports (README 4.5, 6.2, 6.3).
  *
  * Three files:
- *   1. run CSV      - the table Dr. Song asked for on September 21, 2026:
- *                     which mole appeared (row and column), what should have
- *                     been pressed, what was pressed, and the reaction time;
+ *   1. run CSV      - the table Dr. Song asked for: which moles appeared (row
+ *                     and column), what should have been pressed, what was
+ *                     pressed, and the reaction time;
  *   2. events TSV   - BIDS-style, times in seconds, for the fMRI model;
  *   3. full JSON    - metadata, the trial table, and every raw event.
  *
@@ -14,28 +14,21 @@
 const round1 = (x) => +x.toFixed(1);
 const sec = (ms) => (ms / 1000).toFixed(3);
 const NA = 'n/a';
-
-/** Human-readable stimulus names for the run CSV. */
-export const STIM_LABEL = Object.freeze({
-  mole_happy: 'happy mole',
-  mole_sad: 'sad mole',
-  molerat: 'molerat',
-});
-
-/** Outcomes that count as a correct response. */
-const CORRECT = new Set(['hit', 'correct_rejection']);
+const orNA = (v) => (v == null ? NA : v);
 
 /** Column order of the run CSV. */
 export const CSV_COLUMNS = Object.freeze([
-  'trial', 'onset_s', 'stimulus', 'trial_type', 'mole_row', 'mole_col', 'hole',
-  'expected_button', 'pressed_button', 'response_time_ms', 'outcome', 'correct',
+  'trial', 'onset_s', 'trial_type',
+  'good_row', 'good_col', 'bad_row', 'bad_col',
+  'correct_action', 'expected_button', 'pressed_buttons', 'first_press_ms', 'good_hit_ms',
+  'good_outcome', 'bad_outcome', 'outcome', 'correct',
   'scheduled_onset_s', 'onset_lag_ms', 'preceding_go',
 ]);
 
 /** Column order of the BIDS-style events table. */
 export const TSV_COLUMNS = Object.freeze([
-  'onset', 'duration', 'trial_type', 'stimulus', 'hole', 'mole_row', 'mole_col',
-  'expected_button', 'pressed_button', 'outcome', 'response_time', 'scheduled_onset', 'preceding_go',
+  'onset', 'duration', 'trial_type', 'good_row', 'good_col', 'bad_row', 'bad_col',
+  'expected_button', 'pressed_buttons', 'outcome', 'response_time', 'scheduled_onset', 'preceding_go',
 ]);
 
 /** Trials that were actually shown (the run may end before the schedule does). */
@@ -43,83 +36,106 @@ export function shownTrials(trials) {
   return trials.filter((a) => a.actualOnsetMs != null);
 }
 
+const goodOf = (a) => a.targets.find((x) => x.valence === 'good') || null;
+const badOf = (a) => a.targets.find((x) => x.valence === 'bad') || null;
+const pressedList = (a) => (a.presses.length ? a.presses.map((p) => p.button + 1).join(' ') : NA);
+
 function csvCell(v) {
   const s = String(v);
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 /**
- * Run CSV: one row per shown trial, in the order Dr. Song asked for.
- * Reaction time is in milliseconds here because that is how it is read.
+ * Run CSV: one row per trial shown. Reaction times are whole milliseconds.
+ * `pressed_buttons` lists every button pressed while the trial's moles were
+ * up, in order, separated by spaces.
  */
 export function buildRunCSV(trials) {
   const rows = [CSV_COLUMNS.slice()];
   for (const a of shownTrials(trials)) {
+    const g = goodOf(a);
+    const b = badOf(a);
     rows.push([
       a.trial,
       sec(a.actualOnsetMs),
-      STIM_LABEL[a.stim] || a.stim,
       a.type,
-      a.row,
-      a.col,
-      a.hole + 1,
-      a.response + 1,
-      a.pressed != null ? a.pressed + 1 : NA,
-      a.rtMs != null ? Math.round(a.rtMs) : NA,
-      a.outcome || NA,
-      a.outcome === 'truncated' || !a.outcome ? NA : (CORRECT.has(a.outcome) ? 1 : 0),
+      g ? g.row : NA,
+      g ? g.col : NA,
+      b ? b.row : NA,
+      b ? b.col : NA,
+      g ? 'press' : 'withhold',
+      g ? g.response + 1 : NA,
+      pressedList(a),
+      a.presses.length ? Math.round(a.presses[0].rtMs) : NA,
+      a.goodRtMs != null ? Math.round(a.goodRtMs) : NA,
+      g ? orNA(g.outcome) : NA,
+      b ? orNA(b.outcome) : NA,
+      orNA(a.outcome),
+      orNA(a.correct),
       sec(a.scheduledOnsetMs),
       Math.round(a.actualOnsetMs - a.scheduledOnsetMs),
-      a.precedingGo != null ? a.precedingGo : NA,
+      orNA(a.precedingGo),
     ]);
   }
   return rows.map((r) => r.map(csvCell).join(',')).join('\n') + '\n';
 }
 
 /**
- * Events table, one row per shown trial, times in seconds from the trigger.
- * Missing values are "n/a".
+ * Events table, one row per trial shown, times in seconds from the trigger.
+ * Duration runs from onset to when the last mole of the trial went down.
  */
 export function buildEventsTSV(trials) {
   const rows = [TSV_COLUMNS.slice()];
   for (const a of shownTrials(trials)) {
+    const g = goodOf(a);
+    const b = badOf(a);
     rows.push([
       sec(a.actualOnsetMs),
       a.offsetMs != null ? sec(a.offsetMs - a.actualOnsetMs) : NA,
       a.type,
-      a.stim,
-      a.hole + 1,
-      a.row,
-      a.col,
-      a.response + 1,
-      a.pressed != null ? a.pressed + 1 : NA,
-      a.outcome || NA,
-      a.rtMs != null ? sec(a.rtMs) : NA,
+      g ? g.row : NA,
+      g ? g.col : NA,
+      b ? b.row : NA,
+      b ? b.col : NA,
+      g ? g.response + 1 : NA,
+      pressedList(a),
+      orNA(a.outcome),
+      a.goodRtMs != null ? sec(a.goodRtMs) : NA,
       sec(a.scheduledOnsetMs),
-      a.precedingGo != null ? a.precedingGo : NA,
+      orNA(a.precedingGo),
     ]);
   }
   return rows.map((r) => r.join('\t')).join('\n') + '\n';
 }
 
-/** Trial table for the JSON log (README 6.2). 1-based hole and buttons. */
+/** Trial table for the JSON log (README 6.2). 1-based holes and buttons. */
 export function trialTable(trials) {
   return shownTrials(trials).map((a) => ({
     trial: a.trial,
     type: a.type,
-    stimulus: a.stim,
-    hole: a.hole + 1,
-    row: a.row,
-    col: a.col,
-    expected_button: a.response + 1,
-    pressed_button: a.pressed != null ? a.pressed + 1 : null,
     scheduled_onset_ms: a.scheduledOnsetMs,
     actual_onset_ms: round1(a.actualOnsetMs),
     offset_ms: a.offsetMs != null ? round1(a.offsetMs) : null,
     outcome: a.outcome || null,
-    rt_ms: a.rtMs != null ? round1(a.rtMs) : null,
+    correct: a.correct,
+    good_rt_ms: a.goodRtMs != null ? round1(a.goodRtMs) : null,
     preceding_go: a.precedingGo,
-    input: a.source || null,
+    targets: a.targets.map((x) => ({
+      target: x.index,
+      valence: x.valence,
+      stimulus: x.stim,
+      hole: x.hole + 1,
+      row: x.row,
+      col: x.col,
+      button: x.response + 1,
+      outcome: x.outcome || null,
+      rt_ms: x.rtMs != null ? round1(x.rtMs) : null,
+      offset_ms: x.offsetMs != null ? round1(x.offsetMs) : null,
+      input: x.source || null,
+    })),
+    presses: a.presses.map((p) => ({
+      button: p.button + 1, rt_ms: round1(p.rtMs), outcome: p.outcome, input: p.source || null,
+    })),
   }));
 }
 
@@ -132,8 +148,11 @@ export function buildFullLog({ config, trials, events, frameStats, userAgent, cr
       created,
       setting: config.setting,
       in_scanner: config.setting === 'scanner' ? 1 : 0,
-      clock: 'milliseconds from trigger, via performance.now()',
-      onset_note: 'actual onset = animation frame on which the target was first drawn; display latency not measured',
+      trial_mix: { good: config.goodShare, bad: config.badShare, both: config.bothShare },
+      good_stimulus: 'mole_happy',
+      bad_stimulus: config.badStim,
+      clock: 'milliseconds from trigger, via performance.now() in the participant display',
+      onset_note: 'actual onset = animation frame on which the moles were first drawn; display latency not measured',
       response_note: 'a button is a column: three buttons cover nine holes, so the row does not change the correct button',
       user_agent: userAgent,
       frame_stats: frameStats || null,

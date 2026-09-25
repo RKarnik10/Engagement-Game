@@ -84,9 +84,9 @@ export function drawTrace(groupEl, config, trials) {
     }
   }
 
-  const hits = trials.filter((a) => a.outcome === 'hit');
+  const hits = trials.filter((a) => a.goodRtMs != null);
   if (hits.length >= 3) {
-    const rts = hits.map((a) => a.rtMs);
+    const rts = hits.map((a) => a.goodRtMs);
     const m = mean(rts);
     const sd = sdev(rts) || 1;
     const sm = smooth(rts.map((r) => Math.abs(r - m) / sd), 1.5);

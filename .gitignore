@@ -3,3 +3,4 @@ node_modules/
 *.log
 # Local run exports (keep data out of the repo)
 exports/
+notes.md
