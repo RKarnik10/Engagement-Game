@@ -5,7 +5,7 @@ The open questions in section 2 now carry her answers. Values still marked *(pla
 
 **Author:** Rehaan Karnik (undergraduate RA). Drafted with AI assistance; references were pulled from search and are listed in section 10 with notes on what was and was not verified.
 
-**Build status (September 25, 2026):** Phases 0 and 1 of section 7 are done, and `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, and no on-screen feedback. Each trial shows a good (happy) mole to press, a bad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console. 76 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
+**Build status (September 25, 2026):** Phases 0 and 1 of section 7 are done, and `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, and no on-screen feedback. Each trial shows a good (happy) mole to press, a bad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console. 84 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
 
 **Contributors and AI disclosure:** see [section 12](#12-contributors-and-ai-disclosure). Code and documentation in this repository were written by an AI assistant under the author's direction, as recorded there.
 
@@ -70,7 +70,8 @@ Points from the same feedback that could be read more than one way are listed at
    - **Bad** (10%): one sad mole. Do not press. It is not killed; it goes down on its own.
    - **Both** (10%): a happy mole and a sad mole at the same time, in different columns. Press only the happy mole's column.
 5. Nothing on screen reacts to a press. The participant gets no confirmation, no score, and no highlight. The only change is that a hit mole goes down.
-6. The schedule **never depends on the participant's responses**. A hit makes a mole drop early, but the next trial still starts at its scheduled time. This means the timing design (and therefore the fMRI design matrix) is fixed before the run starts.
+6. For testing, a run can be **paused** (the console's Pause button, or <kbd>P</kbd> in the display) and **ended early** (End run, or <kbd>Esc</kbd> in the display). A pause stops the run clock, so the schedule resumes exactly where it stopped. A scanner cannot pause, so pauses are logged and a paused run is marked as not usable for scanning. However a run ends, its results, trace, and downloads stay in the console until the next run starts.
+7. The schedule **never depends on the participant's responses**. A hit makes a mole drop early, but the next trial still starts at its scheduled time. This means the timing design (and therefore the fMRI design matrix) is fixed before the run starts.
 
 ### 3.2 Why go/no-go
 
@@ -265,6 +266,7 @@ Engagement-Game/
 │   ├── display.js          # display: drawing, keys, full screen
 │   ├── link.js             # console <-> display messages (BroadcastChannel)
 │   ├── session.js          # runs the game inside the display tab
+│   ├── summary.js          # PURE: run summary shown after a run (console and display)
 │   ├── config.js           # defaults, validation, presets ("desktop-pilot", "scanner")
 │   ├── rng.js              # seeded PRNG (mulberry32)
 │   ├── schedule.js         # PURE: (config) -> trial list. No DOM.
@@ -284,6 +286,7 @@ Engagement-Game/
 │   ├── engine.test.js
 │   ├── export.test.js
 │   ├── link.test.js        # console and display over a real BroadcastChannel
+│   ├── pause.test.js       # pausing, ending early, and the run summary
 │   ├── input.test.js
 │   ├── config.test.js
 │   └── _sim.js             # fake-clock helper for the engine tests
@@ -351,7 +354,7 @@ good, 60 bad, and 60 both. `badStim` is `mole_sad` or `molerat`.
 
 ### 6.3 Event record
 
-Every event has `t_ms` (from trigger) and `event` (one of `trigger`, `volume`, `target_on`, the outcome codes, `run_end`), plus relevant fields such as `trial`, `type`, `target`, `valence`, `hole`, `row`, `col`, `stim`, `button`, `pressed_button`, `up_buttons`, `rt_ms`, `lag_ms`, `source`. Two more event types: `trial_end` (one per trial, with its overall outcome) and `display_hidden` / `display_visible` (the participant tab lost or regained visibility during a run).
+Every event has `t_ms` (from trigger) and `event` (one of `trigger`, `volume`, `target_on`, the outcome codes, `run_end`), plus relevant fields such as `trial`, `type`, `target`, `valence`, `hole`, `row`, `col`, `stim`, `button`, `pressed_button`, `up_buttons`, `rt_ms`, `lag_ms`, `source`. More event types: `trial_end` (one per trial, with its overall outcome), `display_hidden` / `display_visible` (the participant tab lost or regained visibility during a run), and `pause` / `resume` (testing only; `resume` carries `paused_ms`, and the run clock excludes the pause).
 
 ### 6.4 Two tabs: console and display
 
@@ -360,6 +363,7 @@ The experimenter console (`index.html`) and the participant display (`display.ht
 - The display must stay visible for the whole run. Drag its tab out into its own window on the participant's screen. If it is hidden anyway, the gap is logged as `display_hidden`.
 - The display keeps its last run. A console that is reloaded asks for it again, so data is not lost.
 - If two displays are open, the console warns and sends Start only to the newest.
+- The participant display shows no results by default (Q6). For testing, the console's "Testing" option also shows the results, the reaction-time trace, and the downloads on the display after a run (`showResultsOnDisplay`).
 - BroadcastChannel is supported in all current major browsers (Safari since 15.4, 2022). Full screen uses `requestFullscreen`, with the `webkit` prefix for Safari before 16.4.
 
 ---
@@ -489,7 +493,7 @@ around this repository without reading code),
   console, so the participant never sees settings or data.
 - A ten-minute example run, played by a simulated participant through the real
   engine, is in [examples/](examples/) as all three output files.
-- 76 automated tests pass (`npm test`).
+- 84 automated tests pass (`npm test`).
 
 ### 11.2 Still open
 
@@ -529,7 +533,7 @@ This is research software that may be used with human participants, so how it wa
 | Contributor | Role |
 |---|---|
 | Rehaan Karnik (undergraduate RA, Song Lab) | Human author. Defined the task, wrote the blueprint (sections 1 to 10) and `research-notes.md` with AI assistance, directed and reviewed the AI-written work, and is responsible for this repository. |
-| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. Also checked that the exported files load in pandas. |
+| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. Also checked that the exported files load in pandas. |
 
 **What the AI did not do.** It did not run the game in a real browser (the pages were exercised under a simulated page in Node, and the drawings were checked as rendered images), did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
 

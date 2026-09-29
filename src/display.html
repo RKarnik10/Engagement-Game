@@ -21,7 +21,24 @@
       <div id="ov-body"></div>
     </div>
   </div>
-  <p class="display-hint" id="hint">Press <kbd>F</kbd> for full screen. This tab must stay visible during a run.</p>
+  <p class="display-hint" id="hint">Experimenter keys: <kbd>F</kbd> full screen, <kbd>T</kbd> start, <kbd>P</kbd> pause or resume, <kbd>Esc</kbd> end the run (twice in full screen). This tab must stay visible during a run.</p>
+  <!-- Testing only (showResultsOnDisplay): results and downloads after a run. -->
+  <section class="results" id="results" hidden aria-live="polite">
+    <h2 id="results-title">Run finished</h2>
+    <p id="results-summary"></p>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 1000 198" role="img" aria-label="Reaction-time variability over the run">
+        <g id="chart-data"></g>
+      </svg>
+    </div>
+    <p class="small results-legend">Dots: happy moles hit, higher means less steady responding. Red triangles: distractor pressed. Red rings: happy mole missed. Yellow ticks: simulated scan volumes.</p>
+    <div class="export-bar">
+      <button type="button" class="primary" id="dl-csv">Download run table (CSV)</button>
+      <button type="button" id="dl-tsv">Events (TSV)</button>
+      <button type="button" id="dl-json">Full log (JSON)</button>
+    </div>
+    <p class="small">Files go to the browser's downloads folder. The experimenter console has the same results. Press <kbd>T</kbd> to start another run.</p>
+  </section>
 </div>
 <script type="module" src="./display.js"></script>
 </body>

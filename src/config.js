@@ -79,6 +79,8 @@ export const DEFAULTS = Object.freeze({
   trS: 1.0,                     // TODO(Q4): TR, used for simulated volume events.
   showScore: false,             // DECIDED(Q6): no score.
   feedback: false,              // DECIDED(Q6): no hole lights up on a press. Moles only pop in and out.
+  showResultsOnDisplay: false,  // Testing only: after a run, show results and downloads on the
+                                // participant display too. Off for real participants (Q6).
   seed: 1234,
   // DECIDED(Q5): continuous play, no rest blocks.
   // DECIDED(Q7): no adaptive difficulty; nothing in the engine adapts to performance.
@@ -180,6 +182,7 @@ export function validateConfig(config) {
   if (!(typeof c.trS === 'number' && Number.isFinite(c.trS) && c.trS > 0)) problems.push('trS must be a positive number (s)');
   if (typeof c.showScore !== 'boolean') problems.push('showScore must be a boolean');
   if (typeof c.feedback !== 'boolean') problems.push('feedback must be a boolean');
+  if (typeof c.showResultsOnDisplay !== 'boolean') problems.push('showResultsOnDisplay must be a boolean');
   if (!isInt(c.seed)) problems.push('seed must be an integer');
 
   if (problems.length) throw new Error(`Invalid config:\n  - ${problems.join('\n  - ')}`);

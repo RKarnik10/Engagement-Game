@@ -73,6 +73,11 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     rafId: 0,
     endedMs: null,
     endReason: null,
+    paused: false,
+    pausedAtAbs: null,       // clock reading when the pause began
+    pausedAtMs: null,        // run time (ms from trigger) when the pause began
+    pauses: 0,
+    pausedTotalMs: 0,
   };
 
   function emit(event, data, tMs, trial) {
@@ -81,7 +86,8 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     return record;
   }
 
-  const elapsed = () => now() - s.t0;
+  // Run time freezes while paused, so the schedule simply resumes where it stopped.
+  const elapsed = () => (s.paused ? s.pausedAtMs : now() - s.t0);
   const upTargets = (a) => (a ? a.targets.filter((x) => !x.outcome) : []);
   const moleFields = (a, x) => ({
     trial: a.trial, type: a.type, target: x.index, valence: x.valence, stim: x.stim,
@@ -181,7 +187,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
    * @returns {string|null}  The outcome code, or null if the run is not running.
    */
   function press(button, source) {
-    if (s.phase !== 'running') return null;
+    if (s.phase !== 'running' || s.paused) return null;
     if (!Number.isInteger(button) || button < 0 || button >= nButtons) {
       throw new Error(`engine: button must be an integer in [0, ${nButtons}), got ${button}`);
     }
@@ -210,7 +216,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
 
   /** A real trigger pulse received while running (README 4.1). */
   function pulse(source) {
-    if (s.phase !== 'running') return null;
+    if (s.phase !== 'running' || s.paused) return null;
     const t = elapsed();
     s.pulses++;
     return emit('volume', { volume: s.pulses, simulated: false, source }, t);
@@ -222,14 +228,47 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
    */
   function note(event, data = {}) {
     if (s.phase !== 'running') return null;
+    // While paused, run time is frozen at the pause.
     return emit(event, data, elapsed());
   }
 
-  /** End the run. Any mole still up becomes `truncated`. */
+  /**
+   * Pause the run, for testing only. The run clock stops: the mole that is up
+   * stays up, and when the run resumes every later trial starts that much
+   * later. A real scanner does not pause, so a paused run is not usable for
+   * fMRI; the pauses are logged so this is visible in the data.
+   */
+  function pause() {
+    if (s.phase !== 'running' || s.paused) return false;
+    const t = elapsed();
+    cancelFrame(s.rafId);
+    s.paused = true;
+    s.pausedAtAbs = now();
+    s.pausedAtMs = t;
+    s.pauses++;
+    emit('pause', { pause: s.pauses }, t);
+    return true;
+  }
+
+  /** Resume after pause(). The time spent paused is removed from the run clock. */
+  function resume() {
+    if (s.phase !== 'running' || !s.paused) return false;
+    const pausedFor = now() - s.pausedAtAbs;
+    s.t0 += pausedFor;
+    s.pausedTotalMs += pausedFor;
+    s.paused = false;
+    s.lastFrame = null;      // the paused stretch is not a slow frame
+    emit('resume', { pause: s.pauses, paused_ms: round1(pausedFor) }, elapsed());
+    s.rafId = requestFrame(tick);
+    return true;
+  }
+
+  /** End the run. Any mole still up becomes `truncated`. Works while paused. */
   function end(reason) {
     if (s.phase !== 'running') return;
     const t = elapsed();
     cancelFrame(s.rafId);
+    s.paused = false;
     const a = s.active;
     if (a) {
       for (const x of upTargets(a)) resolveTarget(a, x, classifyRunEnd(x), t, null);
@@ -266,6 +305,9 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       active: s.active,
       endedMs: s.endedMs,
       endReason: s.endReason,
+      paused: s.paused,
+      pauses: s.pauses,
+      pausedTotalMs: s.pausedTotalMs,
     };
   }
 
@@ -274,6 +316,8 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     press,
     pulse,
     note,
+    pause,
+    resume,
     stop: (reason = 'stopped') => end(reason),
     /** The live trial records (read them; do not modify). */
     trials: () => records,

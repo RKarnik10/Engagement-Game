@@ -94,13 +94,20 @@
           <div class="row"><label for="tr">TR, simulated (s)</label><input type="number" id="tr" name="tr" min="0.3" max="5" step="0.1" value="1"></div>
           <div class="row"><label for="seed">Schedule seed</label><input type="number" id="seed" name="seed" step="1" value="1234"></div>
           <p class="small muted" id="run-length"></p>
+          <fieldset>
+            <legend>Testing</legend>
+            <div class="opts">
+              <label><input type="checkbox" name="showResultsOnDisplay"> Also show results and downloads on the participant display after a run (testing only; leave off with real participants)</label>
+            </div>
+          </fieldset>
           <p class="small error-text" id="settings-error" hidden></p>
         </form>
         <div class="buttons">
           <button type="button" class="primary" id="start" disabled>Start run</button>
+          <button type="button" id="pause" disabled>Pause</button>
           <button type="button" id="stop" disabled>End run</button>
         </div>
-        <p class="small muted">Start here, or press <kbd>T</kbd> in the display tab, as the scanner's trigger would.</p>
+        <p class="small muted">Start here, or press <kbd>T</kbd> in the display tab, as the scanner's trigger would. In the display, <kbd>P</kbd> pauses and <kbd>Esc</kbd> ends the run. Pausing is for testing only: a scanner cannot pause, so a paused run is marked as not usable for scanning. When a run ends, for whatever reason, its results, trace, and downloads stay here until the next run starts.</p>
       </section>
       <section>
         <h2>Live measures</h2>
@@ -114,6 +121,7 @@
           <dt>Mean reaction time</dt><dd id="m-rt">–</dd>
           <dt>RT variability (SD ÷ mean)</dt><dd id="m-cv">–</dd>
           <dt>Display hidden during run</dt><dd id="m-hidden">–</dd>
+          <dt>Pauses</dt><dd id="m-pauses">–</dd>
         </dl>
       </section>
     </aside>

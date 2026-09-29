@@ -11,6 +11,11 @@ import {
   renderBoard, renderKeycaps, setTarget, setStimulus, rampVisibility, keysDescription,
 } from './render/board.js';
 import { moleSkin } from './render/skin-mole.js';
+import { drawTrace } from './render/trace.js';
+import { runSummaryText } from './summary.js';
+import {
+  buildRunCSV, buildEventsTSV, buildFullLogJSON, exportFilename, downloadText,
+} from './export.js';
 
 const SKINS = { mole: moleSkin };
 
@@ -22,8 +27,11 @@ const overlay = $('overlay');
 const ovTitle = $('ov-title');
 const ovBody = $('ov-body');
 const hint = $('hint');
+const results = $('results');
+const HINT_HTML = hint.innerHTML;
 
 let config = null;
+let finishedRun = null;
 
 function showOverlay(title, html) {
   ovTitle.textContent = title;
@@ -38,12 +46,19 @@ const view = {
     renderBoard(holesEl, c, skin);
     renderKeycaps(capsEl, c);
     showOverlay('Ready', `<p>${skin.instructions(keysDescription(c), c)}</p><p>Please wait for the task to start.</p>`);
+    results.hidden = true;
+    hint.innerHTML = HINT_HTML;
     hint.hidden = false;
   },
   running() {
     overlay.hidden = true;
+    results.hidden = true;
     hint.hidden = true;
     stage.focus({ preventScroll: true });
+  },
+  paused(on) {
+    if (on) showOverlay('Paused', '<p>Press <kbd>P</kbd> to continue, or <kbd>Esc</kbd> to end the run.</p>');
+    else overlay.hidden = true;
   },
   frame({ active, elapsedMs }) {
     if (!active || config.onset !== 'gradual') return;
@@ -58,9 +73,22 @@ const view = {
     setTarget(holesEl, hole, 0);
     setStimulus(holesEl, hole, '');
   },
-  ended() {
+  ended(reason, run) {
+    finishedRun = run;
+    if (run && run.config.showResultsOnDisplay) {
+      // Testing only: results and downloads on this screen as well.
+      overlay.hidden = true;
+      $('results-title').textContent = reason === 'completed' ? 'Run finished' : 'Run ended early';
+      $('results-summary').textContent = runSummaryText(run);
+      drawTrace($('chart-data'), run.config, run.trials.filter((t) => t.outcome));
+      results.hidden = false;
+      hint.hidden = true;
+      return;
+    }
     // DECIDED(Q6): no feedback, so no score or summary for the participant.
     showOverlay('Finished', '<p>Thank you. Please stay still; the experimenter will be with you shortly.</p>');
+    hint.textContent = 'Results, the reaction-time trace, and the downloads are in the experimenter console tab.';
+    hint.hidden = false;
   },
   error(message) {
     showOverlay('Settings problem', '');
@@ -100,7 +128,10 @@ document.addEventListener('keydown', (e) => {
     config, running,
   );
   if (!action) {
-    if (!running && (e.key === 'f' || e.key === 'F') && !e.metaKey && !e.ctrlKey) toggleFullscreen();
+    const plain = !e.metaKey && !e.ctrlKey && !e.altKey;
+    if (!running && (e.key === 'f' || e.key === 'F') && plain) toggleFullscreen();
+    // Testing only: P pauses and resumes. Presses are ignored while paused.
+    if (running && (e.key === 'p' || e.key === 'P') && plain && !e.repeat) session.togglePause();
     return;
   }
   if (action.preventDefault) e.preventDefault();
@@ -115,6 +146,18 @@ holesEl.addEventListener('pointerdown', (e) => {
   e.preventDefault();
   session.press(Number(h.dataset.btn), 'pointer');
 });
+
+/* ---------- downloads (testing results panel) ---------- */
+
+const KIND = { csv: 'run', tsv: 'events', json: 'log' };
+const MIME = { csv: 'text/csv', tsv: 'text/tab-separated-values', json: 'application/json' };
+const BUILD = { csv: (r) => buildRunCSV(r.trials), tsv: (r) => buildEventsTSV(r.trials), json: (r) => buildFullLogJSON(r) };
+for (const m of ['csv', 'tsv', 'json']) {
+  $(`dl-${m}`).addEventListener('click', () => {
+    if (!finishedRun) return;
+    downloadText(exportFilename(finishedRun.config, KIND[m], new Date(finishedRun.created)), BUILD[m](finishedRun), MIME[m]);
+  });
+}
 
 // Everything loaded: hide the "code has not loaded" warning.
 $('load-check').hidden = true;

@@ -27,8 +27,8 @@ const MOLE_DOWN = new Set(['hit', 'commission', 'omission', 'correct_rejection',
  * @param {object} opts
  * @param {BroadcastChannel} opts.channel
  * @param {string} opts.displayId
- * @param {object} [opts.view]   { idle(config), running(config), frame(info),
- *                                 moleUp(hole, stim), moleDown(hole), ended(reason), error(message) }
+ * @param {object} [opts.view]   { idle(config), running(config), frame(info), moleUp(hole, stim),
+ *                                 moleDown(hole), paused(isPaused), ended(reason, run), error(message) }
  * @param {() => number} [opts.clock]
  * @param {(fn: Function) => any} [opts.raf]
  * @param {(id: any) => void} [opts.caf]
@@ -39,7 +39,7 @@ export function createDisplaySession({
   channel, displayId, view = {}, clock, raf, caf, userAgent = 'unknown', now = () => new Date(),
 }) {
   const v = {
-    idle() {}, running() {}, frame() {}, moleUp() {}, moleDown() {}, ended() {}, error() {}, ...view,
+    idle() {}, running() {}, frame() {}, moleUp() {}, moleDown() {}, paused() {}, ended() {}, error() {}, ...view,
   };
   let config = resolveConfig({});
   let engine = null;
@@ -51,9 +51,10 @@ export function createDisplaySession({
   const post = (msg) => channel.postMessage({ from: displayId, ...msg });
   const isRunning = () => !!(engine && engine.getState().running);
   const phase = () => (engine ? engine.getState().phase : 'idle');
+  const isPaused = () => !!(engine && engine.getState().paused);
 
   function status() {
-    post({ type: MSG.STATUS, phase: phase(), runId, hasRun: !!lastRun, config });
+    post({ type: MSG.STATUS, phase: phase(), paused: isPaused(), runId, hasRun: !!lastRun, config });
   }
 
   function setConfig(raw) {
@@ -91,7 +92,7 @@ export function createDisplaySession({
       created: now().toISOString(),
     };
     post({ type: MSG.RUN, run: lastRun });
-    v.ended(reason);
+    v.ended(reason, lastRun);
     status();
   }
 
@@ -111,6 +112,17 @@ export function createDisplaySession({
     return null;
   }
 
+  /** Pause or resume (testing only). Returns true if anything changed. */
+  function setPaused(on) {
+    if (!isRunning()) return false;
+    const changed = on ? engine.pause() : engine.resume();
+    if (changed) {
+      v.paused(on);
+      status();
+    }
+    return changed;
+  }
+
   function onMessage(e) {
     const m = e.data;
     if (!m || typeof m !== 'object' || m.from !== CONSOLE_ID) return;
@@ -119,6 +131,8 @@ export function createDisplaySession({
       case MSG.CONFIG: setConfig(m.config); break;
       case MSG.START: if (!isRunning()) trigger('console'); break;
       case MSG.STOP: if (isRunning()) engine.stop('stopped'); break;
+      case MSG.PAUSE: setPaused(true); break;
+      case MSG.RESUME: setPaused(false); break;
       case MSG.HELLO:
         status();
         if (lastRun && !isRunning()) post({ type: MSG.RUN, run: lastRun });
@@ -137,6 +151,10 @@ export function createDisplaySession({
     press: (button, source) => (isRunning() ? engine.press(button, source) : null),
     pulse: (source) => (isRunning() ? engine.pulse(source) : null),
     stop: () => { if (isRunning()) engine.stop('stopped'); },
+    pause: () => setPaused(true),
+    resume: () => setPaused(false),
+    togglePause: () => setPaused(!isPaused()),
+    isPaused,
     /** Log the display tab being hidden or shown; hidden tabs stop drawing. */
     visibility: (hidden) => (isRunning() ? engine.note(hidden ? 'display_hidden' : 'display_visible') : null),
     setConfig,

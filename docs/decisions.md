@@ -46,6 +46,16 @@ Relayed by Rehaan Karnik from Dr. Song's written feedback.
 
 This resolves open points A, C, and E from September 21.
 
+## Testing tools, September 28, 2026
+
+Requested by Rehaan Karnik for testing. Neither changes what a participant sees in a real session.
+
+| Item | Decision | Where | Date |
+|------|----------|-------|------|
+| Pause | A run can be paused and resumed (console Pause button, or P in the display). The run clock stops, so the schedule resumes where it stopped. Pauses are logged (`pause`, `resume` with `paused_ms`) and the run summary says a paused run is not usable for scanning. | `pause()`/`resume()` in `src/engine.js`; `src/session.js`, `src/link.js` | 2026-09-28 |
+| Results after a run | However a run ends (time runs out, End run, Esc), the console keeps the summary, measures, trace, and downloads until the next run starts. | `src/main.js` | 2026-09-28 |
+| Results on the display | Optional, off by default: after a run, the display also shows the summary, trace, and downloads. Off because Q6 says the participant sees nothing. | `showResultsOnDisplay` in `src/config.js`; `src/display.js` | 2026-09-28 |
+
 ## Checklist against the September 21 feedback notes
 
 Every line of the feedback notes, and where it stands in the build.

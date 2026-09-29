@@ -25,9 +25,17 @@ for the experimenter, one for the participant.
 5. In the display, press **1**, **2**, or **3** for the *column* a happy mole
    comes out of. Do nothing for a sad mole. When both appear, press only for the
    happy one. **Esc** ends the run early.
-6. Watch the console: it mirrors the display and updates the measures. When the
-   run ends, its download buttons save the three data files to your usual
-   downloads folder.
+6. Watch the console: it mirrors the display and updates the measures.
+7. To pause, click **Pause** in the console or press **P** in the display; the
+   same again resumes. To stop early, click **End run** or press **Esc** in the
+   display (twice in full screen: the first Esc only leaves full screen).
+   Pausing is for testing only: a scanner cannot pause.
+8. However the run ends, the console keeps its results, the reaction-time
+   trace, and the three download buttons until the next run starts. Files go
+   to your usual downloads folder. For testing on one screen, tick **Testing:
+   also show results and downloads on the participant display** in the console
+   settings, and the display shows them too after each run. Leave it off with
+   real participants, who should see nothing (Q6).
 
 The run defaults to 600 trials, ten minutes. Lower "Number of trials" in the
 console to try a short one.

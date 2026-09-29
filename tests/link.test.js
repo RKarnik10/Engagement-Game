@@ -26,7 +26,7 @@ function openDisplay(name, id) {
   const channel = new BroadcastChannel(name);
   let now = 0;
   let pending = null;
-  const seen = { idle: [], ups: [], downs: [], ended: [], errors: [] };
+  const seen = { idle: [], ups: [], downs: [], ended: [], errors: [], paused: [] };
   const session = createDisplaySession({
     channel,
     displayId: id,
@@ -40,6 +40,7 @@ function openDisplay(name, id) {
       moleUp: (hole, stim) => seen.ups.push([hole, stim]),
       moleDown: (hole) => seen.downs.push(hole),
       ended: (reason) => seen.ended.push(reason),
+      paused: (on) => seen.paused.push(on),
       error: (m) => seen.errors.push(m),
     },
   });
@@ -235,3 +236,32 @@ test('link: a display that closes says goodbye', async () => {
   assert.equal(con.link.start(), false, 'nothing to start');
   disp.close(); con.close();
 });
+
+test('link: pause and resume from the console; the console sees the pause', async () => {
+  const name = channelName();
+  const con = openConsole(name);
+  const disp = openDisplay(name, 'display-A');
+  con.link.setConfig(small());
+  await waitFor(() => disp.session.config().nTrials === 30, 'settings');
+  assert.equal(con.link.pause(), true);
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(disp.session.isPaused(), false, 'nothing to pause before a run');
+  disp.session.trigger('key t');
+  disp.advance(2500);
+  con.link.pause();
+  await waitFor(() => disp.session.isPaused(), 'display to pause');
+  await waitFor(() => con.link.state().paused === true, 'console to see the pause');
+  assert.deepEqual(disp.seen.paused, [true]);
+  disp.advance(4000);
+  con.link.resume();
+  await waitFor(() => !disp.session.isPaused(), 'display to resume');
+  await waitFor(() => con.link.state().paused === false, 'console to see the resume');
+  assert.equal(disp.session.togglePause(), true, 'P in the display pauses too');
+  con.link.stop();
+  await waitFor(() => con.got.runs.length === 1, 'the run');
+  const ev = con.got.runs[0].events.map((e) => e.event);
+  assert.deepEqual(ev.filter((e) => e === 'pause' || e === 'resume'), ['pause', 'resume', 'pause']);
+  assert.equal(ev.at(-1), 'run_end', 'stopping while paused still ends the run cleanly');
+  disp.close(); con.close();
+});
+

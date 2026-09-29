@@ -13,7 +13,7 @@
  *
  * Messages carry `from` ("console" or a display id) and, for commands meant
  * for one display, `to`.
- *   console -> display: config, start, stop, hello
+ *   console -> display: config, start, stop, pause, resume, hello
  *   display -> console: status, event, run, error, bye
  */
 
@@ -24,6 +24,8 @@ export const MSG = Object.freeze({
   CONFIG: 'config',
   START: 'start',
   STOP: 'stop',
+  PAUSE: 'pause',
+  RESUME: 'resume',
   HELLO: 'hello',
   STATUS: 'status',
   EVENT: 'event',
@@ -60,6 +62,7 @@ export function createConsoleLink({ channel, onChange = () => {}, onEvent = () =
       displayCount: displays.size,
       current,
       phase: d ? d.phase : null,
+      paused: d ? d.paused : false,
       runId: d ? d.runId : null,
       config: d ? d.config : null,
     };
@@ -71,7 +74,7 @@ export function createConsoleLink({ channel, onChange = () => {}, onEvent = () =
     switch (m.type) {
       case MSG.STATUS: {
         const isNew = !displays.has(m.from);
-        displays.set(m.from, { phase: m.phase, runId: m.runId, hasRun: m.hasRun, config: m.config || null });
+        displays.set(m.from, { phase: m.phase, paused: !!m.paused, runId: m.runId, hasRun: m.hasRun, config: m.config || null });
         if (!current || isNew) current = m.from;
         // A display that just opened gets the current settings.
         if (isNew && config && m.phase !== 'running') post({ type: MSG.CONFIG, to: m.from, config });
@@ -113,6 +116,17 @@ export function createConsoleLink({ channel, onChange = () => {}, onEvent = () =
     stop() {
       if (!current) return false;
       post({ type: MSG.STOP, to: current });
+      return true;
+    },
+    /** Pause or resume the run on the connected display (testing only). */
+    pause() {
+      if (!current) return false;
+      post({ type: MSG.PAUSE, to: current });
+      return true;
+    },
+    resume() {
+      if (!current) return false;
+      post({ type: MSG.RESUME, to: current });
       return true;
     },
     /** Ask every display to report in, and to resend its last finished run. */

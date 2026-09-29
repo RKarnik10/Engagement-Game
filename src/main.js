@@ -14,7 +14,8 @@ import {
 } from './export.js';
 import { renderBoard, renderKeycaps, setTarget, setStimulus } from './render/board.js';
 import { moleSkin } from './render/skin-mole.js';
-import { drawTrace, moveCursor, mean, sdev } from './render/trace.js';
+import { drawTrace, moveCursor } from './render/trace.js';
+import { summarize, eventCounts, runSummaryText } from './summary.js';
 
 const SKINS = { mole: moleSkin };
 
@@ -26,6 +27,7 @@ const overlay = $('overlay');
 const ovTitle = $('ov-title');
 const ovBody = $('ov-body');
 const startBtn = $('start');
+const pauseBtn = $('pause');
 const stopBtn = $('stop');
 const logEl = $('log');
 const exportBox = $('export');
@@ -41,13 +43,13 @@ const LABEL = {
   commission: 'Pressed bad mole', correct_rejection: 'Left bad mole', wrong_hole: 'Wrong column',
   no_target_press: 'Press, no mole', truncated: 'Cut off', run_end: 'Run end',
   display_hidden: 'DISPLAY HIDDEN', display_visible: 'Display visible again',
+  pause: 'Paused (testing)', resume: 'Resumed',
 };
 const MOLE_DOWN = new Set(['hit', 'commission', 'omission', 'correct_rejection', 'truncated']);
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 let config = null;          // settings from the form (null while invalid)
-let live = null;            // { config, trials: Map, counts, hidden, runId }
-let finished = null;        // { run, created, exports }
+let shown = null;           // the run on screen, live or finished (see beginRun)
 let exportMode = 'csv';
 
 /* ---------- link to the participant display ---------- */
@@ -64,21 +66,29 @@ function renderLinkState(st) {
   const running = st.phase === 'running';
   if (!st.connected) linkStatus.textContent = 'Participant display: not open.';
   else if (st.displayCount > 1) linkStatus.textContent = `Warning: ${st.displayCount} participant displays are open. Close all but one.`;
-  else linkStatus.textContent = `Participant display: connected, ${running ? 'running' : st.phase === 'ended' ? 'run finished' : 'ready'}.`;
+  else linkStatus.textContent = `Participant display: connected, ${running ? (st.paused ? 'paused' : 'running') : st.phase === 'ended' ? 'run finished' : 'ready'}.`;
   linkStatus.classList.toggle('warn', st.displayCount > 1);
   startBtn.disabled = !st.connected || running || !config;
   stopBtn.disabled = !running;
+  pauseBtn.disabled = !running;
+  pauseBtn.textContent = running && st.paused ? 'Resume' : 'Pause';
+  if (running && shown && !shown.finished) {
+    // The mirror shows the pause the way the display does.
+    overlay.hidden = !st.paused;
+    if (st.paused) { ovTitle.textContent = 'Paused'; ovBody.innerHTML = '<p>The run clock is stopped.</p>'; }
+  }
   setFormDisabled(running);
   // Setup steps until a display connects; the mirror after.
   $('connect-card').hidden = st.connected;
   for (const id of ['mirror-title', 'stage', 'mirror-caption']) $(id).hidden = !st.connected;
-  if (!running && !live) mirrorIdle(st);
+  if (!running) mirrorIdle(st);
 }
 
 // "Open participant display" is a plain link (index.html), so it opens the
 // display tab even if this script failed to load.
 startBtn.addEventListener('click', () => link.start());
 stopBtn.addEventListener('click', () => link.stop());
+pauseBtn.addEventListener('click', () => (link.state().paused ? link.resume() : link.pause()));
 
 /* ---------- settings ---------- */
 
@@ -98,6 +108,7 @@ function readConfig() {
     holdMs: Math.round(clamp(num('holdMs', 800), 200, 3500)),
     trS: clamp(num('tr', 1), 0.3, 5),
     seed: Math.trunc(num('seed', 1234)),
+    showResultsOnDisplay: f.get('showResultsOnDisplay') === 'on',
   });
 }
 
@@ -125,7 +136,7 @@ function syncSettings() {
   $('run-length').textContent =
     `Run length ${(runDurationMs(config) / 60000).toFixed(1)} minutes (${config.nTrials} trials every ` +
     `${config.trialMs} ms, plus a ${config.firstOnsetMs} ms lead-in). ${LAYOUTS[config.layout].label}.`;
-  if (!live) mirrorIdle(link.state());
+  if (!(shown && !shown.finished)) mirrorIdle(link.state());
   link.setConfig(config);
   renderLinkState(link.state());
 }
@@ -152,16 +163,21 @@ function mirrorIdle(st) {
   overlay.hidden = false;
 }
 
-/* ---------- live run ---------- */
+/* ---------- the run on screen ----------
+   `shown` is the run whose results are on this page: live while it runs,
+   then the finished copy from the display. It stays until a new run starts,
+   however the last one ended (time ran out, End run, or Esc). */
 
-function beginLive(runId) {
+function freshRun(runId, runConfig) {
+  return {
+    runId, config: runConfig, trials: new Map(), events: [], finished: false, created: null, exports: null,
+  };
+}
+
+function beginRun(runId) {
   // Prefer the settings the display is actually running with.
   const runConfig = link.state().config || config;
-  live = {
-    config: runConfig, runId, trials: new Map(), hidden: 0,
-    counts: { wrong_hole: 0, no_target_press: 0 },
-  };
-  finished = null;
+  shown = freshRun(runId, runConfig);
   renderBoard(holesEl, runConfig, SKINS[runConfig.skin] || moleSkin);
   renderKeycaps(capsEl, runConfig);
   overlay.hidden = true;
@@ -176,7 +192,10 @@ function beginLive(runId) {
 }
 
 function onEvent(record, trial, runId) {
-  if (record.event === 'trigger' || !live || live.runId !== runId) beginLive(runId);
+  // A different run: start fresh. Stray messages for a run already finished are ignored.
+  if (!shown || shown.runId !== runId) beginRun(runId);
+  if (shown.finished) return;
+  shown.events.push(record);
   const ev = record.event;
   if (ev === 'target_on') {
     setStimulus(holesEl, record.hole - 1, record.stim);
@@ -185,18 +204,12 @@ function onEvent(record, trial, runId) {
     setTarget(holesEl, record.hole - 1, 0);
     setStimulus(holesEl, record.hole - 1, '');
   } else if (ev === 'trial_end') {
-    live.trials.set(trial.trial, trial);
-    updateMeasures();
+    shown.trials.set(trial.trial, trial);
     redrawTrace();
-  } else if (ev === 'wrong_hole' || ev === 'no_target_press') {
-    live.counts[ev]++;
-    updateMeasures();
-  } else if (ev === 'display_hidden') {
-    live.hidden++;
-    updateMeasures();
   }
+  updateMeasures();
   if (ev === 'volume' && record.simulated) {
-    moveCursor(cursorEl, record.t_ms, live.config.durationS);
+    moveCursor(cursorEl, record.t_ms, shown.config.durationS);
     return;
   }
   if (ev !== 'trial_end') appendLogRow(record);
@@ -204,81 +217,53 @@ function onEvent(record, trial, runId) {
 
 function onRun(run) {
   // The authoritative copy of the run: rebuild everything from it.
-  const created = new Date(run.created);
-  live = {
-    config: run.config, runId: run.runId, trials: new Map(run.trials.filter((t) => t.outcome).map((t) => [t.trial, t])),
-    hidden: run.events.filter((e) => e.event === 'display_hidden').length,
-    counts: {
-      wrong_hole: run.events.filter((e) => e.event === 'wrong_hole').length,
-      no_target_press: run.events.filter((e) => e.event === 'no_target_press').length,
-    },
+  if (!shown || shown.runId !== run.runId) {
+    beginRun(run.runId);          // e.g. this console was reloaded after the run
+    for (const e of run.events) if (!(e.event === 'volume' && e.simulated) && e.event !== 'trial_end') appendLogRow(e);
+  }
+  shown.config = run.config;
+  shown.trials = new Map(run.trials.filter((t) => t.outcome).map((t) => [t.trial, t]));
+  shown.events = run.events;
+  shown.finished = true;
+  shown.created = new Date(run.created);
+  shown.exports = {
+    csv: buildRunCSV(run.trials),
+    tsv: buildEventsTSV(run.trials),
+    json: buildFullLogJSON(run),
   };
-  finished = {
-    run,
-    created,
-    exports: {
-      csv: buildRunCSV(run.trials),
-      tsv: buildEventsTSV(run.trials),
-      json: buildFullLogJSON(run),
-    },
-  };
-  const end = run.events.at(-1);
-  const s = summarize([...live.trials.values()]);
-  $('run-summary').textContent =
-    `Last run ${end && end.reason === 'completed' ? 'finished' : 'ended early'} at ${created.toLocaleTimeString()}: ` +
-    `${s.hits} of ${s.goodShown} good moles hit, ${s.com} of ${s.badShown} bad moles pressed` +
-    (s.rts.length ? `, mean reaction time ${Math.round(s.m)} ms.` : '.') +
-    (live.hidden ? ` Warning: the display was hidden ${live.hidden} time(s); timing in those stretches is not valid.` : '');
+  shown.run = run;
+  $('run-summary').textContent = `${runSummaryText(run)} (${shown.created.toLocaleTimeString()})`;
   updateMeasures();
   redrawTrace();
+  const end = run.events.at(-1);
   if (end) moveCursor(cursorEl, end.t_ms, run.config.durationS);
   showExport();
   for (const id of ['dl-csv', 'dl-tsv', 'dl-json', 'copy']) $(id).disabled = false;
-  live = null;   // idle again; the finished run stays downloadable
   mirrorIdle({ ...link.state(), phase: 'ended' });
 }
 
 /* ---------- measures ---------- */
 
-function summarize(trials) {
-  const moles = trials.flatMap((t) => t.targets).filter((x) => x.outcome && x.outcome !== 'truncated');
-  const good = moles.filter((x) => x.valence === 'good');
-  const bad = moles.filter((x) => x.valence === 'bad');
-  const both = trials.filter((t) => t.type === 'both' && t.correct != null);
-  const rts = trials.map((t) => t.goodRtMs).filter((r) => r != null);
-  return {
-    hits: good.filter((x) => x.outcome === 'hit').length,
-    goodShown: good.length,
-    com: bad.filter((x) => x.outcome === 'commission').length,
-    badShown: bad.length,
-    bothRight: both.filter((t) => t.correct === 1).length,
-    bothShown: both.length,
-    rts, m: mean(rts), s: sdev(rts),
-  };
-}
-
 function updateMeasures() {
-  const src = live || (finished ? { trials: new Map(finished.run.trials.map((t) => [t.trial, t])), counts: {}, hidden: 0 } : null);
-  if (!src) return;
-  const s = summarize([...src.trials.values()].filter((t) => t.outcome));
+  if (!shown) return;
+  const s = summarize([...shown.trials.values()]);
+  const c = eventCounts(shown.events);
   const pct = (a, b) => (b ? `${Math.round((100 * a) / b)}%` : '–');
   $('m-hit').textContent = `${s.hits} / ${s.goodShown}`;
   $('m-hitrate').textContent = pct(s.hits, s.goodShown);
   $('m-com').textContent = `${s.com} / ${s.badShown}`;
   $('m-both').textContent = `${s.bothRight} / ${s.bothShown}`;
-  if (live) {
-    $('m-wrong').textContent = live.counts.wrong_hole;
-    $('m-early').textContent = live.counts.no_target_press;
-    $('m-hidden').textContent = live.hidden ? `${live.hidden} time(s)` : 'no';
-  }
-  $('m-rt').textContent = s.rts.length ? `${Math.round(s.m)} ms` : '–';
-  $('m-cv').textContent = s.rts.length > 1 ? (s.s / s.m).toFixed(2) : '–';
+  $('m-wrong').textContent = c.wrongColumn;
+  $('m-early').textContent = c.noMole;
+  $('m-hidden').textContent = c.hidden ? `${c.hidden} time(s)` : 'no';
+  $('m-pauses').textContent = c.pauses ? `${c.pauses} (${(c.pausedMs / 1000).toFixed(1)} s)` : 'none';
+  $('m-rt').textContent = s.rts.length ? `${Math.round(s.meanRt)} ms` : '–';
+  $('m-cv').textContent = s.rts.length > 1 ? s.cv.toFixed(2) : '–';
 }
 
 function redrawTrace() {
-  const src = live || null;
-  if (!src) return;
-  drawTrace(chartData, src.config, [...src.trials.values()].sort((a, b) => a.trial - b.trial));
+  if (!shown) return;
+  drawTrace(chartData, shown.config, [...shown.trials.values()].sort((a, b) => a.trial - b.trial));
 }
 
 function appendLogRow(record) {
@@ -308,8 +293,8 @@ function appendLogRow(record) {
 /* ---------- exports ---------- */
 
 function showExport() {
-  if (!finished) return;
-  exportBox.value = finished.exports[exportMode];
+  if (!shown || !shown.exports) return;
+  exportBox.value = shown.exports[exportMode];
   for (const m of ['csv', 'tsv', 'json']) $(`fmt-${m}`).setAttribute('aria-pressed', String(exportMode === m));
 }
 
@@ -320,8 +305,8 @@ const MIME = { csv: 'text/csv', tsv: 'text/tab-separated-values', json: 'applica
 const KIND = { csv: 'run', tsv: 'events', json: 'log' };
 for (const m of ['csv', 'tsv', 'json']) {
   $(`dl-${m}`).addEventListener('click', () => {
-    if (!finished) return;
-    downloadText(exportFilename(finished.run.config, KIND[m], finished.created), finished.exports[m], MIME[m]);
+    if (!shown || !shown.exports) return;
+    downloadText(exportFilename(shown.run.config, KIND[m], shown.created), shown.exports[m], MIME[m]);
   });
 }
 copyBtn.addEventListener('click', async () => {
