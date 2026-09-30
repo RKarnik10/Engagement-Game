@@ -4,3 +4,6 @@ node_modules/
 # Local run exports (keep data out of the repo)
 exports/
 notes.md
+# Lab gradCPT code kept here for context only; separate project, not published
+experiment/
+experiment.zip
