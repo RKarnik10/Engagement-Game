@@ -10,6 +10,10 @@ One thing to expect: **the screen never reacts to a button press.** There is no 
 
 ## Try it
 
+**Quickest:** open https://rkarnik10.github.io/Engagement-Game/ (once publishing is switched on). Nothing to install. For a single-screen version, see [for-labmates.md](for-labmates.md).
+
+**On your own computer:**
+
 The current build lives in the `src/` folder and uses two browser tabs: one
 for the experimenter, one for the participant.
 

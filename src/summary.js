@@ -62,6 +62,8 @@ export function runSummaryText(run) {
       + ` ${s.bothRight} of ${s.bothShown} happy + distractor trials fully right.`,
   ];
   if (s.rts.length) parts.push(`Mean reaction time ${Math.round(s.meanRt)} ms${s.rts.length > 1 ? `, variability (SD ÷ mean) ${s.cv.toFixed(2)}` : ''}.`);
+  const variant = run.config.feedbackVariant;
+  if (variant && variant !== 'none') parts.push(`Feedback shown to the player: ${variant}.`);
   if (c.pauses) parts.push(`Paused ${c.pauses} time(s), ${(c.pausedMs / 1000).toFixed(1)} s in total: fine for testing, not usable for scanning.`);
   if (c.hidden) parts.push(`Warning: the display was hidden ${c.hidden} time(s); timing in those stretches is not valid.`);
   return parts.join(' ');

@@ -5,11 +5,11 @@ The open questions in section 2 now carry her answers. Values still marked *(pla
 
 **Author:** Rehaan Karnik (undergraduate RA). Drafted with AI assistance; references were pulled from search and are listed in section 10 with notes on what was and was not verified.
 
-**Build status (September 25, 2026):** Phases 0 and 1 of section 7 are done, and `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, and no on-screen feedback. Each trial shows a good (happy) mole to press, a bad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console. 84 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
+**Build status (September 25, 2026):** Phases 0 and 1 of section 7 are done, and `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, and no on-screen feedback. Each trial shows a good (happy) mole to press, a bad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console. 94 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
 
 **Contributors and AI disclosure:** see [section 12](#12-contributors-and-ai-disclosure). Code and documentation in this repository were written by an AI assistant under the author's direction, as recorded there.
 
-**Companion documents:** [examples/](examples/) (a full 600-trial example run and what to look for in it), [research-notes.md](research-notes.md) (the reading behind sections 8 and 10), [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [docs/decisions.md](docs/decisions.md) (where answers to the open questions are recorded).
+**Companion documents:** [docs/for-labmates.md](docs/for-labmates.md) (for labmates testing the game; no coding), [examples/](examples/) (a full 600-trial example run and what to look for in it), [research-notes.md](research-notes.md) (the reading behind sections 8 and 10), [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [docs/decisions.md](docs/decisions.md) (where answers to the open questions are recorded).
 
 ---
 
@@ -27,7 +27,7 @@ The game records:
 
 Attention and engagement measures are computed from those logs offline (section 5).
 
-**Live prototype:** https://rkarnik10.github.io/Engagement-Game/ (served by GitHub Pages from `index.html` at the repo root).
+**Published game:** https://rkarnik10.github.io/Engagement-Game/ (the experimenter console; labmate links point to `display.html` under it). It is rebuilt from `src/` by `.github/workflows/pages.yml` on every push to `main`, once the tests pass. The original v0.1 prototype is kept at https://rkarnik10.github.io/Engagement-Game/prototype/ . Publishing needs a one-time switch by the repository owner: **Settings > Pages > Source: GitHub Actions**. Labmates: see [docs/for-labmates.md](docs/for-labmates.md).
 
 `index.html` is the v0.1 prototype: one self-contained HTML file with no dependencies. It implements sections 3 and 4.5 of this document with placeholder parameters. The modular build described in sections 6 and 7 will live in `src/` and should not replace `index.html` until it matches the prototype's behavior.
 
@@ -255,6 +255,8 @@ Engagement-Game/
 ├── examples/               # a full 600-trial example run, generated without a browser
 │   ├── simulate-run.mjs
 │   └── example_run.csv, example_events.tsv, example_log.json
+├── .github/workflows/
+│   └── pages.yml           # test, then publish src/ to GitHub Pages on every push to main
 ├── package.json            # {"type": "module"}, test and serve scripts, no dependencies
 ├── scripts/
 │   └── serve.mjs           # `npm run serve`: local server for src/ that disables caching
@@ -267,6 +269,7 @@ Engagement-Game/
 │   ├── link.js             # console <-> display messages (BroadcastChannel)
 │   ├── session.js          # runs the game inside the display tab
 │   ├── summary.js          # PURE: run summary shown after a run (console and display)
+│   ├── query.js            # PURE: settings <-> web address, for labmate links
 │   ├── config.js           # defaults, validation, presets ("desktop-pilot", "scanner")
 │   ├── rng.js              # seeded PRNG (mulberry32)
 │   ├── schedule.js         # PURE: (config) -> trial list. No DOM.
@@ -279,6 +282,7 @@ Engagement-Game/
 │       ├── board.js        # hole layout shared by all skins
 │       ├── trace.js        # attention-trace chart, experimenter view only
 │       ├── skin-mole.js    # happy mole, sad mole, molerat
+│       ├── sound.js        # good/bad feedback sounds (piloting only)
 │       └── skin-neutral.js # not built
 ├── tests/
 │   ├── schedule.test.js
@@ -287,6 +291,9 @@ Engagement-Game/
 │   ├── export.test.js
 │   ├── link.test.js        # console and display over a real BroadcastChannel
 │   ├── pause.test.js       # pausing, ending early, and the run summary
+│   ├── variants.test.js    # feedback variants and labmate links
+│   ├── pages.test.js       # both pages, each in its own worker, under a fake page
+│   └── pages/              # the fake page and the per-page scripts for pages.test.js
 │   ├── input.test.js
 │   ├── config.test.js
 │   └── _sim.js             # fake-clock helper for the engine tests
@@ -363,6 +370,8 @@ The experimenter console (`index.html`) and the participant display (`display.ht
 - The display must stay visible for the whole run. Drag its tab out into its own window on the participant's screen. If it is hidden anyway, the gap is logged as `display_hidden`.
 - The display keeps its last run. A console that is reloaded asks for it again, so data is not lost.
 - If two displays are open, the console warns and sends Start only to the newest.
+- **Feedback variants for piloting** (October 11, 2026). Four switches in the console, all off by default because of Q6: a score (happy moles hit), rings (white on a hit, red on a distractor pressed), sound (good on a hit, bad on any wrong press), and a hammer that swings onto a pressed mole. They never change the schedule. Each run records its variant (`feedback_variant` in the log, and in the file names, e.g. `_score_`). Sound and hammer turn up the "violence dial" that section 8 kept low, so they are for piloting only. Sound is synthesised with the Web Audio API and needs one key press or click in the display first.
+- **Labmate links.** Settings can travel in the display's web address (`display.html?trials=60&score=1&results=1`; `src/query.js`). A display opened from such a link runs on its own: the tester presses T and sees the results and downloads at the end. The console builds the link for its current settings under "Link for labmates".
 - The participant display shows no results by default (Q6). For testing, the console's "Testing" option also shows the results, the reaction-time trace, and the downloads on the display after a run (`showResultsOnDisplay`).
 - BroadcastChannel is supported in all current major browsers (Safari since 15.4, 2022). Full screen uses `requestFullscreen`, with the `webkit` prefix for Safari before 16.4.
 
@@ -493,7 +502,8 @@ around this repository without reading code),
   console, so the participant never sees settings or data.
 - A ten-minute example run, played by a simulated participant through the real
   engine, is in [examples/](examples/) as all three output files.
-- 84 automated tests pass (`npm test`).
+- 94 automated tests pass (`npm test`).
+- Feedback variants for piloting (score, rings, sound, hammer) and one-click links for labmates; the game publishes itself to GitHub Pages once Pages is switched on.
 
 ### 11.2 Still open
 
@@ -533,7 +543,7 @@ This is research software that may be used with human participants, so how it wa
 | Contributor | Role |
 |---|---|
 | Rehaan Karnik (undergraduate RA, Song Lab) | Human author. Defined the task, wrote the blueprint (sections 1 to 10) and `research-notes.md` with AI assistance, directed and reviewed the AI-written work, and is responsible for this repository. |
-| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. Also checked that the exported files load in pandas. |
+| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. On October 11, 2026 (model Claude Opus 5.5), added the four feedback variants for piloting (`sound.js`, ring and hammer drawing in `board.js`), labmate links (`query.js`), the GitHub Pages workflow (`.github/workflows/pages.yml`), `docs/for-labmates.md`, and page-level tests (`tests/pages.test.js`, `tests/pages/`). Also checked that the exported files load in pandas. |
 
 **What the AI did not do.** It did not run the game in a real browser (the pages were exercised under a simulated page in Node, and the drawings were checked as rendered images), did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
 

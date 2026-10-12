@@ -184,3 +184,27 @@ a.button.primary{background:var(--signal);border-color:var(--signal);color:var(-
 .results h2{margin-top:0}
 .results .chart-wrap{margin:10px 0}
 .results-legend{color:var(--muted)}
+
+/* ---- Feedback variants for piloting (all off by default, Q6) ---- */
+/* Ring around a hole: white for a hit, red for a distractor pressed. */
+.fx{fill:none;stroke:transparent;stroke-width:5}
+.hole.fx-hit .fx{stroke:#F2F2F2}
+.hole.fx-com .fx{stroke:#C0392B}
+/* Hammer: hidden until it swings down from above, pivoting on its handle end. */
+.hammer{opacity:0;transform-box:view-box;transform-origin:116px 8px;transform:rotate(50deg);pointer-events:none}
+.hole.swing .hammer{animation:hammer-swing 280ms ease-in forwards}
+@keyframes hammer-swing{
+  0%{opacity:1;transform:rotate(50deg)}
+  40%{opacity:1;transform:rotate(0deg)}
+  80%{opacity:1;transform:rotate(0deg)}
+  100%{opacity:0;transform:rotate(0deg)}
+}
+/* Score, top left of the participant display. */
+.display-score{position:absolute;top:2%;left:3%;font-size:clamp(1.2rem,3.2vh,2.2rem);font-weight:700;color:#1C1C1C;font-variant-numeric:tabular-nums;pointer-events:none}
+
+/* Link for labmates (console). */
+.share{margin:16px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
+.share h3{margin:0 0 4px;font-size:.95rem}
+.share-row{display:flex;gap:6px;flex-wrap:wrap}
+.share-row input{flex:1 1 12rem;min-width:0;font:inherit;font-size:.82rem;padding:6px 8px;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink)}
+.share-row button,.share-row a.button{padding:6px 11px;font-size:.88rem}

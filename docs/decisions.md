@@ -56,6 +56,17 @@ Requested by Rehaan Karnik for testing. Neither changes what a participant sees 
 | Results after a run | However a run ends (time runs out, End run, Esc), the console keeps the summary, measures, trace, and downloads until the next run starts. | `src/main.js` | 2026-09-28 |
 | Results on the display | Optional, off by default: after a run, the display also shows the summary, trace, and downloads. Off because Q6 says the participant sees nothing. | `showResultsOnDisplay` in `src/config.js`; `src/display.js` | 2026-09-28 |
 
+## Piloting variants and publishing, October 11, 2026
+
+Requested by Rehaan Karnik. The defaults still follow Q6 (no feedback).
+
+| Item | Decision | Where | Date |
+|------|----------|-------|------|
+| Feedback variants | Four switches for piloting, all off by default: score (happy moles hit; a pressed distractor no longer subtracts), rings (white hit, red distractor), sound (good hit, bad wrong press), hammer. Each run records its variant. To compare with labmates which feedback keeps people engaged. | `showScore`, `hitRings`, `sound`, `hammer` in `src/config.js`; `src/display.js`, `src/render/board.js`, `src/render/sound.js` | 2026-10-11 |
+| Sound and hammer vs. README section 8 | Section 8 kept the "violence dial" low (no hammer, no impact, no sound). These variants turn it up and are for piloting only; whether any feedback stays is still Dr. Song's call (Q6). | README 6.4 | 2026-10-11 |
+| Publishing | The game is published to GitHub Pages from `src/` by a GitHub Actions workflow, after the tests pass. The v0.1 prototype moves to `/prototype/`; the `index.html` file itself is unchanged. Needs the owner to set Settings > Pages > Source: GitHub Actions once. | `.github/workflows/pages.yml` | 2026-10-11 |
+| Labmate links | A display link carries its settings and runs alone, with results at the end. | `src/query.js`; "Link for labmates" in the console | 2026-10-11 |
+
 ## Checklist against the September 21 feedback notes
 
 Every line of the feedback notes, and where it stands in the build.

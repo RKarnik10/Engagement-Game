@@ -148,6 +148,7 @@ export function buildFullLog({ config, trials, events, frameStats, userAgent, cr
       created,
       setting: config.setting,
       in_scanner: config.setting === 'scanner' ? 1 : 0,
+      feedback_variant: config.feedbackVariant || 'none',
       trial_mix: { good: config.goodShare, bad: config.badShare, both: config.bothShare },
       good_stimulus: 'mole_happy',
       bad_stimulus: config.badStim,
@@ -181,7 +182,8 @@ export function exportStamp(date = new Date()) {
 export function exportFilename(config, kind, date = new Date()) {
   const ext = { run: 'run.csv', events: 'events.tsv', log: 'log.json' }[kind];
   if (!ext) throw new Error(`export: unknown file kind "${kind}"`);
-  return `engagement-game_${exportStamp(date)}_${config.setting}_seed${config.seed}_${ext}`;
+  const variant = config.feedbackVariant && config.feedbackVariant !== 'none' ? `_${config.feedbackVariant}` : '';
+  return `engagement-game_${exportStamp(date)}_${config.setting}_seed${config.seed}${variant}_${ext}`;
 }
 
 /** Download text as a file via a Blob URL and a temporary <a download>. */

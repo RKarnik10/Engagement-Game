@@ -8,8 +8,10 @@ import { CHANNEL, newDisplayId } from './link.js';
 import { createDisplaySession } from './session.js';
 import { interpretKey } from './input.js';
 import {
-  renderBoard, renderKeycaps, setTarget, setStimulus, rampVisibility, keysDescription,
+  renderBoard, renderKeycaps, setTarget, setStimulus, rampVisibility, keysDescription, flashRing, swingHammer,
 } from './render/board.js';
+import { createSounds } from './render/sound.js';
+import { configFromQuery, hasQuerySettings } from './query.js';
 import { moleSkin } from './render/skin-mole.js';
 import { drawTrace } from './render/trace.js';
 import { runSummaryText } from './summary.js';
@@ -28,10 +30,21 @@ const ovTitle = $('ov-title');
 const ovBody = $('ov-body');
 const hint = $('hint');
 const results = $('results');
+const scoreEl = $('score');
 const HINT_HTML = hint.innerHTML;
+const sounds = createSounds();
+// Opened from a shared link (display.html?...): the settings come from the
+// link and the tester starts the run with T, with no console needed.
+const standalone = hasQuerySettings(location.search);
 
 let config = null;
 let finishedRun = null;
+let hits = 0;
+
+function showScore() {
+  scoreEl.textContent = `Score ${hits}`;
+  scoreEl.hidden = !config.showScore;
+}
 
 function showOverlay(title, html) {
   ovTitle.textContent = title;
@@ -45,12 +58,18 @@ const view = {
     const skin = SKINS[c.skin] || moleSkin;
     renderBoard(holesEl, c, skin);
     renderKeycaps(capsEl, c);
-    showOverlay('Ready', `<p>${skin.instructions(keysDescription(c), c)}</p><p>Please wait for the task to start.</p>`);
+    const start = standalone
+      ? '<p>Click this page once, then press <kbd>T</kbd> to start. <kbd>P</kbd> pauses, <kbd>Esc</kbd> ends the run.</p>'
+      : '<p>Please wait for the task to start.</p>';
+    showOverlay('Ready', `<p>${skin.instructions(keysDescription(c), c)}</p>${start}`);
+    scoreEl.hidden = true;
     results.hidden = true;
     hint.innerHTML = HINT_HTML;
     hint.hidden = false;
   },
   running() {
+    hits = 0;
+    showScore();
     overlay.hidden = true;
     results.hidden = true;
     hint.hidden = true;
@@ -68,6 +87,15 @@ const view = {
   moleUp(hole, stim) {
     setStimulus(holesEl, hole, stim);
     setTarget(holesEl, hole, config.onset === 'gradual' ? 0 : 1);
+  },
+  /** Feedback variants for piloting; each is off unless its setting is on. */
+  feedback(record) {
+    const ev = record.event;
+    if (ev === 'hit') { hits++; showScore(); }
+    const onMole = ev === 'hit' || ev === 'commission';
+    if (config.hitRings && onMole) flashRing(holesEl, record.hole - 1, ev);
+    if (config.hammer && onMole) swingHammer(holesEl, record.hole - 1);
+    if (config.sound) sounds.play(ev === 'hit' ? 'good' : 'bad');
   },
   moleDown(hole) {
     setTarget(holesEl, hole, 0);
@@ -122,6 +150,8 @@ function toggleFullscreen() {
 /* ---------- input ---------- */
 
 document.addEventListener('keydown', (e) => {
+  // Browsers allow sound only after a key press or click in the page.
+  if (config && config.sound) sounds.unlock();
   const running = session.isRunning();
   const action = interpretKey(
     { key: e.key, repeat: e.repeat, metaKey: e.metaKey, ctrlKey: e.ctrlKey, altKey: e.altKey, typing: false },
@@ -141,6 +171,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 holesEl.addEventListener('pointerdown', (e) => {
+  if (config && config.sound) sounds.unlock();
   const h = e.target.closest('.hole');
   if (!h || !session.isRunning()) return;
   e.preventDefault();
@@ -158,6 +189,9 @@ for (const m of ['csv', 'tsv', 'json']) {
     downloadText(exportFilename(finishedRun.config, KIND[m], new Date(finishedRun.created)), BUILD[m](finishedRun), MIME[m]);
   });
 }
+
+// Settings from a shared link. A console that connects later can still change them.
+if (standalone) session.setConfig(configFromQuery(location.search));
 
 // Everything loaded: hide the "code has not loaded" warning.
 $('load-check').hidden = true;

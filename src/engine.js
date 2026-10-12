@@ -27,10 +27,11 @@ const round1 = (x) => +x.toFixed(1);
 export const SLOW_FRAME_MS = 20;
 
 /**
- * Score deltas, kept for piloting only. DECIDED(Q6): the participant is
- * shown nothing, so this never reaches the screen unless showScore is on.
+ * The score is the number of happy moles hit (Rehaan Karnik, October 11,
+ * 2026). It reaches the screen only when showScore is on; DECIDED(Q6) keeps
+ * it off for real participants.
  */
-const SCORE_DELTA = Object.freeze({ [OUTCOME.HIT]: 1, [OUTCOME.COMMISSION]: -1 });
+const SCORE_DELTA = Object.freeze({ [OUTCOME.HIT]: 1 });
 
 export function createEngine({ config, trials, logger, clock, raf, caf, onFrame, onEvent }) {
   if (!config || !Array.isArray(trials) || !logger) {

@@ -95,6 +95,16 @@
           <div class="row"><label for="seed">Schedule seed</label><input type="number" id="seed" name="seed" step="1" value="1234"></div>
           <p class="small muted" id="run-length"></p>
           <fieldset>
+            <legend>Feedback to the player (piloting)</legend>
+            <div class="opts">
+              <label><input type="checkbox" name="showScore"> Score: how many happy moles were hit</label>
+              <label><input type="checkbox" name="hitRings"> Rings: white on a hit, red on a distractor</label>
+              <label><input type="checkbox" name="sound"> Sound: good on a hit, bad on a wrong press</label>
+              <label><input type="checkbox" name="hammer"> Hammer swings onto a pressed mole</label>
+            </div>
+            <p class="small muted">All off is Dr. Song's design (no feedback). Each run records which were on, and the file names include it, for example <code>_score_</code>. Sound needs one key press or click in the display tab first; browsers block sound until then.</p>
+          </fieldset>
+          <fieldset>
             <legend>Testing</legend>
             <div class="opts">
               <label><input type="checkbox" name="showResultsOnDisplay"> Also show results and downloads on the participant display after a run (testing only; leave off with real participants)</label>
@@ -106,6 +116,16 @@
           <button type="button" class="primary" id="start" disabled>Start run</button>
           <button type="button" id="pause" disabled>Pause</button>
           <button type="button" id="stop" disabled>End run</button>
+        </div>
+        <div class="share" id="share">
+          <h3>Link for labmates</h3>
+          <p class="small muted">One link with these settings. It opens the game on its own, on one screen: they click the page, press <kbd>T</kbd>, and get the results and downloads at the end. No console, no install.</p>
+          <div class="share-row">
+            <input type="text" id="share-link" readonly aria-label="Link for these settings">
+            <button type="button" id="share-copy">Copy</button>
+            <a class="button" id="share-open" href="./display.html" target="_blank" rel="noopener">Open</a>
+          </div>
+          <p class="small muted" id="share-status" aria-live="polite"></p>
         </div>
         <p class="small muted">Start here, or press <kbd>T</kbd> in the display tab, as the scanner's trigger would. In the display, <kbd>P</kbd> pauses and <kbd>Esc</kbd> ends the run. Pausing is for testing only: a scanner cannot pause, so a paused run is marked as not usable for scanning. When a run ends, for whatever reason, its results, trace, and downloads stay here until the next run starts.</p>
       </section>

@@ -77,8 +77,15 @@ export const DEFAULTS = Object.freeze({
   badStim: 'mole_sad',          // TODO: sad mole or molerat as the bad picture.
 
   trS: 1.0,                     // TODO(Q4): TR, used for simulated volume events.
-  showScore: false,             // DECIDED(Q6): no score.
-  feedback: false,              // DECIDED(Q6): no hole lights up on a press. Moles only pop in and out.
+  // Feedback. DECIDED(Q6): the participant sees nothing, so all four are off.
+  // They exist to pilot variations (Rehaan Karnik, October 11, 2026); every run
+  // records which were on (`feedbackVariant`).
+  showScore: false,             // Score in the corner: how many happy moles were hit.
+  hitRings: false,              // White ring on a hit, red ring on a distractor pressed.
+  sound: false,                 // A good sound on a hit, a bad sound on any wrong press.
+  hammer: false,                // A hammer swings onto any mole that is pressed.
+  // README section 8 kept the "violence dial" low (no hammer, no impact, no
+  // sound); sound and hammer turn it up, so they are for piloting only.
   showResultsOnDisplay: false,  // Testing only: after a run, show results and downloads on the
                                 // participant display too. Off for real participants (Q6).
   seed: 1234,
@@ -120,6 +127,19 @@ export function responseForHole(config, hole) {
 export function holePosition(config, hole) {
   const { columns } = LAYOUTS[config.layout];
   return { row: Math.floor(hole / columns) + 1, col: (hole % columns) + 1 };
+}
+
+/** The feedback switches, in the order they appear in a variant name. */
+export const FEEDBACK_KEYS = Object.freeze(['showScore', 'hitRings', 'sound', 'hammer']);
+const FEEDBACK_NAMES = Object.freeze({ showScore: 'score', hitRings: 'rings', sound: 'sound', hammer: 'hammer' });
+
+/**
+ * Short name for the feedback a run had, e.g. "none", "score", "sound+hammer".
+ * Goes in the file names and the log so runs from different variants never mix.
+ */
+export function feedbackVariant(config) {
+  const on = FEEDBACK_KEYS.filter((k) => config[k]).map((k) => FEEDBACK_NAMES[k]);
+  return on.length ? on.join('+') : 'none';
 }
 
 /** Total run length in ms: lead-in plus every trial cycle. */
@@ -180,8 +200,7 @@ export function validateConfig(config) {
     }
   }
   if (!(typeof c.trS === 'number' && Number.isFinite(c.trS) && c.trS > 0)) problems.push('trS must be a positive number (s)');
-  if (typeof c.showScore !== 'boolean') problems.push('showScore must be a boolean');
-  if (typeof c.feedback !== 'boolean') problems.push('feedback must be a boolean');
+  for (const k of FEEDBACK_KEYS) if (typeof c[k] !== 'boolean') problems.push(`${k} must be a boolean`);
   if (typeof c.showResultsOnDisplay !== 'boolean') problems.push('showResultsOnDisplay must be a boolean');
   if (!isInt(c.seed)) problems.push('seed must be an integer');
 
@@ -206,5 +225,6 @@ export function resolveConfig(partial = {}, preset) {
   validateConfig(merged);
   // Derived, so the engine and the chart know how long the run is.
   merged.durationS = runDurationMs(merged) / 1000;
+  merged.feedbackVariant = feedbackVariant(merged);
   return Object.freeze(merged);
 }

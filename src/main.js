@@ -7,6 +7,7 @@
  */
 
 import { resolveConfig, runDurationMs, LAYOUTS } from './config.js';
+import { configToQuery } from './query.js';
 import { trialCounts } from './schedule.js';
 import { CHANNEL, createConsoleLink } from './link.js';
 import {
@@ -109,6 +110,10 @@ function readConfig() {
     trS: clamp(num('tr', 1), 0.3, 5),
     seed: Math.trunc(num('seed', 1234)),
     showResultsOnDisplay: f.get('showResultsOnDisplay') === 'on',
+    showScore: f.get('showScore') === 'on',
+    hitRings: f.get('hitRings') === 'on',
+    sound: f.get('sound') === 'on',
+    hammer: f.get('hammer') === 'on',
   });
 }
 
@@ -137,12 +142,41 @@ function syncSettings() {
     `Run length ${(runDurationMs(config) / 60000).toFixed(1)} minutes (${config.nTrials} trials every ` +
     `${config.trialMs} ms, plus a ${config.firstOnsetMs} ms lead-in). ${LAYOUTS[config.layout].label}.`;
   if (!(shown && !shown.finished)) mirrorIdle(link.state());
+  updateShareLink();
   link.setConfig(config);
   renderLinkState(link.state());
 }
 
 form.addEventListener('input', syncSettings);
 form.addEventListener('submit', (e) => e.preventDefault());
+
+/* ---------- link for labmates ---------- */
+
+/**
+ * The display page with these settings in its address. Results are always
+ * shown at the end, because a labmate testing alone has no console.
+ */
+function updateShareLink() {
+  const url = new URL(`./display.html${configToQuery(config, { showResultsOnDisplay: true })}`, location.href).href;
+  $('share-link').value = url;
+  $('share-open').href = url;
+  $('share-status').textContent = '';
+}
+
+$('share-copy').addEventListener('click', async () => {
+  const box = $('share-link');
+  box.focus();
+  box.select();
+  let ok = false;
+  try { await navigator.clipboard.writeText(box.value); ok = true; } catch (_) {
+    try { ok = document.execCommand('copy'); } catch (__) { ok = false; }
+  }
+  $('share-status').textContent = ok
+    ? (location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+      ? 'Copied. This is a localhost link, so it only works on this computer; send the one from the published site instead.'
+      : 'Copied.')
+    : 'Copying is blocked here. The link is selected, so press Ctrl+C or \u2318C.';
+});
 
 /* ---------- mirror of the participant display ---------- */
 

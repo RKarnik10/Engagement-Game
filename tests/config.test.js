@@ -17,8 +17,8 @@ test('config: defaults are the September 21 and 25, 2026 decisions', () => {
   assert.equal(c.bothShare, 0.1);
   assert.equal(c.badStim, 'mole_sad');
   assert.equal(c.version, '0.3');
-  assert.equal(c.showScore, false, 'no score');
-  assert.equal(c.feedback, false, 'no on-screen feedback');
+  for (const k of ['showScore', 'hitRings', 'sound', 'hammer']) assert.equal(c[k], false, `${k} off: no feedback (Q6)`);
+  assert.equal(c.feedbackVariant, 'none');
   assert.equal(c.setting, 'behavioral');
   assert.equal(c.durationS, 602, '600 trials of 1 s plus a 2 s lead-in');
   assert.ok(Object.isFrozen(c));
@@ -76,7 +76,8 @@ test('config: validation rejects bad values with a message naming each problem',
   bad({ skin: 'lava' }, /skin/);
   bad({ onset: 'fade' }, /onset/);
   bad({ setting: 'kitchen' }, /setting/);
-  bad({ feedback: 'no' }, /feedback/);
+  bad({ hitRings: 'no' }, /hitRings must be a boolean/);
+  bad({ sound: 1 }, /sound must be a boolean/);
   bad({ keys: ['1', '2'] }, /keys must have 3 entries/);
   bad({ keys: ['1', '1', '2'] }, /unique/);
   bad({ triggerKey: '' }, /triggerKey/);

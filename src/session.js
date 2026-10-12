@@ -22,13 +22,16 @@ import { MSG, CONSOLE_ID } from './link.js';
 
 /** Per-mole outcomes: the mole goes down when one of these is logged. */
 const MOLE_DOWN = new Set(['hit', 'commission', 'omission', 'correct_rejection', 'truncated']);
+/** Presses the display may react to, when a feedback variant is on. */
+const FEEDBACK_EVENTS = new Set(['hit', 'commission', 'wrong_hole']);
 
 /**
  * @param {object} opts
  * @param {BroadcastChannel} opts.channel
  * @param {string} opts.displayId
  * @param {object} [opts.view]   { idle(config), running(config), frame(info), moleUp(hole, stim),
- *                                 moleDown(hole), paused(isPaused), ended(reason, run), error(message) }
+ *                                 moleDown(hole), feedback(record), paused(isPaused), ended(reason, run),
+ *                                 error(message) }
  * @param {() => number} [opts.clock]
  * @param {(fn: Function) => any} [opts.raf]
  * @param {(id: any) => void} [opts.caf]
@@ -39,7 +42,8 @@ export function createDisplaySession({
   channel, displayId, view = {}, clock, raf, caf, userAgent = 'unknown', now = () => new Date(),
 }) {
   const v = {
-    idle() {}, running() {}, frame() {}, moleUp() {}, moleDown() {}, paused() {}, ended() {}, error() {}, ...view,
+    idle() {}, running() {}, frame() {}, moleUp() {}, moleDown() {}, feedback() {}, paused() {}, ended() {}, error() {},
+    ...view,
   };
   let config = resolveConfig({});
   let engine = null;
@@ -73,6 +77,8 @@ export function createDisplaySession({
   }
 
   function onEvent(record, trial) {
+    // Feedback first, so a ring or hammer lands on the mole before it drops.
+    if (FEEDBACK_EVENTS.has(record.event)) v.feedback(record);
     if (record.event === 'target_on') v.moleUp(record.hole - 1, record.stim);
     else if (MOLE_DOWN.has(record.event)) v.moleDown(record.hole - 1);
     // The trial itself only travels with trial_end, when it is complete.

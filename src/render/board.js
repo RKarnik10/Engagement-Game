@@ -3,9 +3,11 @@
  *
  * Only draws. Never decides outcomes.
  *
- * Decided September 21, 2026: the board gives the participant NO feedback.
- * A press changes nothing on screen; moles only pop in and out. There is no
- * flash, no highlight, and no score, so nothing here reacts to a press.
+ * Decided September 21, 2026 (Q6): the board gives the participant NO
+ * feedback; moles only pop in and out. For piloting variations (October 11,
+ * 2026) it can draw a ring around a hole (config.hitRings) and swing a hammer
+ * onto a pressed mole (config.hammer). Both are off by default, and the
+ * display only calls them when they are on.
  */
 
 import { LAYOUTS } from '../config.js';
@@ -18,6 +20,19 @@ const HOLE = Object.freeze({ mound: '#6E6258', pit: '#2A231D', lip: '#574B40' })
 
 /** Vertical travel of the target group inside its clip, in SVG units. */
 const TRAVEL = 84;
+
+/**
+ * Hammer, drawn in its "landed" pose: the head's striking face rests on the
+ * top of a raised mole (y = 22) and the handle runs off to the right. It
+ * swings down from above, pivoting on the handle's end (styles.css).
+ * A plain cartoon mallet; no impact effect.
+ */
+const HAMMER =
+  `<g class="hammer" aria-hidden="true">` +
+    `<rect fill="#A8763E" stroke="#5E3F1E" stroke-width="1.5" x="70" y="4" width="50" height="8" rx="4"/>` +
+    `<rect fill="#4A4F57" stroke="#22252A" stroke-width="1.5" x="45" y="-8" width="27" height="30" rx="5"/>` +
+    `<rect fill="#6B717B" x="45.8" y="1" width="25.4" height="5"/>` +
+  `</g>`;
 
 /**
  * SVG for one hole. The target group holds every stimulus picture; the hole's
@@ -36,6 +51,8 @@ export function holeSVG(i, skin) {
       `<ellipse fill="${HOLE.pit}" cx="60" cy="92" rx="45" ry="12"/>` +
       `<g clip-path="url(#clip-${i})"><g class="target" transform="translate(0 ${TRAVEL})">${arts}</g></g>` +
       `<path fill="none" stroke="${HOLE.lip}" stroke-width="5" stroke-linecap="round" d="M15 92 A45 12 0 0 0 105 92"/>` +
+      `<ellipse class="fx" cx="60" cy="92" rx="53" ry="17"/>` +
+      HAMMER +
     `</svg>`
   );
 }
@@ -75,6 +92,32 @@ export function setTarget(holesEl, i, p) {
   const h = holesEl.children[i];
   if (!h) return;
   h.querySelector('.target').setAttribute('transform', `translate(0 ${(TRAVEL * (1 - p)).toFixed(1)})`);
+}
+
+/** Restart a short CSS animation on a hole by toggling a class. */
+function replay(holesEl, i, cls, others, ms) {
+  const h = holesEl.children[i];
+  if (!h) return;
+  h.classList.remove(cls, ...others);
+  void h.offsetWidth; // force a reflow so the animation starts again
+  h.classList.add(cls);
+  clearTimeout(h[`_${cls}`]);
+  h[`_${cls}`] = setTimeout(() => h.classList.remove(cls), ms);
+}
+
+/**
+ * Ring around a hole (config.hitRings): white for a hit, red for a
+ * distractor pressed.
+ * @param {'hit'|'commission'} kind
+ */
+export function flashRing(holesEl, i, kind) {
+  const cls = kind === 'hit' ? 'fx-hit' : 'fx-com';
+  replay(holesEl, i, cls, ['fx-hit', 'fx-com'], 260);
+}
+
+/** Swing the hammer onto a hole (config.hammer). */
+export function swingHammer(holesEl, i) {
+  replay(holesEl, i, 'swing', [], 300);
 }
 
 /** Select which picture is shown in a hole, or '' for none. */
