@@ -67,6 +67,17 @@ Requested by Rehaan Karnik. The defaults still follow Q6 (no feedback).
 | Publishing | The game is published to GitHub Pages from `src/` by a GitHub Actions workflow, after the tests pass. The v0.1 prototype moves to `/prototype/`; the `index.html` file itself is unchanged. Needs the owner to set Settings > Pages > Source: GitHub Actions once. | `.github/workflows/pages.yml` | 2026-10-11 |
 | Labmate links | A display link carries its settings and runs alone, with results at the end. | `src/query.js`; "Link for labmates" in the console | 2026-10-11 |
 
+## Feedback after a test run, October 13, 2026
+
+Relayed by Rehaan Karnik.
+
+| Item | Decision | Where | Date |
+|------|----------|-------|------|
+| Every press timed | All presses in a trial are kept with their own times (`press_times_ms` in the run table, `press_times` in the events table; the full log already had them). | `src/export.js` | 2026-10-13 |
+| Decimals | Reaction times and onset lag keep one decimal in ms (0.1 ms; seconds to four decimals in the events table). That is the browser timer's resolution, not the screen's accuracy. | `src/export.js` | 2026-10-13 |
+| Penalty | Hitting a distractor costs 10 points (`scorePenalty`, adjustable in the console and in links as `penalty=`). | `src/engine.js` | 2026-10-13 |
+| Score as a percentage | Shown score = (happy moles hit − 10 × distractors hit) ÷ happy moles that could have been hit so far, as a %. A count of hits gave away how many trials were left. Recorded per trial (`score_points`, `score_pct`). | `src/engine.js`, `scorePercent` in `src/summary.js` | 2026-10-13 |
+
 ## Checklist against the September 21 feedback notes
 
 Every line of the feedback notes, and where it stands in the build.

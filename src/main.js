@@ -16,7 +16,7 @@ import {
 import { renderBoard, renderKeycaps, setTarget, setStimulus } from './render/board.js';
 import { moleSkin } from './render/skin-mole.js';
 import { drawTrace, moveCursor } from './render/trace.js';
-import { summarize, eventCounts, runSummaryText } from './summary.js';
+import { summarize, eventCounts, runSummaryText, scoreText } from './summary.js';
 
 const SKINS = { mole: moleSkin };
 
@@ -114,6 +114,7 @@ function readConfig() {
     hitRings: f.get('hitRings') === 'on',
     sound: f.get('sound') === 'on',
     hammer: f.get('hammer') === 'on',
+    scorePenalty: Math.round(clamp(num('scorePenalty', 10), 0, 100)),
   });
 }
 
@@ -291,6 +292,8 @@ function updateMeasures() {
   $('m-early').textContent = c.noMole;
   $('m-hidden').textContent = c.hidden ? `${c.hidden} time(s)` : 'no';
   $('m-pauses').textContent = c.pauses ? `${c.pauses} (${(c.pausedMs / 1000).toFixed(1)} s)` : 'none';
+  const last = [...shown.trials.values()].reduce((m, t) => (t.scoreDue != null && (!m || t.trial > m.trial) ? t : m), null);
+  $('m-score').textContent = last ? scoreText(last.scorePoints, last.scoreDue) : '–';
   $('m-rt').textContent = s.rts.length ? `${Math.round(s.meanRt)} ms` : '–';
   $('m-cv').textContent = s.rts.length > 1 ? s.cv.toFixed(2) : '–';
 }

@@ -11,6 +11,21 @@ const sdev = (a) => {
 };
 
 /**
+ * The score shown to the player: points as a percentage of the points a
+ * perfect player would have so far. Null before any happy mole has counted.
+ * Can go below zero, since a hit distractor costs 10 points.
+ */
+export function scorePercent(points, due) {
+  return due > 0 ? (100 * points) / due : null;
+}
+
+/** Score as text, e.g. "92%", or "–" before it means anything. */
+export function scoreText(points, due) {
+  const p = scorePercent(points, due);
+  return p == null ? '–' : `${Math.round(p)}%`;
+}
+
+/**
  * @param {Array} trials  Trial records that have an outcome.
  */
 export function summarize(trials) {
@@ -62,6 +77,11 @@ export function runSummaryText(run) {
       + ` ${s.bothRight} of ${s.bothShown} happy + distractor trials fully right.`,
   ];
   if (s.rts.length) parts.push(`Mean reaction time ${Math.round(s.meanRt)} ms${s.rts.length > 1 ? `, variability (SD ÷ mean) ${s.cv.toFixed(2)}` : ''}.`);
+  const last = [...run.trials].reverse().find((t) => t.scoreDue != null);
+  if (last && last.scoreDue > 0) {
+    parts.push(`Score ${scoreText(last.scorePoints, last.scoreDue)} (${last.scorePoints} points out of ${last.scoreDue}; `
+      + `a hit distractor costs ${run.config.scorePenalty}).`);
+  }
   const variant = run.config.feedbackVariant;
   if (variant && variant !== 'none') parts.push(`Feedback shown to the player: ${variant}.`);
   if (c.pauses) parts.push(`Paused ${c.pauses} time(s), ${(c.pausedMs / 1000).toFixed(1)} s in total: fine for testing, not usable for scanning.`);

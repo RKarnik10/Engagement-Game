@@ -5,7 +5,7 @@
   "description": "Whac-a-mole go/no-go attention task for fMRI (Song Lab). Vanilla ES modules, no dependencies.",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.js",
+    "test": "node --test --test-timeout=60000 tests/*.test.js",
     "serve": "node scripts/serve.mjs"
   },
   "engines": {

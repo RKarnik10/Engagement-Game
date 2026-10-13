@@ -12,7 +12,9 @@ import { DEFAULTS, resolveConfig } from './config.js';
 const BOOL = Object.freeze({
   score: 'showScore', rings: 'hitRings', sound: 'sound', hammer: 'hammer', results: 'showResultsOnDisplay',
 });
-const INT = Object.freeze({ trials: 'nTrials', trialms: 'trialMs', holdms: 'holdMs', seed: 'seed' });
+const INT = Object.freeze({
+  trials: 'nTrials', trialms: 'trialMs', holdms: 'holdMs', seed: 'seed', penalty: 'scorePenalty',
+});
 const TEXT = Object.freeze({ setting: 'setting', layout: 'layout', onset: 'onset' });
 const DISTRACTOR = Object.freeze({ sad: 'mole_sad', molerat: 'molerat' });
 

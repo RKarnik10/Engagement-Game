@@ -14,7 +14,7 @@ import { createSounds } from './render/sound.js';
 import { configFromQuery, hasQuerySettings } from './query.js';
 import { moleSkin } from './render/skin-mole.js';
 import { drawTrace } from './render/trace.js';
-import { runSummaryText } from './summary.js';
+import { runSummaryText, scoreText } from './summary.js';
 import {
   buildRunCSV, buildEventsTSV, buildFullLogJSON, exportFilename, downloadText,
 } from './export.js';
@@ -39,10 +39,8 @@ const standalone = hasQuerySettings(location.search);
 
 let config = null;
 let finishedRun = null;
-let hits = 0;
-
-function showScore() {
-  scoreEl.textContent = `Score ${hits}`;
+function showScore(points = 0, due = 0) {
+  scoreEl.textContent = `Score ${scoreText(points, due)}`;
   scoreEl.hidden = !config.showScore;
 }
 
@@ -68,7 +66,6 @@ const view = {
     hint.hidden = false;
   },
   running() {
-    hits = 0;
     showScore();
     overlay.hidden = true;
     results.hidden = true;
@@ -91,11 +88,13 @@ const view = {
   /** Feedback variants for piloting; each is off unless its setting is on. */
   feedback(record) {
     const ev = record.event;
-    if (ev === 'hit') { hits++; showScore(); }
     const onMole = ev === 'hit' || ev === 'commission';
     if (config.hitRings && onMole) flashRing(holesEl, record.hole - 1, ev);
     if (config.hammer && onMole) swingHammer(holesEl, record.hole - 1);
     if (config.sound) sounds.play(ev === 'hit' ? 'good' : 'bad');
+  },
+  score(points, due) {
+    showScore(points, due);
   },
   moleDown(hole) {
     setTarget(holesEl, hole, 0);

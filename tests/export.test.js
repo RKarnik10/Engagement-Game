@@ -42,7 +42,7 @@ test('export: the run CSV has what Dr. Song asked for', () => {
   const { header, rows } = readTable(buildRunCSV(trials), ',');
   assert.deepEqual(header, [...CSV_COLUMNS]);
   // Which mole appeared (row and column), what should be pressed, what was pressed, reaction time.
-  for (const c of ['good_row', 'good_col', 'bad_row', 'bad_col', 'expected_button', 'pressed_buttons', 'first_press_ms', 'good_hit_ms']) {
+  for (const c of ['good_row', 'good_col', 'bad_row', 'bad_col', 'expected_button', 'pressed_buttons', 'press_times_ms', 'first_press_ms', 'good_hit_ms', 'score_pct']) {
     assert.ok(header.includes(c), `${c} is present`);
   }
   assert.equal(rows.length, shownTrials(trials).length);
@@ -69,15 +69,18 @@ test('export: run CSV rows are right for each trial type', () => {
   // Trial 1: good mole hit at 300 ms.
   assert.equal(get(row(1), 'onset_s'), '2.000');
   assert.equal(get(row(1), 'pressed_buttons'), get(row(1), 'expected_button'));
-  assert.equal(get(row(1), 'first_press_ms'), '300');
-  assert.equal(get(row(1), 'good_hit_ms'), '300');
+  assert.equal(get(row(1), 'first_press_ms'), '300.0', 'reaction times keep a decimal');
+  assert.equal(get(row(1), 'good_hit_ms'), '300.0');
+  assert.equal(get(row(1), 'press_times_ms'), '300.0');
+  assert.deepEqual([get(row(1), 'score_points'), get(row(1), 'score_pct')], ['1', '100.0']);
   assert.deepEqual([get(row(1), 'outcome'), get(row(1), 'correct')], ['hit', '1']);
 
   // Trial 2: wrong column first, then the right one; every press is listed in order.
   const w = schedule[1].targets[0];
   assert.equal(get(row(2), 'pressed_buttons'), `${((w.response + 1) % 3) + 1} ${w.response + 1}`);
-  assert.equal(get(row(2), 'first_press_ms'), '120');
-  assert.equal(get(row(2), 'good_hit_ms'), '350');
+  assert.equal(get(row(2), 'press_times_ms'), '120.0 350.0', 'every press has its own time, in order');
+  assert.equal(get(row(2), 'first_press_ms'), '120.0');
+  assert.equal(get(row(2), 'good_hit_ms'), '350.0');
   assert.equal(get(row(2), 'outcome'), 'hit');
 
   // The bad trial that was pressed.
@@ -92,7 +95,10 @@ test('export: run CSV rows are right for each trial type', () => {
     [get(bothRow, 'good_outcome'), get(bothRow, 'bad_outcome'), get(bothRow, 'outcome'), get(bothRow, 'correct')],
     ['hit', 'correct_rejection', 'hit', '1'],
   );
-  assert.equal(get(bothRow, 'good_hit_ms'), '330');
+  assert.equal(get(bothRow, 'good_hit_ms'), '330.0');
+  // The pressed sad mole cost 10 points; the score stays a running total.
+  assert.ok(Number(get(badRow, 'score_points')) < Number(get(row(2), 'score_points')));
+  for (const r of rows) assert.match(get(r, 'onset_lag_ms'), /^\d+\.\d$/, 'onset lag keeps a decimal');
 });
 
 test('export: the events TSV keeps the BIDS layout', () => {
@@ -102,6 +108,7 @@ test('export: the events TSV keeps the BIDS layout', () => {
   assert.deepEqual(header.slice(0, 2), ['onset', 'duration']);
   const numeric = /^\d+\.\d{3}$/;
   for (const r of rows) {
+    if (get(r, 'response_time') !== 'n/a') assert.match(get(r, 'response_time'), /^\d+\.\d{4}$/, 'seconds to 0.1 ms');
     assert.match(get(r, 'onset'), numeric);
     assert.match(get(r, 'duration'), numeric);
     assert.ok(['good', 'bad', 'both'].includes(get(r, 'trial_type')));

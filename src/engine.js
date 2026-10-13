@@ -20,6 +20,7 @@ import {
   hasResponseTime, OUTCOME,
 } from './classify.js';
 import { runDurationMs } from './config.js';
+import { scorePercent } from './summary.js';
 
 const round1 = (x) => +x.toFixed(1);
 
@@ -27,11 +28,15 @@ const round1 = (x) => +x.toFixed(1);
 export const SLOW_FRAME_MS = 20;
 
 /**
- * The score is the number of happy moles hit (Rehaan Karnik, October 11,
- * 2026). It reaches the screen only when showScore is on; DECIDED(Q6) keeps
- * it off for real participants.
+ * Score (feedback relayed by Rehaan Karnik, October 13, 2026):
+ *   points = happy moles hit x 1 - distractors hit x scorePenalty (10)
+ *   due    = happy moles that could have been hit so far (each one counts once
+ *            it is hit or goes down missed), so a perfect player is at 100%
+ *   shown  = points / due, as a percentage (scorePercent in summary.js)
+ * A percentage, not a count, so the score does not reveal how many trials
+ * are left. Wrong-column presses cost nothing. It reaches the screen only
+ * when showScore is on; DECIDED(Q6) keeps it off for real participants.
  */
-const SCORE_DELTA = Object.freeze({ [OUTCOME.HIT]: 1 });
 
 export function createEngine({ config, trials, logger, clock, raf, caf, onFrame, onEvent }) {
   if (!config || !Array.isArray(trials) || !logger) {
@@ -65,7 +70,8 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     tMs: 0,
     next: 0,
     active: null,
-    score: 0,
+    points: 0,               // score numerator
+    due: 0,                  // score denominator: happy moles resolved so far
     counts: { wrong_hole: 0, no_target_press: 0 },
     volumes: 0,              // simulated volumes (from trS)
     pulses: 0,               // real trigger pulses seen during the run
@@ -106,7 +112,11 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       d.rt_ms = round1(press.rtMs);
       d.source = press.source;
     }
-    if (SCORE_DELTA[outcome]) s.score += SCORE_DELTA[outcome];
+    if (outcome === OUTCOME.HIT) s.points += 1;
+    if (outcome === OUTCOME.COMMISSION) s.points -= config.scorePenalty;
+    if (x.valence === 'good' && (outcome === OUTCOME.HIT || outcome === OUTCOME.OMISSION)) s.due += 1;
+    d.score_points = s.points;
+    d.score_due = s.due;
     emit(outcome, d, t, a);
   }
 
@@ -116,6 +126,8 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     a.correct = trialCorrect(a);
     const good = a.targets.find((x) => x.valence === 'good');
     a.goodRtMs = good && good.outcome === OUTCOME.HIT ? good.rtMs : null;
+    a.scorePoints = s.points;
+    a.scoreDue = s.due;
     s.active = null;
     emit('trial_end', { trial: a.trial, type: a.type, outcome: a.outcome, correct: a.correct }, t, a);
   }
@@ -298,7 +310,9 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       phase: s.phase,
       running: s.phase === 'running',
       tMs: s.tMs,
-      score: s.score,
+      score: s.points,
+      scoreDue: s.due,
+      scorePct: scorePercent(s.points, s.due),
       counts: { ...s.counts },
       volumes: s.volumes,
       pulses: s.pulses,

@@ -13,6 +13,14 @@
 
 const round1 = (x) => +x.toFixed(1);
 const sec = (ms) => (ms / 1000).toFixed(3);
+/**
+ * Reaction times keep a decimal (feedback of October 13, 2026): 0.1 ms in
+ * the CSV, 0.0001 s in the TSV. That is the resolution browsers give
+ * performance.now() (about 0.1 ms; coarser in some browsers), not the
+ * accuracy of the screen, which only changes every frame (about 16.7 ms).
+ */
+const ms1 = (ms) => ms.toFixed(1);
+const sec4 = (ms) => (ms / 1000).toFixed(4);
 const NA = 'n/a';
 const orNA = (v) => (v == null ? NA : v);
 
@@ -20,15 +28,15 @@ const orNA = (v) => (v == null ? NA : v);
 export const CSV_COLUMNS = Object.freeze([
   'trial', 'onset_s', 'trial_type',
   'good_row', 'good_col', 'bad_row', 'bad_col',
-  'correct_action', 'expected_button', 'pressed_buttons', 'first_press_ms', 'good_hit_ms',
-  'good_outcome', 'bad_outcome', 'outcome', 'correct',
+  'correct_action', 'expected_button', 'pressed_buttons', 'press_times_ms', 'first_press_ms', 'good_hit_ms',
+  'good_outcome', 'bad_outcome', 'outcome', 'correct', 'score_points', 'score_pct',
   'scheduled_onset_s', 'onset_lag_ms', 'preceding_go',
 ]);
 
 /** Column order of the BIDS-style events table. */
 export const TSV_COLUMNS = Object.freeze([
   'onset', 'duration', 'trial_type', 'good_row', 'good_col', 'bad_row', 'bad_col',
-  'expected_button', 'pressed_buttons', 'outcome', 'response_time', 'scheduled_onset', 'preceding_go',
+  'expected_button', 'pressed_buttons', 'press_times', 'outcome', 'response_time', 'scheduled_onset', 'preceding_go',
 ]);
 
 /** Trials that were actually shown (the run may end before the schedule does). */
@@ -39,6 +47,9 @@ export function shownTrials(trials) {
 const goodOf = (a) => a.targets.find((x) => x.valence === 'good') || null;
 const badOf = (a) => a.targets.find((x) => x.valence === 'bad') || null;
 const pressedList = (a) => (a.presses.length ? a.presses.map((p) => p.button + 1).join(' ') : NA);
+/** Time of every press in the trial, in order, matching pressedList. */
+const pressTimes = (a, fmt) => (a.presses.length ? a.presses.map((p) => fmt(p.rtMs)).join(' ') : NA);
+const pctText = (a) => (a.scoreDue > 0 ? (100 * a.scorePoints / a.scoreDue).toFixed(1) : NA);
 
 function csvCell(v) {
   const s = String(v);
@@ -66,14 +77,17 @@ export function buildRunCSV(trials) {
       g ? 'press' : 'withhold',
       g ? g.response + 1 : NA,
       pressedList(a),
-      a.presses.length ? Math.round(a.presses[0].rtMs) : NA,
-      a.goodRtMs != null ? Math.round(a.goodRtMs) : NA,
+      pressTimes(a, ms1),
+      a.presses.length ? ms1(a.presses[0].rtMs) : NA,
+      a.goodRtMs != null ? ms1(a.goodRtMs) : NA,
       g ? orNA(g.outcome) : NA,
       b ? orNA(b.outcome) : NA,
       orNA(a.outcome),
       orNA(a.correct),
+      a.scoreDue != null ? a.scorePoints : NA,
+      a.scoreDue != null ? pctText(a) : NA,
       sec(a.scheduledOnsetMs),
-      Math.round(a.actualOnsetMs - a.scheduledOnsetMs),
+      ms1(a.actualOnsetMs - a.scheduledOnsetMs),
       orNA(a.precedingGo),
     ]);
   }
@@ -99,8 +113,9 @@ export function buildEventsTSV(trials) {
       b ? b.col : NA,
       g ? g.response + 1 : NA,
       pressedList(a),
+      pressTimes(a, sec4),
       orNA(a.outcome),
-      a.goodRtMs != null ? sec(a.goodRtMs) : NA,
+      a.goodRtMs != null ? sec4(a.goodRtMs) : NA,
       sec(a.scheduledOnsetMs),
       orNA(a.precedingGo),
     ]);
@@ -119,6 +134,8 @@ export function trialTable(trials) {
     outcome: a.outcome || null,
     correct: a.correct,
     good_rt_ms: a.goodRtMs != null ? round1(a.goodRtMs) : null,
+    score_points: a.scoreDue != null ? a.scorePoints : null,
+    score_due: a.scoreDue != null ? a.scoreDue : null,
     preceding_go: a.precedingGo,
     targets: a.targets.map((x) => ({
       target: x.index,

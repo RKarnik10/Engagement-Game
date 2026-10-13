@@ -26,7 +26,7 @@ test('variants never change the schedule: same seed, same trials', () => {
   }
 });
 
-test('the score counts happy moles hit, and a pressed distractor does not take points away', () => {
+test('the score: +1 per happy mole hit, -10 per distractor hit, over the happy moles so far', () => {
   const config = resolveConfig({ seed: 1234, nTrials: 60 });
   const schedule = buildSchedule(config);
   const goods = schedule.filter((t) => t.type === 'good').slice(0, 3);
@@ -37,7 +37,13 @@ test('the score counts happy moles hit, and a pressed distractor does not take p
   ];
   const { state, trials } = simulateRun({ config, trials: schedule, presses });
   assert.equal(trials.filter((t) => t.outcome === 'commission').length, 1);
-  assert.equal(state.score, 3);
+  assert.equal(state.score, 3 - 10, 'points');
+  const goodMoles = trials.flatMap((t) => t.targets).filter((x) => x.valence === 'good' && x.outcome !== 'truncated');
+  assert.equal(state.scoreDue, goodMoles.length, 'every happy mole counts once, hit or missed');
+  assert.equal(state.scorePct, (100 * -7) / goodMoles.length);
+  // Each trial carries the running score at its end.
+  const t1 = trials[0];
+  assert.deepEqual([t1.scorePoints, t1.scoreDue], [1, 1], 'after one hit: 100%');
 });
 
 test('file names and the log say which variant a run used', () => {
@@ -112,3 +118,30 @@ test('links: reading is forgiving about what is not ours, strict about bad value
   assert.throws(() => resolveConfig(configFromQuery('?trials=abc')), /nTrials/);
   assert.throws(() => resolveConfig(configFromQuery('?distractor=eggplant')), /badStim/);
 });
+
+test('score: the percentage, its text, and the penalty setting', async () => {
+  const { scorePercent, scoreText } = await import('../src/summary.js');
+  assert.equal(scorePercent(0, 0), null, 'nothing to score yet');
+  assert.equal(scoreText(0, 0), '–');
+  assert.equal(scoreText(9, 10), '90%');
+  assert.equal(scoreText(-11, 20), '-55%', 'a hit distractor can push it below zero');
+  assert.equal(resolveConfig().scorePenalty, 10);
+  assert.equal(resolveConfig(configFromQuery('?penalty=5')).scorePenalty, 5);
+  assert.equal(configToQuery(resolveConfig({ scorePenalty: 0 })), '?penalty=0');
+  assert.throws(() => resolveConfig({ scorePenalty: -1 }), /scorePenalty/);
+  const config = resolveConfig({ seed: 1234, nTrials: 40, scorePenalty: 3 });
+  const schedule = buildSchedule(config);
+  const bad = schedule.find((t) => t.type === 'bad');
+  const { state } = simulateRun({ config, trials: schedule, presses: [{ tMs: bad.scheduledOnsetMs + 200, button: bad.targets[0].response }] });
+  assert.equal(state.score, -3);
+});
+
+test('score: a wrong column costs nothing, a missed happy mole only grows the denominator', () => {
+  const config = resolveConfig({ seed: 1234, nTrials: 20 });
+  const schedule = buildSchedule(config);
+  const t1 = schedule[0];
+  const other = (t1.targets[0].response + 1) % 3;
+  const { trials } = simulateRun({ config, trials: schedule, presses: [{ tMs: t1.scheduledOnsetMs + 100, button: other }] });
+  assert.deepEqual([trials[0].scorePoints, trials[0].scoreDue], [0, 1], 'wrong column then missed: 0 of 1');
+});
+

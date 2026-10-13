@@ -97,11 +97,12 @@
           <fieldset>
             <legend>Feedback to the player (piloting)</legend>
             <div class="opts">
-              <label><input type="checkbox" name="showScore"> Score: how many happy moles were hit</label>
+              <label><input type="checkbox" name="showScore"> Score, as a percentage: +1 per happy mole hit, minus a penalty per distractor hit, out of the happy moles so far</label>
               <label><input type="checkbox" name="hitRings"> Rings: white on a hit, red on a distractor</label>
               <label><input type="checkbox" name="sound"> Sound: good on a hit, bad on a wrong press</label>
               <label><input type="checkbox" name="hammer"> Hammer swings onto a pressed mole</label>
             </div>
+            <div class="row"><label for="scorePenalty">Points lost per distractor hit</label><input type="number" id="scorePenalty" name="scorePenalty" min="0" max="100" step="1" value="10"></div>
             <p class="small muted">All off is Dr. Song's design (no feedback). Each run records which were on, and the file names include it, for example <code>_score_</code>. Sound needs one key press or click in the display tab first; browsers block sound until then.</p>
           </fieldset>
           <fieldset>
@@ -142,6 +143,7 @@
           <dt>RT variability (SD ÷ mean)</dt><dd id="m-cv">–</dd>
           <dt>Display hidden during run</dt><dd id="m-hidden">–</dd>
           <dt>Pauses</dt><dd id="m-pauses">–</dd>
+          <dt>Score (as the player would see it)</dt><dd id="m-score">–</dd>
         </dl>
       </section>
     </aside>

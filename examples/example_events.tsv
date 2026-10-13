@@ -1,601 +1,601 @@
-onset	duration	trial_type	good_row	good_col	bad_row	bad_col	expected_button	pressed_buttons	outcome	response_time	scheduled_onset	preceding_go
-2.000	0.292	good	2	3	n/a	n/a	3	3	hit	0.292	2.000	n/a
-3.017	0.408	good	1	3	n/a	n/a	3	3	hit	0.408	3.000	n/a
-4.017	0.352	good	1	1	n/a	n/a	1	1	hit	0.352	4.000	n/a
-5.000	0.325	good	1	3	n/a	n/a	3	3	hit	0.325	5.000	n/a
-6.000	0.386	good	2	3	n/a	n/a	3	3	hit	0.386	6.000	n/a
-7.000	0.454	good	2	1	n/a	n/a	1	1	hit	0.454	7.000	n/a
-8.000	0.424	good	3	3	n/a	n/a	3	3	hit	0.424	8.000	n/a
-9.000	0.350	good	1	2	n/a	n/a	2	2	hit	0.350	9.000	n/a
-10.017	0.416	good	3	3	n/a	n/a	3	3	hit	0.416	10.000	n/a
-11.017	0.430	good	1	2	n/a	n/a	2	2	hit	0.430	11.000	n/a
-12.017	0.463	good	3	2	n/a	n/a	2	2	hit	0.463	12.000	n/a
-13.017	0.412	good	1	3	n/a	n/a	3	3	hit	0.412	13.000	n/a
-14.017	0.348	good	2	2	n/a	n/a	2	2	hit	0.348	14.000	n/a
-15.017	0.817	bad	n/a	n/a	1	3	n/a	n/a	correct_rejection	n/a	15.000	13
-16.017	0.395	good	2	2	n/a	n/a	2	2	hit	0.395	16.000	n/a
-17.017	0.293	good	1	3	n/a	n/a	3	3	hit	0.293	17.000	n/a
-18.017	0.321	good	3	2	n/a	n/a	2	2	hit	0.321	18.000	n/a
-19.017	0.431	good	1	2	n/a	n/a	2	2	hit	0.431	19.000	n/a
-20.000	0.800	both	1	1	1	3	1	1	hit	0.351	20.000	4
-21.000	0.375	good	3	1	n/a	n/a	1	1	hit	0.375	21.000	n/a
-22.000	0.545	bad	n/a	n/a	2	1	n/a	1	commission	n/a	22.000	6
-23.000	0.339	good	1	1	n/a	n/a	1	1	hit	0.339	23.000	n/a
-24.000	0.375	good	3	1	n/a	n/a	1	1	hit	0.375	24.000	n/a
-25.000	0.444	good	1	1	n/a	n/a	1	1	hit	0.444	25.000	n/a
-26.000	0.800	both	2	1	2	2	1	1	hit	0.509	26.000	3
-27.000	0.390	good	1	1	n/a	n/a	1	1	hit	0.390	27.000	n/a
-28.000	0.408	good	3	1	n/a	n/a	1	1	hit	0.408	28.000	n/a
-29.000	0.462	good	1	3	n/a	n/a	3	3	hit	0.462	29.000	n/a
-30.000	0.449	good	2	1	n/a	n/a	1	1	hit	0.449	30.000	n/a
-31.000	0.422	good	1	1	n/a	n/a	1	1	hit	0.422	31.000	n/a
-32.000	0.393	good	3	2	n/a	n/a	2	2	hit	0.393	32.000	n/a
-33.000	0.361	good	1	2	n/a	n/a	2	2	hit	0.361	33.000	n/a
-34.000	0.405	good	2	3	n/a	n/a	3	3	hit	0.405	34.000	n/a
-35.000	0.553	good	1	2	n/a	n/a	2	1 2	hit	0.553	35.000	n/a
-36.000	0.460	good	2	2	n/a	n/a	2	2	hit	0.460	36.000	n/a
-37.000	0.384	good	1	1	n/a	n/a	1	1	hit	0.384	37.000	n/a
-38.000	0.524	good	2	2	n/a	n/a	2	2	hit	0.524	38.000	n/a
-39.000	0.817	bad	n/a	n/a	1	1	n/a	n/a	correct_rejection	n/a	39.000	16
-40.017	0.385	good	3	3	n/a	n/a	3	3	hit	0.385	40.000	n/a
-41.017	0.817	both	3	2	2	1	2	2	hit	0.536	41.000	1
-42.017	0.278	good	1	3	n/a	n/a	3	3	hit	0.278	42.000	n/a
-43.017	0.397	good	3	1	n/a	n/a	1	1	hit	0.397	43.000	n/a
-44.017	0.633	both	2	1	1	2	1	1 2	commission	0.483	44.000	4
-45.017	0.413	good	3	1	n/a	n/a	1	1	hit	0.413	45.000	n/a
-46.017	0.455	bad	n/a	n/a	2	3	n/a	3	commission	n/a	46.000	6
-47.017	0.325	good	2	1	n/a	n/a	1	1	hit	0.325	47.000	n/a
-48.017	0.353	good	3	3	n/a	n/a	3	3	hit	0.353	48.000	n/a
-49.017	0.332	good	2	2	n/a	n/a	2	2	hit	0.332	49.000	n/a
-50.017	0.817	bad	n/a	n/a	1	1	n/a	n/a	correct_rejection	n/a	50.000	3
-51.017	0.455	good	2	3	n/a	n/a	3	3	hit	0.455	51.000	n/a
-52.017	0.817	both	3	1	3	2	1	1	hit	0.540	52.000	1
-53.017	0.817	both	2	1	3	3	1	1	hit	0.382	53.000	2
-54.017	0.341	good	3	1	n/a	n/a	1	1	hit	0.341	54.000	n/a
-55.017	0.817	both	2	1	3	3	1	1	hit	0.458	55.000	4
-56.017	0.303	good	3	2	n/a	n/a	2	2	hit	0.303	56.000	n/a
-57.017	0.353	good	1	3	n/a	n/a	3	3	hit	0.353	57.000	n/a
-58.017	0.370	good	1	2	n/a	n/a	2	2	hit	0.370	58.000	n/a
-59.017	0.817	bad	n/a	n/a	2	3	n/a	n/a	correct_rejection	n/a	59.000	8
-60.017	0.412	good	3	3	n/a	n/a	3	3	hit	0.412	60.000	n/a
-61.017	0.378	good	1	2	n/a	n/a	2	2	hit	0.378	61.000	n/a
-62.017	0.474	good	2	2	n/a	n/a	2	2	hit	0.474	62.000	n/a
-63.017	0.425	good	1	3	n/a	n/a	3	3	hit	0.425	63.000	n/a
-64.017	0.411	good	2	3	n/a	n/a	3	3	hit	0.411	64.000	n/a
-65.017	0.328	good	1	2	n/a	n/a	2	2	hit	0.328	65.000	n/a
-66.017	0.486	good	3	3	n/a	n/a	3	3	hit	0.486	66.000	n/a
-67.017	0.376	good	3	2	n/a	n/a	2	2	hit	0.376	67.000	n/a
-68.017	0.393	good	2	1	n/a	n/a	1	1	hit	0.393	68.000	n/a
-69.017	0.800	both	1	2	3	3	2	2	hit	0.401	69.000	9
-70.017	0.408	good	1	1	n/a	n/a	1	1	hit	0.408	70.000	n/a
-71.017	0.422	good	2	3	n/a	n/a	3	3	hit	0.422	71.000	n/a
-72.017	0.503	good	3	2	n/a	n/a	2	2	hit	0.503	72.000	n/a
-73.017	0.424	good	1	1	n/a	n/a	1	1	hit	0.424	73.000	n/a
-74.017	0.800	good	1	2	n/a	n/a	2	n/a	omission	n/a	74.000	n/a
-75.017	0.443	good	3	2	n/a	n/a	2	2	hit	0.443	75.000	n/a
-76.017	0.466	good	3	1	n/a	n/a	1	1	hit	0.466	76.000	n/a
-77.017	0.800	good	1	2	n/a	n/a	2	1	omission	n/a	77.000	n/a
-78.017	0.420	good	2	1	n/a	n/a	1	1	hit	0.420	78.000	n/a
-79.000	0.399	good	1	3	n/a	n/a	3	3	hit	0.399	79.000	n/a
-80.000	0.461	good	2	1	n/a	n/a	1	1	hit	0.461	80.000	n/a
-81.000	0.434	good	1	1	n/a	n/a	1	1	hit	0.434	81.000	n/a
-82.000	0.408	bad	n/a	n/a	3	1	n/a	1	commission	n/a	82.000	22
-83.000	0.314	good	1	2	n/a	n/a	2	2	hit	0.314	83.000	n/a
-84.000	0.368	good	3	1	n/a	n/a	1	1	hit	0.368	84.000	n/a
-85.000	0.399	good	2	3	n/a	n/a	3	3	hit	0.399	85.000	n/a
-86.000	0.401	good	3	1	n/a	n/a	1	1	hit	0.401	86.000	n/a
-87.000	0.458	good	1	3	n/a	n/a	3	3	hit	0.458	87.000	n/a
-88.000	0.483	good	3	1	n/a	n/a	1	1	hit	0.483	88.000	n/a
-89.000	0.368	good	1	3	n/a	n/a	3	3	hit	0.368	89.000	n/a
-90.000	0.800	bad	n/a	n/a	3	2	n/a	n/a	correct_rejection	n/a	90.000	7
-91.000	0.482	good	1	3	n/a	n/a	3	3	hit	0.482	91.000	n/a
-92.000	0.800	good	1	1	n/a	n/a	1	3	omission	n/a	92.000	n/a
-93.000	0.392	good	3	3	n/a	n/a	3	3	hit	0.392	93.000	n/a
-94.000	0.800	both	1	3	3	1	3	3	hit	0.432	94.000	3
-95.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	95.000	4
-96.000	0.800	both	2	3	3	1	3	3	hit	0.469	96.000	0
-97.000	0.423	good	1	2	n/a	n/a	2	2	hit	0.423	97.000	n/a
-98.000	0.448	good	2	1	n/a	n/a	1	1	hit	0.448	98.000	n/a
-99.000	0.418	good	3	3	n/a	n/a	3	3	hit	0.418	99.000	n/a
-100.000	0.370	good	1	2	n/a	n/a	2	2	hit	0.370	100.000	n/a
-101.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	101.000	5
-102.000	0.404	good	2	3	n/a	n/a	3	3	hit	0.404	102.000	n/a
-103.000	0.354	good	2	2	n/a	n/a	2	2	hit	0.354	103.000	n/a
-104.000	0.407	good	3	1	n/a	n/a	1	1	hit	0.407	104.000	n/a
-105.000	0.477	good	1	3	n/a	n/a	3	3	hit	0.477	105.000	n/a
-106.000	0.358	good	3	3	n/a	n/a	3	3	hit	0.358	106.000	n/a
-107.000	0.415	good	2	1	n/a	n/a	1	1	hit	0.415	107.000	n/a
-108.000	0.422	good	1	3	n/a	n/a	3	3	hit	0.422	108.000	n/a
-109.000	0.477	good	2	3	n/a	n/a	3	3	hit	0.477	109.000	n/a
-110.000	0.354	good	3	3	n/a	n/a	3	3	hit	0.354	110.000	n/a
-111.000	0.428	good	2	2	n/a	n/a	2	2	hit	0.428	111.000	n/a
-112.000	0.444	good	1	1	n/a	n/a	1	1	hit	0.444	112.000	n/a
-113.000	0.373	good	3	1	n/a	n/a	1	1	hit	0.373	113.000	n/a
-114.000	0.410	good	2	3	n/a	n/a	3	3	hit	0.410	114.000	n/a
-115.000	0.390	good	3	1	n/a	n/a	1	1	hit	0.390	115.000	n/a
-116.000	0.405	good	3	3	n/a	n/a	3	3	hit	0.405	116.000	n/a
-117.000	0.455	good	2	2	n/a	n/a	2	2	hit	0.455	117.000	n/a
-118.000	0.362	good	2	1	n/a	n/a	1	1	hit	0.362	118.000	n/a
-119.000	0.800	good	3	2	n/a	n/a	2	n/a	omission	n/a	119.000	n/a
-120.000	0.441	good	1	2	n/a	n/a	2	2	hit	0.441	120.000	n/a
-121.000	0.310	bad	n/a	n/a	3	2	n/a	2	commission	n/a	121.000	19
-122.000	0.372	good	1	1	n/a	n/a	1	1	hit	0.372	122.000	n/a
-123.000	0.445	good	3	3	n/a	n/a	3	3	hit	0.445	123.000	n/a
-124.000	0.404	good	3	1	n/a	n/a	1	1	hit	0.404	124.000	n/a
-125.000	0.800	both	1	2	1	1	2	1	commission	n/a	125.000	3
-126.000	0.381	good	2	3	n/a	n/a	3	3	hit	0.381	126.000	n/a
-127.000	0.428	good	3	1	n/a	n/a	1	1	hit	0.428	127.000	n/a
-128.000	0.448	good	2	2	n/a	n/a	2	2	hit	0.448	128.000	n/a
-129.000	0.800	bad	n/a	n/a	2	1	n/a	n/a	correct_rejection	n/a	129.000	7
-130.000	0.332	good	2	2	n/a	n/a	2	2	hit	0.332	130.000	n/a
-131.000	0.387	bad	n/a	n/a	1	3	n/a	3	commission	n/a	131.000	1
-132.000	0.328	good	3	2	n/a	n/a	2	2	hit	0.328	132.000	n/a
-133.000	0.304	good	3	1	n/a	n/a	1	1	hit	0.304	133.000	n/a
-134.000	0.326	good	3	3	n/a	n/a	3	3	hit	0.326	134.000	n/a
-135.000	0.313	good	2	1	n/a	n/a	1	1	hit	0.313	135.000	n/a
-136.000	0.817	both	3	1	2	2	1	1	hit	0.429	136.000	4
-137.000	0.399	good	1	2	n/a	n/a	2	2	hit	0.399	137.000	n/a
-138.000	0.431	good	3	1	n/a	n/a	1	1	hit	0.431	138.000	n/a
-139.000	0.462	good	3	3	n/a	n/a	3	3	hit	0.462	139.000	n/a
-140.000	0.469	good	3	2	n/a	n/a	2	2	hit	0.469	140.000	n/a
-141.000	0.454	good	2	1	n/a	n/a	1	1	hit	0.454	141.000	n/a
-142.000	0.440	good	1	2	n/a	n/a	2	2	hit	0.440	142.000	n/a
-143.000	0.393	good	1	1	n/a	n/a	1	1	hit	0.393	143.000	n/a
-144.000	0.817	good	3	1	n/a	n/a	1	n/a	omission	n/a	144.000	n/a
-145.000	0.341	good	2	2	n/a	n/a	2	2	hit	0.341	145.000	n/a
-146.000	0.415	bad	n/a	n/a	2	3	n/a	3	commission	n/a	146.000	14
-147.000	0.367	good	1	1	n/a	n/a	1	1	hit	0.367	147.000	n/a
-148.000	0.323	good	3	1	n/a	n/a	1	1	hit	0.323	148.000	n/a
-149.000	0.463	good	2	3	n/a	n/a	3	3	hit	0.463	149.000	n/a
-150.000	0.373	good	1	2	n/a	n/a	2	2	hit	0.373	150.000	n/a
-151.000	0.373	good	1	1	n/a	n/a	1	1	hit	0.373	151.000	n/a
-152.000	0.402	good	1	3	n/a	n/a	3	3	hit	0.402	152.000	n/a
-153.000	0.817	both	1	2	2	3	2	2	hit	0.408	153.000	6
-154.000	0.245	good	3	1	n/a	n/a	1	1	hit	0.245	154.000	n/a
-155.000	0.386	good	3	2	n/a	n/a	2	2	hit	0.386	155.000	n/a
-156.000	0.334	good	3	3	n/a	n/a	3	3	hit	0.334	156.000	n/a
-157.000	0.384	good	2	3	n/a	n/a	3	3	hit	0.384	157.000	n/a
-158.017	0.224	good	3	2	n/a	n/a	2	2	hit	0.224	158.000	n/a
-159.017	0.351	good	1	1	n/a	n/a	1	1	hit	0.351	159.000	n/a
-160.017	0.817	both	3	2	2	3	2	2	hit	0.385	160.000	13
-161.017	0.374	good	1	1	n/a	n/a	1	1	hit	0.374	161.000	n/a
-162.017	0.398	good	3	1	n/a	n/a	1	1	hit	0.398	162.000	n/a
-163.017	0.270	good	3	2	n/a	n/a	2	2	hit	0.270	163.000	n/a
-164.017	0.428	good	1	2	n/a	n/a	2	2	hit	0.428	164.000	n/a
-165.017	0.817	both	1	3	1	1	3	1	commission	n/a	165.000	18
-166.017	0.817	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	166.000	19
-167.017	0.360	good	3	2	n/a	n/a	2	2	hit	0.360	167.000	n/a
-168.017	0.387	good	1	2	n/a	n/a	2	2	hit	0.387	168.000	n/a
-169.017	0.336	good	2	2	n/a	n/a	2	2	hit	0.336	169.000	n/a
-170.017	0.605	good	2	3	n/a	n/a	3	1 3	hit	0.605	170.000	n/a
-171.017	0.817	bad	n/a	n/a	3	1	n/a	n/a	correct_rejection	n/a	171.000	4
-172.017	0.315	good	2	3	n/a	n/a	3	3	hit	0.315	172.000	n/a
-173.017	0.817	bad	n/a	n/a	1	3	n/a	n/a	correct_rejection	n/a	173.000	1
-174.017	0.335	good	3	2	n/a	n/a	2	2	hit	0.335	174.000	n/a
-175.017	0.362	good	2	2	n/a	n/a	2	2	hit	0.362	175.000	n/a
-176.017	0.293	good	3	1	n/a	n/a	1	1	hit	0.293	176.000	n/a
-177.017	0.399	good	2	2	n/a	n/a	2	2	hit	0.399	177.000	n/a
-178.017	0.817	good	3	1	n/a	n/a	1	3	omission	n/a	178.000	n/a
-179.017	0.309	good	2	3	n/a	n/a	3	3	hit	0.309	179.000	n/a
-180.017	0.489	good	3	3	n/a	n/a	3	3	hit	0.489	180.000	n/a
-181.017	0.312	good	1	1	n/a	n/a	1	1	hit	0.312	181.000	n/a
-182.017	0.516	good	3	3	n/a	n/a	3	3	hit	0.516	182.000	n/a
-183.017	0.377	good	2	3	n/a	n/a	3	3	hit	0.377	183.000	n/a
-184.017	0.332	good	1	2	n/a	n/a	2	2	hit	0.332	184.000	n/a
-185.017	0.366	good	2	3	n/a	n/a	3	3	hit	0.366	185.000	n/a
-186.017	0.313	good	3	3	n/a	n/a	3	3	hit	0.313	186.000	n/a
-187.017	0.350	good	2	2	n/a	n/a	2	2	hit	0.350	187.000	n/a
-188.017	0.330	good	2	3	n/a	n/a	3	3	hit	0.330	188.000	n/a
-189.017	0.375	good	2	1	n/a	n/a	1	1	hit	0.375	189.000	n/a
-190.017	0.356	good	3	3	n/a	n/a	3	3	hit	0.356	190.000	n/a
-191.017	0.334	good	3	2	n/a	n/a	2	2	hit	0.334	191.000	n/a
-192.017	0.312	good	3	1	n/a	n/a	1	1	hit	0.312	192.000	n/a
-193.017	0.316	good	2	3	n/a	n/a	3	3	hit	0.316	193.000	n/a
-194.017	0.817	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	194.000	20
-195.017	0.303	good	3	1	n/a	n/a	1	1	hit	0.303	195.000	n/a
-196.017	0.817	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	196.000	1
-197.017	0.425	good	2	1	n/a	n/a	1	1	hit	0.425	197.000	n/a
-198.017	0.305	good	2	3	n/a	n/a	3	3	hit	0.305	198.000	n/a
-199.017	0.381	good	1	3	n/a	n/a	3	3	hit	0.381	199.000	n/a
-200.017	0.357	good	3	3	n/a	n/a	3	3	hit	0.357	200.000	n/a
-201.017	0.817	both	1	3	3	1	3	3	hit	0.384	201.000	4
-202.017	0.817	both	2	2	2	3	2	2	hit	0.463	202.000	5
-203.017	0.319	good	3	2	n/a	n/a	2	2	hit	0.319	203.000	n/a
-204.017	0.419	good	1	2	n/a	n/a	2	2	hit	0.419	204.000	n/a
-205.017	0.817	both	2	1	2	2	1	1	hit	0.385	205.000	8
-206.017	0.351	good	2	3	n/a	n/a	3	3	hit	0.351	206.000	n/a
-207.017	0.367	good	3	3	n/a	n/a	3	3	hit	0.367	207.000	n/a
-208.017	0.411	good	2	1	n/a	n/a	1	1	hit	0.411	208.000	n/a
-209.017	0.343	good	3	2	n/a	n/a	2	2	hit	0.343	209.000	n/a
-210.017	0.817	good	2	2	n/a	n/a	2	n/a	omission	n/a	210.000	n/a
-211.017	0.323	good	3	1	n/a	n/a	1	1	hit	0.323	211.000	n/a
-212.017	0.435	good	1	3	n/a	n/a	3	3	hit	0.435	212.000	n/a
-213.017	0.817	bad	n/a	n/a	2	2	n/a	n/a	correct_rejection	n/a	213.000	16
-214.017	0.276	good	3	3	n/a	n/a	3	3	hit	0.276	214.000	n/a
-215.017	0.285	good	1	2	n/a	n/a	2	2	hit	0.285	215.000	n/a
-216.017	0.334	good	3	2	n/a	n/a	2	2	hit	0.334	216.000	n/a
-217.017	0.569	good	1	3	n/a	n/a	3	1 3	hit	0.569	217.000	n/a
-218.017	0.817	good	1	2	n/a	n/a	2	n/a	omission	n/a	218.000	n/a
-219.017	0.343	good	3	3	n/a	n/a	3	3	hit	0.343	219.000	n/a
-220.017	0.456	good	3	2	n/a	n/a	2	2	hit	0.456	220.000	n/a
-221.017	0.334	good	1	1	n/a	n/a	1	1	hit	0.334	221.000	n/a
-222.017	0.331	good	3	1	n/a	n/a	1	1	hit	0.331	222.000	n/a
-223.017	0.414	good	3	3	n/a	n/a	3	3	hit	0.414	223.000	n/a
-224.017	0.343	good	3	1	n/a	n/a	1	1	hit	0.343	224.000	n/a
-225.017	0.817	bad	n/a	n/a	2	1	n/a	n/a	correct_rejection	n/a	225.000	11
-226.017	0.388	good	3	2	n/a	n/a	2	2	hit	0.388	226.000	n/a
-227.017	0.332	good	1	2	n/a	n/a	2	2	hit	0.332	227.000	n/a
-228.017	0.247	good	1	3	n/a	n/a	3	3	hit	0.247	228.000	n/a
-229.017	0.366	good	2	1	n/a	n/a	1	1	hit	0.366	229.000	n/a
-230.017	0.368	good	1	2	n/a	n/a	2	2	hit	0.368	230.000	n/a
-231.017	0.370	good	3	1	n/a	n/a	1	1	hit	0.370	231.000	n/a
-232.017	0.401	good	2	1	n/a	n/a	1	1	hit	0.401	232.000	n/a
-233.017	0.401	good	1	1	n/a	n/a	1	1	hit	0.401	233.000	n/a
-234.017	0.817	good	3	3	n/a	n/a	3	n/a	omission	n/a	234.000	n/a
-235.017	0.359	good	3	2	n/a	n/a	2	2	hit	0.359	235.000	n/a
-236.017	0.817	bad	n/a	n/a	3	1	n/a	n/a	correct_rejection	n/a	236.000	10
-237.017	0.421	good	2	2	n/a	n/a	2	2	hit	0.421	237.000	n/a
-238.017	0.391	good	1	3	n/a	n/a	3	3	hit	0.391	238.000	n/a
-239.017	0.476	good	2	1	n/a	n/a	1	1	hit	0.476	239.000	n/a
-240.017	0.409	good	2	2	n/a	n/a	2	2	hit	0.409	240.000	n/a
-241.017	0.413	bad	n/a	n/a	1	3	n/a	3	commission	n/a	241.000	4
-242.017	0.422	good	3	1	n/a	n/a	1	1	hit	0.422	242.000	n/a
-243.017	0.437	good	2	2	n/a	n/a	2	2	hit	0.437	243.000	n/a
-244.017	0.339	bad	n/a	n/a	1	2	n/a	2	commission	n/a	244.000	2
-245.017	0.817	both	2	1	2	3	1	1	hit	0.509	245.000	0
-246.017	0.433	good	3	2	n/a	n/a	2	2	hit	0.433	246.000	n/a
-247.017	0.444	good	2	3	n/a	n/a	3	3	hit	0.444	247.000	n/a
-248.017	0.430	good	1	3	n/a	n/a	3	3	hit	0.430	248.000	n/a
-249.017	0.284	good	2	1	n/a	n/a	1	1	hit	0.284	249.000	n/a
-250.017	0.427	good	3	1	n/a	n/a	1	1	hit	0.427	250.000	n/a
-251.017	0.817	both	1	2	1	3	2	2	hit	0.474	251.000	6
-252.017	0.359	good	2	2	n/a	n/a	2	2	hit	0.359	252.000	n/a
-253.017	0.397	good	2	3	n/a	n/a	3	3	hit	0.397	253.000	n/a
-254.017	0.412	good	3	3	n/a	n/a	3	3	hit	0.412	254.000	n/a
-255.017	0.491	good	2	1	n/a	n/a	1	1	hit	0.491	255.000	n/a
-256.017	0.817	both	3	3	1	2	3	3	hit	0.459	256.000	11
-257.017	0.420	good	3	2	n/a	n/a	2	2	hit	0.420	257.000	n/a
-258.017	0.320	good	1	2	n/a	n/a	2	2	hit	0.320	258.000	n/a
-259.017	0.378	good	2	2	n/a	n/a	2	2	hit	0.378	259.000	n/a
-260.017	0.361	good	1	3	n/a	n/a	3	3	hit	0.361	260.000	n/a
-261.017	0.482	good	1	2	n/a	n/a	2	2	hit	0.482	261.000	n/a
-262.017	0.376	good	1	1	n/a	n/a	1	1	hit	0.376	262.000	n/a
-263.017	0.363	good	1	2	n/a	n/a	2	2	hit	0.363	263.000	n/a
-264.017	0.380	good	2	1	n/a	n/a	1	1	hit	0.380	264.000	n/a
-265.017	0.800	both	2	3	3	2	3	3	hit	0.404	265.000	20
-266.017	0.402	good	2	1	n/a	n/a	1	1	hit	0.402	266.000	n/a
-267.017	0.800	both	2	3	3	1	3	3	hit	0.496	267.000	22
-268.017	0.501	good	1	3	n/a	n/a	3	3	hit	0.501	268.000	n/a
-269.017	0.417	good	1	2	n/a	n/a	2	2	hit	0.417	269.000	n/a
-270.017	0.409	good	2	3	n/a	n/a	3	3	hit	0.409	270.000	n/a
-271.017	0.481	good	2	2	n/a	n/a	2	2	hit	0.481	271.000	n/a
-272.017	0.445	good	3	3	n/a	n/a	3	3	hit	0.445	272.000	n/a
-273.017	0.800	bad	n/a	n/a	2	2	n/a	n/a	correct_rejection	n/a	273.000	28
-274.017	0.385	good	3	3	n/a	n/a	3	3	hit	0.385	274.000	n/a
-275.017	0.346	good	1	2	n/a	n/a	2	2	hit	0.346	275.000	n/a
-276.017	0.378	good	3	1	n/a	n/a	1	1	hit	0.378	276.000	n/a
-277.017	0.800	good	2	3	n/a	n/a	3	n/a	omission	n/a	277.000	n/a
-278.017	0.421	good	2	2	n/a	n/a	2	2	hit	0.421	278.000	n/a
-279.017	0.429	good	1	2	n/a	n/a	2	2	hit	0.429	279.000	n/a
-280.017	0.390	good	2	1	n/a	n/a	1	1	hit	0.390	280.000	n/a
-281.017	0.459	good	1	1	n/a	n/a	1	1	hit	0.459	281.000	n/a
-282.017	0.800	both	1	2	1	3	2	2	hit	0.413	282.000	8
-283.017	0.413	good	1	1	n/a	n/a	1	1	hit	0.413	283.000	n/a
-284.017	0.393	good	2	3	n/a	n/a	3	3	hit	0.393	284.000	n/a
-285.017	0.800	both	3	3	3	1	3	1	commission	n/a	285.000	11
-286.017	0.371	good	3	2	n/a	n/a	2	2	hit	0.371	286.000	n/a
-287.017	0.507	good	2	3	n/a	n/a	3	3	hit	0.507	287.000	n/a
-288.017	0.364	good	2	1	n/a	n/a	1	1	hit	0.364	288.000	n/a
-289.017	0.479	good	1	2	n/a	n/a	2	2	hit	0.479	289.000	n/a
-290.017	0.384	good	1	3	n/a	n/a	3	3	hit	0.384	290.000	n/a
-291.017	0.800	good	1	1	n/a	n/a	1	n/a	omission	n/a	291.000	n/a
-292.017	0.377	good	3	2	n/a	n/a	2	2	hit	0.377	292.000	n/a
-293.017	0.403	good	2	2	n/a	n/a	2	2	hit	0.403	293.000	n/a
-294.017	0.368	bad	n/a	n/a	3	2	n/a	2	commission	n/a	294.000	20
-295.017	0.447	good	2	3	n/a	n/a	3	3	hit	0.447	295.000	n/a
-296.017	0.800	both	3	3	2	1	3	3	hit	0.517	296.000	1
-297.017	0.800	good	1	3	n/a	n/a	3	n/a	omission	n/a	297.000	n/a
-298.017	0.401	good	3	2	n/a	n/a	2	2	hit	0.401	298.000	n/a
-299.017	0.800	both	2	1	1	3	1	1	hit	0.485	299.000	4
-300.017	0.473	good	1	2	n/a	n/a	2	2	hit	0.473	300.000	n/a
-301.017	0.472	good	2	3	n/a	n/a	3	3	hit	0.472	301.000	n/a
-302.017	0.487	good	3	3	n/a	n/a	3	3	hit	0.487	302.000	n/a
-303.017	0.390	good	3	1	n/a	n/a	1	1	hit	0.390	303.000	n/a
-304.017	0.800	good	2	3	n/a	n/a	3	n/a	omission	n/a	304.000	n/a
-305.017	0.295	good	1	1	n/a	n/a	1	1	hit	0.295	305.000	n/a
-306.017	0.409	good	1	2	n/a	n/a	2	2	hit	0.409	306.000	n/a
-307.017	0.348	good	2	1	n/a	n/a	1	1	hit	0.348	307.000	n/a
-308.017	0.455	good	1	1	n/a	n/a	1	1	hit	0.455	308.000	n/a
-309.017	0.800	good	2	2	n/a	n/a	2	3	omission	n/a	309.000	n/a
-310.017	0.384	good	1	3	n/a	n/a	3	3	hit	0.384	310.000	n/a
-311.017	0.401	good	3	2	n/a	n/a	2	2	hit	0.401	311.000	n/a
-312.017	0.535	good	1	2	n/a	n/a	2	2	hit	0.535	312.000	n/a
-313.017	0.800	both	2	2	1	3	2	2	hit	0.454	313.000	18
-314.017	0.384	good	3	3	n/a	n/a	3	3	hit	0.384	314.000	n/a
-315.000	0.424	good	1	1	n/a	n/a	1	1	hit	0.424	315.000	n/a
-316.000	0.423	good	1	2	n/a	n/a	2	2	hit	0.423	316.000	n/a
-317.000	0.476	good	1	3	n/a	n/a	3	3	hit	0.476	317.000	n/a
-318.000	0.556	good	2	2	n/a	n/a	2	2	hit	0.556	318.000	n/a
-319.000	0.460	good	2	3	n/a	n/a	3	3	hit	0.460	319.000	n/a
-320.000	0.341	bad	n/a	n/a	1	3	n/a	3	commission	n/a	320.000	25
-321.000	0.476	good	2	1	n/a	n/a	1	1	hit	0.476	321.000	n/a
-322.000	0.417	good	3	3	n/a	n/a	3	3	hit	0.417	322.000	n/a
-323.000	0.373	good	1	2	n/a	n/a	2	2	hit	0.373	323.000	n/a
-324.000	0.406	good	3	3	n/a	n/a	3	3	hit	0.406	324.000	n/a
-325.000	0.463	good	1	2	n/a	n/a	2	2	hit	0.463	325.000	n/a
-326.000	0.423	good	2	1	n/a	n/a	1	1	hit	0.423	326.000	n/a
-327.000	0.800	bad	n/a	n/a	2	3	n/a	n/a	correct_rejection	n/a	327.000	6
-328.000	0.800	both	2	1	2	2	1	2	commission	n/a	328.000	0
-329.000	0.483	good	1	3	n/a	n/a	3	3	hit	0.483	329.000	n/a
-330.000	0.450	good	2	2	n/a	n/a	2	2	hit	0.450	330.000	n/a
-331.000	0.800	both	3	3	1	1	3	3	hit	0.363	331.000	3
-332.000	0.399	good	1	2	n/a	n/a	2	2	hit	0.399	332.000	n/a
-333.000	0.431	good	3	3	n/a	n/a	3	3	hit	0.431	333.000	n/a
-334.000	0.378	good	3	1	n/a	n/a	1	1	hit	0.378	334.000	n/a
-335.000	0.423	good	2	3	n/a	n/a	3	3	hit	0.423	335.000	n/a
-336.000	0.357	good	3	2	n/a	n/a	2	2	hit	0.357	336.000	n/a
-337.000	0.401	good	2	1	n/a	n/a	1	1	hit	0.401	337.000	n/a
-338.000	0.346	good	2	2	n/a	n/a	2	2	hit	0.346	338.000	n/a
-339.000	0.323	good	3	3	n/a	n/a	3	3	hit	0.323	339.000	n/a
-340.000	0.378	good	3	1	n/a	n/a	1	1	hit	0.378	340.000	n/a
-341.000	0.561	both	2	3	3	2	3	3 2	commission	0.411	341.000	13
-342.000	0.800	bad	n/a	n/a	1	1	n/a	n/a	correct_rejection	n/a	342.000	14
-343.000	0.405	good	2	1	n/a	n/a	1	1	hit	0.405	343.000	n/a
-344.000	0.417	good	1	1	n/a	n/a	1	1	hit	0.417	344.000	n/a
-345.000	0.800	bad	n/a	n/a	3	1	n/a	n/a	correct_rejection	n/a	345.000	2
-346.000	0.316	good	3	3	n/a	n/a	3	3	hit	0.316	346.000	n/a
-347.000	0.282	good	1	3	n/a	n/a	3	3	hit	0.282	347.000	n/a
-348.000	0.308	good	3	2	n/a	n/a	2	2	hit	0.308	348.000	n/a
-349.000	0.452	good	2	2	n/a	n/a	2	2	hit	0.452	349.000	n/a
-350.000	0.360	good	1	2	n/a	n/a	2	2	hit	0.360	350.000	n/a
-351.000	0.320	good	3	1	n/a	n/a	1	1	hit	0.320	351.000	n/a
-352.000	0.800	bad	n/a	n/a	2	3	n/a	n/a	correct_rejection	n/a	352.000	6
-353.000	0.385	good	1	3	n/a	n/a	3	3	hit	0.385	353.000	n/a
-354.000	0.357	good	1	2	n/a	n/a	2	2	hit	0.357	354.000	n/a
-355.000	0.800	both	2	3	2	2	3	2	commission	n/a	355.000	2
-356.000	0.371	good	1	2	n/a	n/a	2	2	hit	0.371	356.000	n/a
-357.000	0.326	good	1	1	n/a	n/a	1	1	hit	0.326	357.000	n/a
-358.000	0.308	good	2	2	n/a	n/a	2	2	hit	0.308	358.000	n/a
-359.000	0.286	good	1	1	n/a	n/a	1	1	hit	0.286	359.000	n/a
-360.000	0.345	good	1	3	n/a	n/a	3	3	hit	0.345	360.000	n/a
-361.000	0.800	bad	n/a	n/a	1	1	n/a	n/a	correct_rejection	n/a	361.000	8
-362.000	0.800	both	1	3	3	2	3	3	hit	0.397	362.000	0
-363.000	0.800	both	1	1	2	2	1	n/a	omission	n/a	363.000	1
-364.000	0.389	good	3	2	n/a	n/a	2	2	hit	0.389	364.000	n/a
-365.000	0.225	good	2	3	n/a	n/a	3	3	hit	0.225	365.000	n/a
-366.000	0.800	both	3	2	3	1	2	2	hit	0.367	366.000	4
-367.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	367.000	5
-368.000	0.450	good	1	2	n/a	n/a	2	2	hit	0.450	368.000	n/a
-369.000	0.618	good	1	1	n/a	n/a	1	1	hit	0.618	369.000	n/a
-370.000	0.488	good	2	1	n/a	n/a	1	1	hit	0.488	370.000	n/a
-371.000	0.392	good	3	1	n/a	n/a	1	1	hit	0.392	371.000	n/a
-372.000	0.800	bad	n/a	n/a	3	2	n/a	n/a	correct_rejection	n/a	372.000	4
-373.000	0.604	good	2	3	n/a	n/a	3	3	hit	0.604	373.000	n/a
-374.000	0.448	good	1	3	n/a	n/a	3	3	hit	0.448	374.000	n/a
-375.000	0.285	good	3	3	n/a	n/a	3	3	hit	0.285	375.000	n/a
-376.000	0.800	both	2	3	1	2	3	3	hit	0.531	376.000	3
-377.000	0.423	good	2	2	n/a	n/a	2	2	hit	0.423	377.000	n/a
-378.000	0.800	good	2	3	n/a	n/a	3	n/a	omission	n/a	378.000	n/a
-379.000	0.466	good	3	2	n/a	n/a	2	2	hit	0.466	379.000	n/a
-380.000	0.277	good	1	1	n/a	n/a	1	1	hit	0.277	380.000	n/a
-381.000	0.404	good	3	1	n/a	n/a	1	1	hit	0.404	381.000	n/a
-382.000	0.550	good	1	2	n/a	n/a	2	2	hit	0.550	382.000	n/a
-383.000	0.393	good	3	1	n/a	n/a	1	1	hit	0.393	383.000	n/a
-384.000	0.319	good	2	2	n/a	n/a	2	2	hit	0.319	384.000	n/a
-385.000	0.515	good	1	1	n/a	n/a	1	1	hit	0.515	385.000	n/a
-386.000	0.363	good	2	3	n/a	n/a	3	3	hit	0.363	386.000	n/a
-387.000	0.800	both	1	2	1	3	2	2	hit	0.548	387.000	14
-388.000	0.800	good	1	1	n/a	n/a	1	n/a	omission	n/a	388.000	n/a
-389.000	0.309	good	2	3	n/a	n/a	3	3	hit	0.309	389.000	n/a
-390.000	0.584	good	2	1	n/a	n/a	1	1	hit	0.584	390.000	n/a
-391.000	0.391	good	1	3	n/a	n/a	3	3	hit	0.391	391.000	n/a
-392.000	0.236	good	3	3	n/a	n/a	3	3	hit	0.236	392.000	n/a
-393.000	0.287	good	3	1	n/a	n/a	1	1	hit	0.287	393.000	n/a
-394.000	0.800	bad	n/a	n/a	1	2	n/a	n/a	correct_rejection	n/a	394.000	21
-395.000	0.800	good	1	3	n/a	n/a	3	1	omission	n/a	395.000	n/a
-396.000	0.459	good	3	3	n/a	n/a	3	3	hit	0.459	396.000	n/a
-397.000	0.800	good	2	3	n/a	n/a	3	n/a	omission	n/a	397.000	n/a
-398.000	0.502	good	2	1	n/a	n/a	1	1	hit	0.502	398.000	n/a
-399.000	0.800	both	1	2	2	3	2	2	hit	0.420	399.000	4
-400.000	0.257	good	3	2	n/a	n/a	2	2	hit	0.257	400.000	n/a
-401.000	0.392	good	2	3	n/a	n/a	3	3	hit	0.392	401.000	n/a
-402.000	0.800	both	3	1	2	2	1	1	hit	0.318	402.000	7
-403.000	0.406	good	1	1	n/a	n/a	1	1	hit	0.406	403.000	n/a
-404.000	0.281	good	2	1	n/a	n/a	1	1	hit	0.281	404.000	n/a
-405.000	0.352	good	3	1	n/a	n/a	1	1	hit	0.352	405.000	n/a
-406.000	0.467	good	1	1	n/a	n/a	1	1	hit	0.467	406.000	n/a
-407.000	0.394	good	2	1	n/a	n/a	1	1	hit	0.394	407.000	n/a
-408.000	0.424	good	3	1	n/a	n/a	1	1	hit	0.424	408.000	n/a
-409.000	0.454	good	2	3	n/a	n/a	3	3	hit	0.454	409.000	n/a
-410.000	0.383	good	3	1	n/a	n/a	1	1	hit	0.383	410.000	n/a
-411.000	0.393	good	2	3	n/a	n/a	3	3	hit	0.393	411.000	n/a
-412.000	0.397	bad	n/a	n/a	3	1	n/a	1	commission	n/a	412.000	17
-413.000	0.557	good	1	3	n/a	n/a	3	3	hit	0.557	413.000	n/a
-414.000	0.498	good	3	2	n/a	n/a	2	2	hit	0.498	414.000	n/a
-415.000	0.800	both	1	2	2	1	2	2	hit	0.473	415.000	2
-416.000	0.354	good	1	1	n/a	n/a	1	1	hit	0.354	416.000	n/a
-417.000	0.532	good	1	3	n/a	n/a	3	3	hit	0.532	417.000	n/a
-418.000	0.463	good	1	1	n/a	n/a	1	1	hit	0.463	418.000	n/a
-419.000	0.553	good	2	2	n/a	n/a	2	2	hit	0.553	419.000	n/a
-420.000	0.385	good	3	2	n/a	n/a	2	2	hit	0.385	420.000	n/a
-421.000	0.400	good	1	1	n/a	n/a	1	1	hit	0.400	421.000	n/a
-422.000	0.458	good	3	3	n/a	n/a	3	3	hit	0.458	422.000	n/a
-423.000	0.800	bad	n/a	n/a	1	3	n/a	n/a	correct_rejection	n/a	423.000	10
-424.000	0.559	good	1	2	n/a	n/a	2	2	hit	0.559	424.000	n/a
-425.000	0.426	good	3	3	n/a	n/a	3	3	hit	0.426	425.000	n/a
-426.000	0.800	both	2	1	1	2	1	1	hit	0.499	426.000	2
-427.000	0.800	both	3	3	2	2	3	3	hit	0.602	427.000	3
-428.000	0.800	both	3	2	3	1	2	2	hit	0.528	428.000	4
-429.000	0.526	good	2	2	n/a	n/a	2	2	hit	0.526	429.000	n/a
-430.000	0.414	good	3	3	n/a	n/a	3	3	hit	0.414	430.000	n/a
-431.000	0.184	good	2	3	n/a	n/a	3	3	hit	0.184	431.000	n/a
-432.000	0.305	good	3	2	n/a	n/a	2	2	hit	0.305	432.000	n/a
-433.000	0.317	good	3	1	n/a	n/a	1	1	hit	0.317	433.000	n/a
-434.000	0.800	bad	n/a	n/a	3	2	n/a	n/a	correct_rejection	n/a	434.000	10
-435.000	0.369	good	2	2	n/a	n/a	2	2	hit	0.369	435.000	n/a
-436.000	0.562	good	2	1	n/a	n/a	1	1	hit	0.562	436.000	n/a
-437.000	0.383	good	3	1	n/a	n/a	1	1	hit	0.383	437.000	n/a
-438.000	0.800	bad	n/a	n/a	1	3	n/a	n/a	correct_rejection	n/a	438.000	3
-439.000	0.434	good	3	3	n/a	n/a	3	3	hit	0.434	439.000	n/a
-440.000	0.445	good	2	1	n/a	n/a	1	1	hit	0.445	440.000	n/a
-441.000	0.338	good	2	3	n/a	n/a	3	3	hit	0.338	441.000	n/a
-442.000	0.486	bad	n/a	n/a	3	2	n/a	2	commission	n/a	442.000	3
-443.000	0.517	good	3	3	n/a	n/a	3	3	hit	0.517	443.000	n/a
-444.000	0.605	good	3	2	n/a	n/a	2	2	hit	0.605	444.000	n/a
-445.000	0.470	good	2	2	n/a	n/a	2	2	hit	0.470	445.000	n/a
-446.000	0.800	bad	n/a	n/a	3	2	n/a	n/a	correct_rejection	n/a	446.000	3
-447.000	0.557	good	3	3	n/a	n/a	3	3	hit	0.557	447.000	n/a
-448.000	0.467	good	2	1	n/a	n/a	1	1	hit	0.467	448.000	n/a
-449.000	0.525	good	2	2	n/a	n/a	2	2	hit	0.525	449.000	n/a
-450.000	0.800	bad	n/a	n/a	2	3	n/a	n/a	correct_rejection	n/a	450.000	3
-451.000	0.575	good	2	2	n/a	n/a	2	2	hit	0.575	451.000	n/a
-452.000	0.521	good	2	3	n/a	n/a	3	3	hit	0.521	452.000	n/a
-453.000	0.520	good	3	1	n/a	n/a	1	1	hit	0.520	453.000	n/a
-454.000	0.800	both	1	2	2	3	2	2	hit	0.516	454.000	3
-455.000	0.503	good	2	2	n/a	n/a	2	2	hit	0.503	455.000	n/a
-456.000	0.800	bad	n/a	n/a	1	1	n/a	n/a	correct_rejection	n/a	456.000	5
-457.000	0.437	good	2	2	n/a	n/a	2	2	hit	0.437	457.000	n/a
-458.000	0.800	both	3	3	3	1	3	3	hit	0.599	458.000	1
-459.000	0.461	good	2	3	n/a	n/a	3	3	hit	0.461	459.000	n/a
-460.000	0.800	bad	n/a	n/a	1	1	n/a	n/a	correct_rejection	n/a	460.000	3
-461.000	0.417	good	2	3	n/a	n/a	3	3	hit	0.417	461.000	n/a
-462.000	0.536	good	1	1	n/a	n/a	1	1	hit	0.536	462.000	n/a
-463.000	0.386	good	2	2	n/a	n/a	2	2	hit	0.386	463.000	n/a
-464.000	0.442	good	2	1	n/a	n/a	1	1	hit	0.442	464.000	n/a
-465.000	0.414	good	3	3	n/a	n/a	3	3	hit	0.414	465.000	n/a
-466.000	0.366	good	2	2	n/a	n/a	2	2	hit	0.366	466.000	n/a
-467.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	467.000	6
-468.000	0.800	both	3	1	1	2	1	1	hit	0.489	468.000	0
-469.000	0.383	good	2	2	n/a	n/a	2	2	hit	0.383	469.000	n/a
-470.000	0.613	good	2	3	n/a	n/a	3	3	hit	0.613	470.000	n/a
-471.000	0.800	both	1	1	3	3	1	1	hit	0.401	471.000	3
-472.000	0.800	bad	n/a	n/a	3	1	n/a	n/a	correct_rejection	n/a	472.000	4
-473.000	0.479	good	2	3	n/a	n/a	3	3	hit	0.479	473.000	n/a
-474.000	0.507	good	2	2	n/a	n/a	2	2	hit	0.507	474.000	n/a
-475.000	0.310	bad	n/a	n/a	1	3	n/a	3	commission	n/a	475.000	2
-476.000	0.625	good	3	1	n/a	n/a	1	1	hit	0.625	476.000	n/a
-477.000	0.491	good	1	2	n/a	n/a	2	2	hit	0.491	477.000	n/a
-478.000	0.372	good	2	2	n/a	n/a	2	2	hit	0.372	478.000	n/a
-479.000	0.670	good	1	3	n/a	n/a	3	3	hit	0.670	479.000	n/a
-480.000	0.404	good	3	1	n/a	n/a	1	1	hit	0.404	480.000	n/a
-481.000	0.800	both	1	2	3	3	2	2	hit	0.691	481.000	5
-482.000	0.800	good	3	2	n/a	n/a	2	n/a	omission	n/a	482.000	n/a
-483.000	0.443	good	2	3	n/a	n/a	3	3	hit	0.443	483.000	n/a
-484.000	0.457	good	2	2	n/a	n/a	2	2	hit	0.457	484.000	n/a
-485.000	0.425	good	3	1	n/a	n/a	1	1	hit	0.425	485.000	n/a
-486.000	0.800	bad	n/a	n/a	1	3	n/a	n/a	correct_rejection	n/a	486.000	10
-487.000	0.800	both	3	3	3	1	3	n/a	omission	n/a	487.000	0
-488.000	0.519	good	1	2	n/a	n/a	2	2	hit	0.519	488.000	n/a
-489.000	0.398	good	3	1	n/a	n/a	1	1	hit	0.398	489.000	n/a
-490.000	0.402	good	1	1	n/a	n/a	1	1	hit	0.402	490.000	n/a
-491.000	0.800	bad	n/a	n/a	3	1	n/a	n/a	correct_rejection	n/a	491.000	4
-492.000	0.450	good	1	2	n/a	n/a	2	2	hit	0.450	492.000	n/a
-493.000	0.441	good	2	2	n/a	n/a	2	2	hit	0.441	493.000	n/a
-494.000	0.438	good	2	1	n/a	n/a	1	1	hit	0.438	494.000	n/a
-495.000	0.480	good	3	1	n/a	n/a	1	1	hit	0.480	495.000	n/a
-496.000	0.427	good	2	2	n/a	n/a	2	2	hit	0.427	496.000	n/a
-497.000	0.559	good	3	1	n/a	n/a	1	1	hit	0.559	497.000	n/a
-498.000	0.288	good	2	3	n/a	n/a	3	3	hit	0.288	498.000	n/a
-499.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	499.000	7
-500.000	0.409	good	1	2	n/a	n/a	2	2	hit	0.409	500.000	n/a
-501.000	0.513	good	1	1	n/a	n/a	1	1	hit	0.513	501.000	n/a
-502.000	0.445	good	1	3	n/a	n/a	3	3	hit	0.445	502.000	n/a
-503.000	0.800	both	2	1	2	2	1	1	hit	0.406	503.000	3
-504.000	0.507	good	1	2	n/a	n/a	2	2	hit	0.507	504.000	n/a
-505.000	0.585	good	3	1	n/a	n/a	1	1	hit	0.585	505.000	n/a
-506.000	0.506	good	2	1	n/a	n/a	1	1	hit	0.506	506.000	n/a
-507.000	0.566	good	1	1	n/a	n/a	1	1	hit	0.566	507.000	n/a
-508.000	0.344	good	2	3	n/a	n/a	3	3	hit	0.344	508.000	n/a
-509.000	0.800	both	3	3	2	2	3	3	hit	0.502	509.000	9
-510.000	0.800	bad	n/a	n/a	1	2	n/a	n/a	correct_rejection	n/a	510.000	10
-511.000	0.545	good	2	3	n/a	n/a	3	3	hit	0.545	511.000	n/a
-512.000	0.557	good	1	2	n/a	n/a	2	2	hit	0.557	512.000	n/a
-513.000	0.800	bad	n/a	n/a	3	1	n/a	n/a	correct_rejection	n/a	513.000	2
-514.000	0.423	good	2	1	n/a	n/a	1	1	hit	0.423	514.000	n/a
-515.000	0.485	good	3	1	n/a	n/a	1	1	hit	0.485	515.000	n/a
-516.000	0.496	good	1	1	n/a	n/a	1	1	hit	0.496	516.000	n/a
-517.000	0.518	good	1	3	n/a	n/a	3	3	hit	0.518	517.000	n/a
-518.000	0.643	good	2	2	n/a	n/a	2	2	hit	0.643	518.000	n/a
-519.000	0.535	good	2	3	n/a	n/a	3	3	hit	0.535	519.000	n/a
-520.000	0.800	bad	n/a	n/a	2	2	n/a	n/a	correct_rejection	n/a	520.000	6
-521.000	0.421	good	1	2	n/a	n/a	2	2	hit	0.421	521.000	n/a
-522.000	0.397	good	3	2	n/a	n/a	2	2	hit	0.397	522.000	n/a
-523.000	0.800	bad	n/a	n/a	1	2	n/a	n/a	correct_rejection	n/a	523.000	2
-524.000	0.617	good	1	1	n/a	n/a	1	1	hit	0.617	524.000	n/a
-525.000	0.626	both	2	2	2	3	2	2 3	commission	0.476	525.000	1
-526.000	0.511	good	1	2	n/a	n/a	2	2	hit	0.511	526.000	n/a
-527.000	0.817	bad	n/a	n/a	3	2	n/a	n/a	correct_rejection	n/a	527.000	3
-528.000	0.392	good	3	3	n/a	n/a	3	3	hit	0.392	528.000	n/a
-529.000	0.532	good	1	1	n/a	n/a	1	1	hit	0.532	529.000	n/a
-530.000	0.467	good	2	2	n/a	n/a	2	2	hit	0.467	530.000	n/a
-531.000	0.817	good	1	3	n/a	n/a	3	n/a	omission	n/a	531.000	n/a
-532.000	0.817	good	2	1	n/a	n/a	1	n/a	omission	n/a	532.000	n/a
-533.000	0.817	both	3	2	1	1	2	2	hit	0.567	533.000	5
-534.000	0.483	good	3	1	n/a	n/a	1	1	hit	0.483	534.000	n/a
-535.000	0.492	good	1	3	n/a	n/a	3	3	hit	0.492	535.000	n/a
-536.000	0.561	good	3	1	n/a	n/a	1	1	hit	0.561	536.000	n/a
-537.000	0.577	good	3	3	n/a	n/a	3	3	hit	0.577	537.000	n/a
-538.000	0.716	good	2	3	n/a	n/a	3	3	hit	0.716	538.000	n/a
-539.000	0.817	both	3	1	3	3	1	3	commission	n/a	539.000	11
-540.000	0.575	good	2	1	n/a	n/a	1	2 1	hit	0.575	540.000	n/a
-541.000	0.505	good	3	1	n/a	n/a	1	1	hit	0.505	541.000	n/a
-542.000	0.535	good	3	3	n/a	n/a	3	3	hit	0.535	542.000	n/a
-543.000	0.497	good	1	3	n/a	n/a	3	3	hit	0.497	543.000	n/a
-544.000	0.817	both	2	2	3	3	2	2	hit	0.560	544.000	16
-545.000	0.635	good	1	3	n/a	n/a	3	3	hit	0.635	545.000	n/a
-546.000	0.323	good	1	2	n/a	n/a	2	2	hit	0.323	546.000	n/a
-547.000	0.422	good	1	1	n/a	n/a	1	1	hit	0.422	547.000	n/a
-548.000	0.428	bad	n/a	n/a	1	3	n/a	3	commission	n/a	548.000	20
-549.000	0.279	good	1	1	n/a	n/a	1	1	hit	0.279	549.000	n/a
-550.000	0.278	good	2	3	n/a	n/a	3	3	hit	0.278	550.000	n/a
-551.000	0.817	bad	n/a	n/a	3	3	n/a	n/a	correct_rejection	n/a	551.000	2
-552.000	0.478	good	2	1	n/a	n/a	1	1	hit	0.478	552.000	n/a
-553.000	0.476	good	1	1	n/a	n/a	1	1	hit	0.476	553.000	n/a
-554.000	0.487	good	1	2	n/a	n/a	2	2	hit	0.487	554.000	n/a
-555.000	0.817	both	3	2	3	1	2	2	hit	0.498	555.000	3
-556.000	0.613	good	2	3	n/a	n/a	3	3	hit	0.613	556.000	n/a
-557.000	0.294	good	3	3	n/a	n/a	3	3	hit	0.294	557.000	n/a
-558.000	0.484	good	1	3	n/a	n/a	3	3	hit	0.484	558.000	n/a
-559.000	0.357	good	3	3	n/a	n/a	3	3	hit	0.357	559.000	n/a
-560.000	0.338	good	1	3	n/a	n/a	3	3	hit	0.338	560.000	n/a
-561.000	0.387	good	3	2	n/a	n/a	2	2	hit	0.387	561.000	n/a
-562.000	0.817	bad	n/a	n/a	1	3	n/a	n/a	correct_rejection	n/a	562.000	10
-563.000	0.527	good	1	2	n/a	n/a	2	2	hit	0.527	563.000	n/a
-564.000	0.499	good	2	2	n/a	n/a	2	2	hit	0.499	564.000	n/a
-565.000	0.471	good	3	3	n/a	n/a	3	3	hit	0.471	565.000	n/a
-566.000	0.543	good	3	1	n/a	n/a	1	1	hit	0.543	566.000	n/a
-567.000	0.817	both	1	2	1	3	2	2	hit	0.415	567.000	4
-568.000	0.477	good	3	3	n/a	n/a	3	3	hit	0.477	568.000	n/a
-569.000	0.416	good	3	1	n/a	n/a	1	1	hit	0.416	569.000	n/a
-570.000	0.538	good	1	1	n/a	n/a	1	1	hit	0.538	570.000	n/a
-571.000	0.480	good	3	2	n/a	n/a	2	2	hit	0.480	571.000	n/a
-572.000	0.304	good	3	3	n/a	n/a	3	3	hit	0.304	572.000	n/a
-573.000	0.817	both	2	2	2	3	2	2	hit	0.414	573.000	10
-574.000	0.467	good	2	1	n/a	n/a	1	1	hit	0.467	574.000	n/a
-575.000	0.817	bad	n/a	n/a	3	1	n/a	n/a	correct_rejection	n/a	575.000	12
-576.000	0.333	good	2	2	n/a	n/a	2	2	hit	0.333	576.000	n/a
-577.000	0.463	good	1	1	n/a	n/a	1	1	hit	0.463	577.000	n/a
-578.000	0.476	good	2	1	n/a	n/a	1	1	hit	0.476	578.000	n/a
-579.000	0.494	good	3	3	n/a	n/a	3	3	hit	0.494	579.000	n/a
-580.000	0.464	good	2	2	n/a	n/a	2	2	hit	0.464	580.000	n/a
-581.000	0.429	good	2	3	n/a	n/a	3	3	hit	0.429	581.000	n/a
-582.000	0.264	good	2	2	n/a	n/a	2	2	hit	0.264	582.000	n/a
-583.000	0.664	good	3	2	n/a	n/a	2	2	hit	0.664	583.000	n/a
-584.000	0.817	both	1	2	2	1	2	2	hit	0.391	584.000	8
-585.000	0.426	good	3	2	n/a	n/a	2	2	hit	0.426	585.000	n/a
-586.000	0.817	both	2	3	2	1	3	n/a	omission	n/a	586.000	10
-587.000	0.420	good	1	3	n/a	n/a	3	3	hit	0.420	587.000	n/a
-588.000	0.560	good	3	2	n/a	n/a	2	2	hit	0.560	588.000	n/a
-589.000	0.309	good	3	1	n/a	n/a	1	1	hit	0.309	589.000	n/a
-590.000	0.343	good	1	3	n/a	n/a	3	3	hit	0.343	590.000	n/a
-591.000	0.234	good	2	3	n/a	n/a	3	3	hit	0.234	591.000	n/a
-592.000	0.353	good	3	3	n/a	n/a	3	3	hit	0.353	592.000	n/a
-593.000	0.584	good	1	2	n/a	n/a	2	2	hit	0.584	593.000	n/a
-594.000	0.817	bad	n/a	n/a	2	1	n/a	n/a	correct_rejection	n/a	594.000	18
-595.000	0.511	good	1	1	n/a	n/a	1	1	hit	0.511	595.000	n/a
-596.000	0.817	good	2	2	n/a	n/a	2	n/a	omission	n/a	596.000	n/a
-597.000	0.392	good	2	3	n/a	n/a	3	3	hit	0.392	597.000	n/a
-598.000	0.302	good	3	2	n/a	n/a	2	2	hit	0.302	598.000	n/a
-599.000	0.389	good	3	3	n/a	n/a	3	3	hit	0.389	599.000	n/a
-600.000	0.351	good	1	3	n/a	n/a	3	3	hit	0.351	600.000	n/a
-601.000	0.432	good	3	1	n/a	n/a	1	1	hit	0.432	601.000	n/a
+onset	duration	trial_type	good_row	good_col	bad_row	bad_col	expected_button	pressed_buttons	press_times	outcome	response_time	scheduled_onset	preceding_go
+2.000	0.292	good	2	3	n/a	n/a	3	3	0.2920	hit	0.2920	2.000	n/a
+3.017	0.408	good	1	3	n/a	n/a	3	3	0.4083	hit	0.4083	3.000	n/a
+4.017	0.352	good	1	1	n/a	n/a	1	1	0.3523	hit	0.3523	4.000	n/a
+5.000	0.325	good	1	3	n/a	n/a	3	3	0.3250	hit	0.3250	5.000	n/a
+6.000	0.386	good	2	3	n/a	n/a	3	3	0.3860	hit	0.3860	6.000	n/a
+7.000	0.454	good	2	1	n/a	n/a	1	1	0.4540	hit	0.4540	7.000	n/a
+8.000	0.424	good	3	3	n/a	n/a	3	3	0.4240	hit	0.4240	8.000	n/a
+9.000	0.350	good	1	2	n/a	n/a	2	2	0.3500	hit	0.3500	9.000	n/a
+10.017	0.416	good	3	3	n/a	n/a	3	3	0.4163	hit	0.4163	10.000	n/a
+11.017	0.430	good	1	2	n/a	n/a	2	2	0.4303	hit	0.4303	11.000	n/a
+12.017	0.463	good	3	2	n/a	n/a	2	2	0.4633	hit	0.4633	12.000	n/a
+13.017	0.412	good	1	3	n/a	n/a	3	3	0.4123	hit	0.4123	13.000	n/a
+14.017	0.348	good	2	2	n/a	n/a	2	2	0.3483	hit	0.3483	14.000	n/a
+15.017	0.817	bad	n/a	n/a	1	3	n/a	n/a	n/a	correct_rejection	n/a	15.000	13
+16.017	0.395	good	2	2	n/a	n/a	2	2	0.3953	hit	0.3953	16.000	n/a
+17.017	0.293	good	1	3	n/a	n/a	3	3	0.2933	hit	0.2933	17.000	n/a
+18.017	0.321	good	3	2	n/a	n/a	2	2	0.3213	hit	0.3213	18.000	n/a
+19.017	0.431	good	1	2	n/a	n/a	2	2	0.4313	hit	0.4313	19.000	n/a
+20.000	0.800	both	1	1	1	3	1	1	0.3510	hit	0.3510	20.000	4
+21.000	0.375	good	3	1	n/a	n/a	1	1	0.3750	hit	0.3750	21.000	n/a
+22.000	0.545	bad	n/a	n/a	2	1	n/a	1	0.5450	commission	n/a	22.000	6
+23.000	0.339	good	1	1	n/a	n/a	1	1	0.3390	hit	0.3390	23.000	n/a
+24.000	0.375	good	3	1	n/a	n/a	1	1	0.3750	hit	0.3750	24.000	n/a
+25.000	0.444	good	1	1	n/a	n/a	1	1	0.4440	hit	0.4440	25.000	n/a
+26.000	0.800	both	2	1	2	2	1	1	0.5090	hit	0.5090	26.000	3
+27.000	0.390	good	1	1	n/a	n/a	1	1	0.3900	hit	0.3900	27.000	n/a
+28.000	0.408	good	3	1	n/a	n/a	1	1	0.4080	hit	0.4080	28.000	n/a
+29.000	0.462	good	1	3	n/a	n/a	3	3	0.4620	hit	0.4620	29.000	n/a
+30.000	0.449	good	2	1	n/a	n/a	1	1	0.4490	hit	0.4490	30.000	n/a
+31.000	0.422	good	1	1	n/a	n/a	1	1	0.4220	hit	0.4220	31.000	n/a
+32.000	0.393	good	3	2	n/a	n/a	2	2	0.3930	hit	0.3930	32.000	n/a
+33.000	0.361	good	1	2	n/a	n/a	2	2	0.3610	hit	0.3610	33.000	n/a
+34.000	0.405	good	2	3	n/a	n/a	3	3	0.4050	hit	0.4050	34.000	n/a
+35.000	0.553	good	1	2	n/a	n/a	2	1 2	0.3830 0.5530	hit	0.5530	35.000	n/a
+36.000	0.460	good	2	2	n/a	n/a	2	2	0.4600	hit	0.4600	36.000	n/a
+37.000	0.384	good	1	1	n/a	n/a	1	1	0.3840	hit	0.3840	37.000	n/a
+38.000	0.524	good	2	2	n/a	n/a	2	2	0.5240	hit	0.5240	38.000	n/a
+39.000	0.817	bad	n/a	n/a	1	1	n/a	n/a	n/a	correct_rejection	n/a	39.000	16
+40.017	0.385	good	3	3	n/a	n/a	3	3	0.3853	hit	0.3853	40.000	n/a
+41.017	0.817	both	3	2	2	1	2	2	0.5363	hit	0.5363	41.000	1
+42.017	0.278	good	1	3	n/a	n/a	3	3	0.2783	hit	0.2783	42.000	n/a
+43.017	0.397	good	3	1	n/a	n/a	1	1	0.3973	hit	0.3973	43.000	n/a
+44.017	0.633	both	2	1	1	2	1	1 2	0.4833 0.6333	commission	0.4833	44.000	4
+45.017	0.413	good	3	1	n/a	n/a	1	1	0.4133	hit	0.4133	45.000	n/a
+46.017	0.455	bad	n/a	n/a	2	3	n/a	3	0.4553	commission	n/a	46.000	6
+47.017	0.325	good	2	1	n/a	n/a	1	1	0.3253	hit	0.3253	47.000	n/a
+48.017	0.353	good	3	3	n/a	n/a	3	3	0.3533	hit	0.3533	48.000	n/a
+49.017	0.332	good	2	2	n/a	n/a	2	2	0.3323	hit	0.3323	49.000	n/a
+50.017	0.817	bad	n/a	n/a	1	1	n/a	n/a	n/a	correct_rejection	n/a	50.000	3
+51.017	0.455	good	2	3	n/a	n/a	3	3	0.4553	hit	0.4553	51.000	n/a
+52.017	0.817	both	3	1	3	2	1	1	0.5403	hit	0.5403	52.000	1
+53.017	0.817	both	2	1	3	3	1	1	0.3823	hit	0.3823	53.000	2
+54.017	0.341	good	3	1	n/a	n/a	1	1	0.3413	hit	0.3413	54.000	n/a
+55.017	0.817	both	2	1	3	3	1	1	0.4583	hit	0.4583	55.000	4
+56.017	0.303	good	3	2	n/a	n/a	2	2	0.3033	hit	0.3033	56.000	n/a
+57.017	0.353	good	1	3	n/a	n/a	3	3	0.3533	hit	0.3533	57.000	n/a
+58.017	0.370	good	1	2	n/a	n/a	2	2	0.3703	hit	0.3703	58.000	n/a
+59.017	0.817	bad	n/a	n/a	2	3	n/a	n/a	n/a	correct_rejection	n/a	59.000	8
+60.017	0.412	good	3	3	n/a	n/a	3	3	0.4123	hit	0.4123	60.000	n/a
+61.017	0.378	good	1	2	n/a	n/a	2	2	0.3783	hit	0.3783	61.000	n/a
+62.017	0.474	good	2	2	n/a	n/a	2	2	0.4743	hit	0.4743	62.000	n/a
+63.017	0.425	good	1	3	n/a	n/a	3	3	0.4253	hit	0.4253	63.000	n/a
+64.017	0.411	good	2	3	n/a	n/a	3	3	0.4113	hit	0.4113	64.000	n/a
+65.017	0.328	good	1	2	n/a	n/a	2	2	0.3283	hit	0.3283	65.000	n/a
+66.017	0.486	good	3	3	n/a	n/a	3	3	0.4863	hit	0.4863	66.000	n/a
+67.017	0.376	good	3	2	n/a	n/a	2	2	0.3763	hit	0.3763	67.000	n/a
+68.017	0.393	good	2	1	n/a	n/a	1	1	0.3933	hit	0.3933	68.000	n/a
+69.017	0.800	both	1	2	3	3	2	2	0.4013	hit	0.4013	69.000	9
+70.017	0.408	good	1	1	n/a	n/a	1	1	0.4083	hit	0.4083	70.000	n/a
+71.017	0.422	good	2	3	n/a	n/a	3	3	0.4223	hit	0.4223	71.000	n/a
+72.017	0.503	good	3	2	n/a	n/a	2	2	0.5033	hit	0.5033	72.000	n/a
+73.017	0.424	good	1	1	n/a	n/a	1	1	0.4243	hit	0.4243	73.000	n/a
+74.017	0.800	good	1	2	n/a	n/a	2	n/a	n/a	omission	n/a	74.000	n/a
+75.017	0.443	good	3	2	n/a	n/a	2	2	0.4433	hit	0.4433	75.000	n/a
+76.017	0.466	good	3	1	n/a	n/a	1	1	0.4663	hit	0.4663	76.000	n/a
+77.017	0.800	good	1	2	n/a	n/a	2	1	0.4063	omission	n/a	77.000	n/a
+78.017	0.420	good	2	1	n/a	n/a	1	1	0.4203	hit	0.4203	78.000	n/a
+79.000	0.399	good	1	3	n/a	n/a	3	3	0.3990	hit	0.3990	79.000	n/a
+80.000	0.461	good	2	1	n/a	n/a	1	1	0.4610	hit	0.4610	80.000	n/a
+81.000	0.434	good	1	1	n/a	n/a	1	1	0.4340	hit	0.4340	81.000	n/a
+82.000	0.408	bad	n/a	n/a	3	1	n/a	1	0.4080	commission	n/a	82.000	22
+83.000	0.314	good	1	2	n/a	n/a	2	2	0.3140	hit	0.3140	83.000	n/a
+84.000	0.368	good	3	1	n/a	n/a	1	1	0.3680	hit	0.3680	84.000	n/a
+85.000	0.399	good	2	3	n/a	n/a	3	3	0.3990	hit	0.3990	85.000	n/a
+86.000	0.401	good	3	1	n/a	n/a	1	1	0.4010	hit	0.4010	86.000	n/a
+87.000	0.458	good	1	3	n/a	n/a	3	3	0.4580	hit	0.4580	87.000	n/a
+88.000	0.483	good	3	1	n/a	n/a	1	1	0.4830	hit	0.4830	88.000	n/a
+89.000	0.368	good	1	3	n/a	n/a	3	3	0.3680	hit	0.3680	89.000	n/a
+90.000	0.800	bad	n/a	n/a	3	2	n/a	n/a	n/a	correct_rejection	n/a	90.000	7
+91.000	0.482	good	1	3	n/a	n/a	3	3	0.4820	hit	0.4820	91.000	n/a
+92.000	0.800	good	1	1	n/a	n/a	1	3	0.4280	omission	n/a	92.000	n/a
+93.000	0.392	good	3	3	n/a	n/a	3	3	0.3920	hit	0.3920	93.000	n/a
+94.000	0.800	both	1	3	3	1	3	3	0.4320	hit	0.4320	94.000	3
+95.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	95.000	4
+96.000	0.800	both	2	3	3	1	3	3	0.4690	hit	0.4690	96.000	0
+97.000	0.423	good	1	2	n/a	n/a	2	2	0.4230	hit	0.4230	97.000	n/a
+98.000	0.448	good	2	1	n/a	n/a	1	1	0.4480	hit	0.4480	98.000	n/a
+99.000	0.418	good	3	3	n/a	n/a	3	3	0.4180	hit	0.4180	99.000	n/a
+100.000	0.370	good	1	2	n/a	n/a	2	2	0.3700	hit	0.3700	100.000	n/a
+101.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	101.000	5
+102.000	0.404	good	2	3	n/a	n/a	3	3	0.4040	hit	0.4040	102.000	n/a
+103.000	0.354	good	2	2	n/a	n/a	2	2	0.3540	hit	0.3540	103.000	n/a
+104.000	0.407	good	3	1	n/a	n/a	1	1	0.4070	hit	0.4070	104.000	n/a
+105.000	0.477	good	1	3	n/a	n/a	3	3	0.4770	hit	0.4770	105.000	n/a
+106.000	0.358	good	3	3	n/a	n/a	3	3	0.3580	hit	0.3580	106.000	n/a
+107.000	0.415	good	2	1	n/a	n/a	1	1	0.4150	hit	0.4150	107.000	n/a
+108.000	0.422	good	1	3	n/a	n/a	3	3	0.4220	hit	0.4220	108.000	n/a
+109.000	0.477	good	2	3	n/a	n/a	3	3	0.4770	hit	0.4770	109.000	n/a
+110.000	0.354	good	3	3	n/a	n/a	3	3	0.3540	hit	0.3540	110.000	n/a
+111.000	0.428	good	2	2	n/a	n/a	2	2	0.4280	hit	0.4280	111.000	n/a
+112.000	0.444	good	1	1	n/a	n/a	1	1	0.4440	hit	0.4440	112.000	n/a
+113.000	0.373	good	3	1	n/a	n/a	1	1	0.3730	hit	0.3730	113.000	n/a
+114.000	0.410	good	2	3	n/a	n/a	3	3	0.4100	hit	0.4100	114.000	n/a
+115.000	0.390	good	3	1	n/a	n/a	1	1	0.3900	hit	0.3900	115.000	n/a
+116.000	0.405	good	3	3	n/a	n/a	3	3	0.4050	hit	0.4050	116.000	n/a
+117.000	0.455	good	2	2	n/a	n/a	2	2	0.4550	hit	0.4550	117.000	n/a
+118.000	0.362	good	2	1	n/a	n/a	1	1	0.3620	hit	0.3620	118.000	n/a
+119.000	0.800	good	3	2	n/a	n/a	2	n/a	n/a	omission	n/a	119.000	n/a
+120.000	0.441	good	1	2	n/a	n/a	2	2	0.4410	hit	0.4410	120.000	n/a
+121.000	0.310	bad	n/a	n/a	3	2	n/a	2	0.3100	commission	n/a	121.000	19
+122.000	0.372	good	1	1	n/a	n/a	1	1	0.3720	hit	0.3720	122.000	n/a
+123.000	0.445	good	3	3	n/a	n/a	3	3	0.4450	hit	0.4450	123.000	n/a
+124.000	0.404	good	3	1	n/a	n/a	1	1	0.4040	hit	0.4040	124.000	n/a
+125.000	0.800	both	1	2	1	1	2	1	0.5360	commission	n/a	125.000	3
+126.000	0.381	good	2	3	n/a	n/a	3	3	0.3810	hit	0.3810	126.000	n/a
+127.000	0.428	good	3	1	n/a	n/a	1	1	0.4280	hit	0.4280	127.000	n/a
+128.000	0.448	good	2	2	n/a	n/a	2	2	0.4480	hit	0.4480	128.000	n/a
+129.000	0.800	bad	n/a	n/a	2	1	n/a	n/a	n/a	correct_rejection	n/a	129.000	7
+130.000	0.332	good	2	2	n/a	n/a	2	2	0.3320	hit	0.3320	130.000	n/a
+131.000	0.387	bad	n/a	n/a	1	3	n/a	3	0.3870	commission	n/a	131.000	1
+132.000	0.328	good	3	2	n/a	n/a	2	2	0.3280	hit	0.3280	132.000	n/a
+133.000	0.304	good	3	1	n/a	n/a	1	1	0.3040	hit	0.3040	133.000	n/a
+134.000	0.326	good	3	3	n/a	n/a	3	3	0.3260	hit	0.3260	134.000	n/a
+135.000	0.313	good	2	1	n/a	n/a	1	1	0.3130	hit	0.3130	135.000	n/a
+136.000	0.817	both	3	1	2	2	1	1	0.4290	hit	0.4290	136.000	4
+137.000	0.399	good	1	2	n/a	n/a	2	2	0.3990	hit	0.3990	137.000	n/a
+138.000	0.431	good	3	1	n/a	n/a	1	1	0.4310	hit	0.4310	138.000	n/a
+139.000	0.462	good	3	3	n/a	n/a	3	3	0.4620	hit	0.4620	139.000	n/a
+140.000	0.469	good	3	2	n/a	n/a	2	2	0.4690	hit	0.4690	140.000	n/a
+141.000	0.454	good	2	1	n/a	n/a	1	1	0.4540	hit	0.4540	141.000	n/a
+142.000	0.440	good	1	2	n/a	n/a	2	2	0.4400	hit	0.4400	142.000	n/a
+143.000	0.393	good	1	1	n/a	n/a	1	1	0.3930	hit	0.3930	143.000	n/a
+144.000	0.817	good	3	1	n/a	n/a	1	n/a	n/a	omission	n/a	144.000	n/a
+145.000	0.341	good	2	2	n/a	n/a	2	2	0.3410	hit	0.3410	145.000	n/a
+146.000	0.415	bad	n/a	n/a	2	3	n/a	3	0.4150	commission	n/a	146.000	14
+147.000	0.367	good	1	1	n/a	n/a	1	1	0.3670	hit	0.3670	147.000	n/a
+148.000	0.323	good	3	1	n/a	n/a	1	1	0.3230	hit	0.3230	148.000	n/a
+149.000	0.463	good	2	3	n/a	n/a	3	3	0.4630	hit	0.4630	149.000	n/a
+150.000	0.373	good	1	2	n/a	n/a	2	2	0.3730	hit	0.3730	150.000	n/a
+151.000	0.373	good	1	1	n/a	n/a	1	1	0.3730	hit	0.3730	151.000	n/a
+152.000	0.402	good	1	3	n/a	n/a	3	3	0.4020	hit	0.4020	152.000	n/a
+153.000	0.817	both	1	2	2	3	2	2	0.4080	hit	0.4080	153.000	6
+154.000	0.245	good	3	1	n/a	n/a	1	1	0.2450	hit	0.2450	154.000	n/a
+155.000	0.386	good	3	2	n/a	n/a	2	2	0.3860	hit	0.3860	155.000	n/a
+156.000	0.334	good	3	3	n/a	n/a	3	3	0.3340	hit	0.3340	156.000	n/a
+157.000	0.384	good	2	3	n/a	n/a	3	3	0.3840	hit	0.3840	157.000	n/a
+158.017	0.224	good	3	2	n/a	n/a	2	2	0.2243	hit	0.2243	158.000	n/a
+159.017	0.351	good	1	1	n/a	n/a	1	1	0.3513	hit	0.3513	159.000	n/a
+160.017	0.817	both	3	2	2	3	2	2	0.3853	hit	0.3853	160.000	13
+161.017	0.374	good	1	1	n/a	n/a	1	1	0.3743	hit	0.3743	161.000	n/a
+162.017	0.398	good	3	1	n/a	n/a	1	1	0.3983	hit	0.3983	162.000	n/a
+163.017	0.270	good	3	2	n/a	n/a	2	2	0.2703	hit	0.2703	163.000	n/a
+164.017	0.428	good	1	2	n/a	n/a	2	2	0.4283	hit	0.4283	164.000	n/a
+165.017	0.817	both	1	3	1	1	3	1	0.4213	commission	n/a	165.000	18
+166.017	0.817	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	166.000	19
+167.017	0.360	good	3	2	n/a	n/a	2	2	0.3603	hit	0.3603	167.000	n/a
+168.017	0.387	good	1	2	n/a	n/a	2	2	0.3873	hit	0.3873	168.000	n/a
+169.017	0.336	good	2	2	n/a	n/a	2	2	0.3363	hit	0.3363	169.000	n/a
+170.017	0.605	good	2	3	n/a	n/a	3	1 3	0.4353 0.6053	hit	0.6053	170.000	n/a
+171.017	0.817	bad	n/a	n/a	3	1	n/a	n/a	n/a	correct_rejection	n/a	171.000	4
+172.017	0.315	good	2	3	n/a	n/a	3	3	0.3153	hit	0.3153	172.000	n/a
+173.017	0.817	bad	n/a	n/a	1	3	n/a	n/a	n/a	correct_rejection	n/a	173.000	1
+174.017	0.335	good	3	2	n/a	n/a	2	2	0.3353	hit	0.3353	174.000	n/a
+175.017	0.362	good	2	2	n/a	n/a	2	2	0.3623	hit	0.3623	175.000	n/a
+176.017	0.293	good	3	1	n/a	n/a	1	1	0.2933	hit	0.2933	176.000	n/a
+177.017	0.399	good	2	2	n/a	n/a	2	2	0.3993	hit	0.3993	177.000	n/a
+178.017	0.817	good	3	1	n/a	n/a	1	3	0.3983	omission	n/a	178.000	n/a
+179.017	0.309	good	2	3	n/a	n/a	3	3	0.3093	hit	0.3093	179.000	n/a
+180.017	0.489	good	3	3	n/a	n/a	3	3	0.4893	hit	0.4893	180.000	n/a
+181.017	0.312	good	1	1	n/a	n/a	1	1	0.3123	hit	0.3123	181.000	n/a
+182.017	0.516	good	3	3	n/a	n/a	3	3	0.5163	hit	0.5163	182.000	n/a
+183.017	0.377	good	2	3	n/a	n/a	3	3	0.3773	hit	0.3773	183.000	n/a
+184.017	0.332	good	1	2	n/a	n/a	2	2	0.3323	hit	0.3323	184.000	n/a
+185.017	0.366	good	2	3	n/a	n/a	3	3	0.3663	hit	0.3663	185.000	n/a
+186.017	0.313	good	3	3	n/a	n/a	3	3	0.3133	hit	0.3133	186.000	n/a
+187.017	0.350	good	2	2	n/a	n/a	2	2	0.3503	hit	0.3503	187.000	n/a
+188.017	0.330	good	2	3	n/a	n/a	3	3	0.3303	hit	0.3303	188.000	n/a
+189.017	0.375	good	2	1	n/a	n/a	1	1	0.3753	hit	0.3753	189.000	n/a
+190.017	0.356	good	3	3	n/a	n/a	3	3	0.3563	hit	0.3563	190.000	n/a
+191.017	0.334	good	3	2	n/a	n/a	2	2	0.3343	hit	0.3343	191.000	n/a
+192.017	0.312	good	3	1	n/a	n/a	1	1	0.3123	hit	0.3123	192.000	n/a
+193.017	0.316	good	2	3	n/a	n/a	3	3	0.3163	hit	0.3163	193.000	n/a
+194.017	0.817	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	194.000	20
+195.017	0.303	good	3	1	n/a	n/a	1	1	0.3033	hit	0.3033	195.000	n/a
+196.017	0.817	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	196.000	1
+197.017	0.425	good	2	1	n/a	n/a	1	1	0.4253	hit	0.4253	197.000	n/a
+198.017	0.305	good	2	3	n/a	n/a	3	3	0.3053	hit	0.3053	198.000	n/a
+199.017	0.381	good	1	3	n/a	n/a	3	3	0.3813	hit	0.3813	199.000	n/a
+200.017	0.357	good	3	3	n/a	n/a	3	3	0.3573	hit	0.3573	200.000	n/a
+201.017	0.817	both	1	3	3	1	3	3	0.3843	hit	0.3843	201.000	4
+202.017	0.817	both	2	2	2	3	2	2	0.4633	hit	0.4633	202.000	5
+203.017	0.319	good	3	2	n/a	n/a	2	2	0.3193	hit	0.3193	203.000	n/a
+204.017	0.419	good	1	2	n/a	n/a	2	2	0.4193	hit	0.4193	204.000	n/a
+205.017	0.817	both	2	1	2	2	1	1	0.3853	hit	0.3853	205.000	8
+206.017	0.351	good	2	3	n/a	n/a	3	3	0.3513	hit	0.3513	206.000	n/a
+207.017	0.367	good	3	3	n/a	n/a	3	3	0.3673	hit	0.3673	207.000	n/a
+208.017	0.411	good	2	1	n/a	n/a	1	1	0.4113	hit	0.4113	208.000	n/a
+209.017	0.343	good	3	2	n/a	n/a	2	2	0.3433	hit	0.3433	209.000	n/a
+210.017	0.817	good	2	2	n/a	n/a	2	n/a	n/a	omission	n/a	210.000	n/a
+211.017	0.323	good	3	1	n/a	n/a	1	1	0.3233	hit	0.3233	211.000	n/a
+212.017	0.435	good	1	3	n/a	n/a	3	3	0.4353	hit	0.4353	212.000	n/a
+213.017	0.817	bad	n/a	n/a	2	2	n/a	n/a	n/a	correct_rejection	n/a	213.000	16
+214.017	0.276	good	3	3	n/a	n/a	3	3	0.2763	hit	0.2763	214.000	n/a
+215.017	0.285	good	1	2	n/a	n/a	2	2	0.2853	hit	0.2853	215.000	n/a
+216.017	0.334	good	3	2	n/a	n/a	2	2	0.3343	hit	0.3343	216.000	n/a
+217.017	0.569	good	1	3	n/a	n/a	3	1 3	0.3993 0.5693	hit	0.5693	217.000	n/a
+218.017	0.817	good	1	2	n/a	n/a	2	n/a	n/a	omission	n/a	218.000	n/a
+219.017	0.343	good	3	3	n/a	n/a	3	3	0.3433	hit	0.3433	219.000	n/a
+220.017	0.456	good	3	2	n/a	n/a	2	2	0.4563	hit	0.4563	220.000	n/a
+221.017	0.334	good	1	1	n/a	n/a	1	1	0.3343	hit	0.3343	221.000	n/a
+222.017	0.331	good	3	1	n/a	n/a	1	1	0.3313	hit	0.3313	222.000	n/a
+223.017	0.414	good	3	3	n/a	n/a	3	3	0.4143	hit	0.4143	223.000	n/a
+224.017	0.343	good	3	1	n/a	n/a	1	1	0.3433	hit	0.3433	224.000	n/a
+225.017	0.817	bad	n/a	n/a	2	1	n/a	n/a	n/a	correct_rejection	n/a	225.000	11
+226.017	0.388	good	3	2	n/a	n/a	2	2	0.3883	hit	0.3883	226.000	n/a
+227.017	0.332	good	1	2	n/a	n/a	2	2	0.3323	hit	0.3323	227.000	n/a
+228.017	0.247	good	1	3	n/a	n/a	3	3	0.2473	hit	0.2473	228.000	n/a
+229.017	0.366	good	2	1	n/a	n/a	1	1	0.3663	hit	0.3663	229.000	n/a
+230.017	0.368	good	1	2	n/a	n/a	2	2	0.3683	hit	0.3683	230.000	n/a
+231.017	0.370	good	3	1	n/a	n/a	1	1	0.3703	hit	0.3703	231.000	n/a
+232.017	0.401	good	2	1	n/a	n/a	1	1	0.4013	hit	0.4013	232.000	n/a
+233.017	0.401	good	1	1	n/a	n/a	1	1	0.4013	hit	0.4013	233.000	n/a
+234.017	0.817	good	3	3	n/a	n/a	3	n/a	n/a	omission	n/a	234.000	n/a
+235.017	0.359	good	3	2	n/a	n/a	2	2	0.3593	hit	0.3593	235.000	n/a
+236.017	0.817	bad	n/a	n/a	3	1	n/a	n/a	n/a	correct_rejection	n/a	236.000	10
+237.017	0.421	good	2	2	n/a	n/a	2	2	0.4213	hit	0.4213	237.000	n/a
+238.017	0.391	good	1	3	n/a	n/a	3	3	0.3913	hit	0.3913	238.000	n/a
+239.017	0.476	good	2	1	n/a	n/a	1	1	0.4763	hit	0.4763	239.000	n/a
+240.017	0.409	good	2	2	n/a	n/a	2	2	0.4093	hit	0.4093	240.000	n/a
+241.017	0.413	bad	n/a	n/a	1	3	n/a	3	0.4133	commission	n/a	241.000	4
+242.017	0.422	good	3	1	n/a	n/a	1	1	0.4223	hit	0.4223	242.000	n/a
+243.017	0.437	good	2	2	n/a	n/a	2	2	0.4373	hit	0.4373	243.000	n/a
+244.017	0.339	bad	n/a	n/a	1	2	n/a	2	0.3393	commission	n/a	244.000	2
+245.017	0.817	both	2	1	2	3	1	1	0.5093	hit	0.5093	245.000	0
+246.017	0.433	good	3	2	n/a	n/a	2	2	0.4333	hit	0.4333	246.000	n/a
+247.017	0.444	good	2	3	n/a	n/a	3	3	0.4443	hit	0.4443	247.000	n/a
+248.017	0.430	good	1	3	n/a	n/a	3	3	0.4303	hit	0.4303	248.000	n/a
+249.017	0.284	good	2	1	n/a	n/a	1	1	0.2843	hit	0.2843	249.000	n/a
+250.017	0.427	good	3	1	n/a	n/a	1	1	0.4273	hit	0.4273	250.000	n/a
+251.017	0.817	both	1	2	1	3	2	2	0.4743	hit	0.4743	251.000	6
+252.017	0.359	good	2	2	n/a	n/a	2	2	0.3593	hit	0.3593	252.000	n/a
+253.017	0.397	good	2	3	n/a	n/a	3	3	0.3973	hit	0.3973	253.000	n/a
+254.017	0.412	good	3	3	n/a	n/a	3	3	0.4123	hit	0.4123	254.000	n/a
+255.017	0.491	good	2	1	n/a	n/a	1	1	0.4913	hit	0.4913	255.000	n/a
+256.017	0.817	both	3	3	1	2	3	3	0.4593	hit	0.4593	256.000	11
+257.017	0.420	good	3	2	n/a	n/a	2	2	0.4203	hit	0.4203	257.000	n/a
+258.017	0.320	good	1	2	n/a	n/a	2	2	0.3203	hit	0.3203	258.000	n/a
+259.017	0.378	good	2	2	n/a	n/a	2	2	0.3783	hit	0.3783	259.000	n/a
+260.017	0.361	good	1	3	n/a	n/a	3	3	0.3613	hit	0.3613	260.000	n/a
+261.017	0.482	good	1	2	n/a	n/a	2	2	0.4823	hit	0.4823	261.000	n/a
+262.017	0.376	good	1	1	n/a	n/a	1	1	0.3763	hit	0.3763	262.000	n/a
+263.017	0.363	good	1	2	n/a	n/a	2	2	0.3633	hit	0.3633	263.000	n/a
+264.017	0.380	good	2	1	n/a	n/a	1	1	0.3803	hit	0.3803	264.000	n/a
+265.017	0.800	both	2	3	3	2	3	3	0.4043	hit	0.4043	265.000	20
+266.017	0.402	good	2	1	n/a	n/a	1	1	0.4023	hit	0.4023	266.000	n/a
+267.017	0.800	both	2	3	3	1	3	3	0.4963	hit	0.4963	267.000	22
+268.017	0.501	good	1	3	n/a	n/a	3	3	0.5013	hit	0.5013	268.000	n/a
+269.017	0.417	good	1	2	n/a	n/a	2	2	0.4173	hit	0.4173	269.000	n/a
+270.017	0.409	good	2	3	n/a	n/a	3	3	0.4093	hit	0.4093	270.000	n/a
+271.017	0.481	good	2	2	n/a	n/a	2	2	0.4813	hit	0.4813	271.000	n/a
+272.017	0.445	good	3	3	n/a	n/a	3	3	0.4453	hit	0.4453	272.000	n/a
+273.017	0.800	bad	n/a	n/a	2	2	n/a	n/a	n/a	correct_rejection	n/a	273.000	28
+274.017	0.385	good	3	3	n/a	n/a	3	3	0.3853	hit	0.3853	274.000	n/a
+275.017	0.346	good	1	2	n/a	n/a	2	2	0.3463	hit	0.3463	275.000	n/a
+276.017	0.378	good	3	1	n/a	n/a	1	1	0.3783	hit	0.3783	276.000	n/a
+277.017	0.800	good	2	3	n/a	n/a	3	n/a	n/a	omission	n/a	277.000	n/a
+278.017	0.421	good	2	2	n/a	n/a	2	2	0.4213	hit	0.4213	278.000	n/a
+279.017	0.429	good	1	2	n/a	n/a	2	2	0.4293	hit	0.4293	279.000	n/a
+280.017	0.390	good	2	1	n/a	n/a	1	1	0.3903	hit	0.3903	280.000	n/a
+281.017	0.459	good	1	1	n/a	n/a	1	1	0.4593	hit	0.4593	281.000	n/a
+282.017	0.800	both	1	2	1	3	2	2	0.4133	hit	0.4133	282.000	8
+283.017	0.413	good	1	1	n/a	n/a	1	1	0.4133	hit	0.4133	283.000	n/a
+284.017	0.393	good	2	3	n/a	n/a	3	3	0.3933	hit	0.3933	284.000	n/a
+285.017	0.800	both	3	3	3	1	3	1	0.4813	commission	n/a	285.000	11
+286.017	0.371	good	3	2	n/a	n/a	2	2	0.3713	hit	0.3713	286.000	n/a
+287.017	0.507	good	2	3	n/a	n/a	3	3	0.5073	hit	0.5073	287.000	n/a
+288.017	0.364	good	2	1	n/a	n/a	1	1	0.3643	hit	0.3643	288.000	n/a
+289.017	0.479	good	1	2	n/a	n/a	2	2	0.4793	hit	0.4793	289.000	n/a
+290.017	0.384	good	1	3	n/a	n/a	3	3	0.3843	hit	0.3843	290.000	n/a
+291.017	0.800	good	1	1	n/a	n/a	1	n/a	n/a	omission	n/a	291.000	n/a
+292.017	0.377	good	3	2	n/a	n/a	2	2	0.3773	hit	0.3773	292.000	n/a
+293.017	0.403	good	2	2	n/a	n/a	2	2	0.4033	hit	0.4033	293.000	n/a
+294.017	0.368	bad	n/a	n/a	3	2	n/a	2	0.3683	commission	n/a	294.000	20
+295.017	0.447	good	2	3	n/a	n/a	3	3	0.4473	hit	0.4473	295.000	n/a
+296.017	0.800	both	3	3	2	1	3	3	0.5173	hit	0.5173	296.000	1
+297.017	0.800	good	1	3	n/a	n/a	3	n/a	n/a	omission	n/a	297.000	n/a
+298.017	0.401	good	3	2	n/a	n/a	2	2	0.4013	hit	0.4013	298.000	n/a
+299.017	0.800	both	2	1	1	3	1	1	0.4853	hit	0.4853	299.000	4
+300.017	0.473	good	1	2	n/a	n/a	2	2	0.4733	hit	0.4733	300.000	n/a
+301.017	0.472	good	2	3	n/a	n/a	3	3	0.4723	hit	0.4723	301.000	n/a
+302.017	0.487	good	3	3	n/a	n/a	3	3	0.4873	hit	0.4873	302.000	n/a
+303.017	0.390	good	3	1	n/a	n/a	1	1	0.3903	hit	0.3903	303.000	n/a
+304.017	0.800	good	2	3	n/a	n/a	3	n/a	n/a	omission	n/a	304.000	n/a
+305.017	0.295	good	1	1	n/a	n/a	1	1	0.2953	hit	0.2953	305.000	n/a
+306.017	0.409	good	1	2	n/a	n/a	2	2	0.4093	hit	0.4093	306.000	n/a
+307.017	0.348	good	2	1	n/a	n/a	1	1	0.3483	hit	0.3483	307.000	n/a
+308.017	0.455	good	1	1	n/a	n/a	1	1	0.4553	hit	0.4553	308.000	n/a
+309.017	0.800	good	2	2	n/a	n/a	2	3	0.3723	omission	n/a	309.000	n/a
+310.017	0.384	good	1	3	n/a	n/a	3	3	0.3843	hit	0.3843	310.000	n/a
+311.017	0.401	good	3	2	n/a	n/a	2	2	0.4013	hit	0.4013	311.000	n/a
+312.017	0.535	good	1	2	n/a	n/a	2	2	0.5353	hit	0.5353	312.000	n/a
+313.017	0.800	both	2	2	1	3	2	2	0.4543	hit	0.4543	313.000	18
+314.017	0.384	good	3	3	n/a	n/a	3	3	0.3843	hit	0.3843	314.000	n/a
+315.000	0.424	good	1	1	n/a	n/a	1	1	0.4240	hit	0.4240	315.000	n/a
+316.000	0.423	good	1	2	n/a	n/a	2	2	0.4230	hit	0.4230	316.000	n/a
+317.000	0.476	good	1	3	n/a	n/a	3	3	0.4760	hit	0.4760	317.000	n/a
+318.000	0.556	good	2	2	n/a	n/a	2	2	0.5560	hit	0.5560	318.000	n/a
+319.000	0.460	good	2	3	n/a	n/a	3	3	0.4600	hit	0.4600	319.000	n/a
+320.000	0.341	bad	n/a	n/a	1	3	n/a	3	0.3410	commission	n/a	320.000	25
+321.000	0.476	good	2	1	n/a	n/a	1	1	0.4760	hit	0.4760	321.000	n/a
+322.000	0.417	good	3	3	n/a	n/a	3	3	0.4170	hit	0.4170	322.000	n/a
+323.000	0.373	good	1	2	n/a	n/a	2	2	0.3730	hit	0.3730	323.000	n/a
+324.000	0.406	good	3	3	n/a	n/a	3	3	0.4060	hit	0.4060	324.000	n/a
+325.000	0.463	good	1	2	n/a	n/a	2	2	0.4630	hit	0.4630	325.000	n/a
+326.000	0.423	good	2	1	n/a	n/a	1	1	0.4230	hit	0.4230	326.000	n/a
+327.000	0.800	bad	n/a	n/a	2	3	n/a	n/a	n/a	correct_rejection	n/a	327.000	6
+328.000	0.800	both	2	1	2	2	1	2	0.4130	commission	n/a	328.000	0
+329.000	0.483	good	1	3	n/a	n/a	3	3	0.4830	hit	0.4830	329.000	n/a
+330.000	0.450	good	2	2	n/a	n/a	2	2	0.4500	hit	0.4500	330.000	n/a
+331.000	0.800	both	3	3	1	1	3	3	0.3630	hit	0.3630	331.000	3
+332.000	0.399	good	1	2	n/a	n/a	2	2	0.3990	hit	0.3990	332.000	n/a
+333.000	0.431	good	3	3	n/a	n/a	3	3	0.4310	hit	0.4310	333.000	n/a
+334.000	0.378	good	3	1	n/a	n/a	1	1	0.3780	hit	0.3780	334.000	n/a
+335.000	0.423	good	2	3	n/a	n/a	3	3	0.4230	hit	0.4230	335.000	n/a
+336.000	0.357	good	3	2	n/a	n/a	2	2	0.3570	hit	0.3570	336.000	n/a
+337.000	0.401	good	2	1	n/a	n/a	1	1	0.4010	hit	0.4010	337.000	n/a
+338.000	0.346	good	2	2	n/a	n/a	2	2	0.3460	hit	0.3460	338.000	n/a
+339.000	0.323	good	3	3	n/a	n/a	3	3	0.3230	hit	0.3230	339.000	n/a
+340.000	0.378	good	3	1	n/a	n/a	1	1	0.3780	hit	0.3780	340.000	n/a
+341.000	0.561	both	2	3	3	2	3	3 2	0.4110 0.5610	commission	0.4110	341.000	13
+342.000	0.800	bad	n/a	n/a	1	1	n/a	n/a	n/a	correct_rejection	n/a	342.000	14
+343.000	0.405	good	2	1	n/a	n/a	1	1	0.4050	hit	0.4050	343.000	n/a
+344.000	0.417	good	1	1	n/a	n/a	1	1	0.4170	hit	0.4170	344.000	n/a
+345.000	0.800	bad	n/a	n/a	3	1	n/a	n/a	n/a	correct_rejection	n/a	345.000	2
+346.000	0.316	good	3	3	n/a	n/a	3	3	0.3160	hit	0.3160	346.000	n/a
+347.000	0.282	good	1	3	n/a	n/a	3	3	0.2820	hit	0.2820	347.000	n/a
+348.000	0.308	good	3	2	n/a	n/a	2	2	0.3080	hit	0.3080	348.000	n/a
+349.000	0.452	good	2	2	n/a	n/a	2	2	0.4520	hit	0.4520	349.000	n/a
+350.000	0.360	good	1	2	n/a	n/a	2	2	0.3600	hit	0.3600	350.000	n/a
+351.000	0.320	good	3	1	n/a	n/a	1	1	0.3200	hit	0.3200	351.000	n/a
+352.000	0.800	bad	n/a	n/a	2	3	n/a	n/a	n/a	correct_rejection	n/a	352.000	6
+353.000	0.385	good	1	3	n/a	n/a	3	3	0.3850	hit	0.3850	353.000	n/a
+354.000	0.357	good	1	2	n/a	n/a	2	2	0.3570	hit	0.3570	354.000	n/a
+355.000	0.800	both	2	3	2	2	3	2	0.4720	commission	n/a	355.000	2
+356.000	0.371	good	1	2	n/a	n/a	2	2	0.3710	hit	0.3710	356.000	n/a
+357.000	0.326	good	1	1	n/a	n/a	1	1	0.3260	hit	0.3260	357.000	n/a
+358.000	0.308	good	2	2	n/a	n/a	2	2	0.3080	hit	0.3080	358.000	n/a
+359.000	0.286	good	1	1	n/a	n/a	1	1	0.2860	hit	0.2860	359.000	n/a
+360.000	0.345	good	1	3	n/a	n/a	3	3	0.3450	hit	0.3450	360.000	n/a
+361.000	0.800	bad	n/a	n/a	1	1	n/a	n/a	n/a	correct_rejection	n/a	361.000	8
+362.000	0.800	both	1	3	3	2	3	3	0.3970	hit	0.3970	362.000	0
+363.000	0.800	both	1	1	2	2	1	n/a	n/a	omission	n/a	363.000	1
+364.000	0.389	good	3	2	n/a	n/a	2	2	0.3890	hit	0.3890	364.000	n/a
+365.000	0.225	good	2	3	n/a	n/a	3	3	0.2250	hit	0.2250	365.000	n/a
+366.000	0.800	both	3	2	3	1	2	2	0.3670	hit	0.3670	366.000	4
+367.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	367.000	5
+368.000	0.450	good	1	2	n/a	n/a	2	2	0.4500	hit	0.4500	368.000	n/a
+369.000	0.618	good	1	1	n/a	n/a	1	1	0.6180	hit	0.6180	369.000	n/a
+370.000	0.488	good	2	1	n/a	n/a	1	1	0.4880	hit	0.4880	370.000	n/a
+371.000	0.392	good	3	1	n/a	n/a	1	1	0.3920	hit	0.3920	371.000	n/a
+372.000	0.800	bad	n/a	n/a	3	2	n/a	n/a	n/a	correct_rejection	n/a	372.000	4
+373.000	0.604	good	2	3	n/a	n/a	3	3	0.6040	hit	0.6040	373.000	n/a
+374.000	0.448	good	1	3	n/a	n/a	3	3	0.4480	hit	0.4480	374.000	n/a
+375.000	0.285	good	3	3	n/a	n/a	3	3	0.2850	hit	0.2850	375.000	n/a
+376.000	0.800	both	2	3	1	2	3	3	0.5310	hit	0.5310	376.000	3
+377.000	0.423	good	2	2	n/a	n/a	2	2	0.4230	hit	0.4230	377.000	n/a
+378.000	0.800	good	2	3	n/a	n/a	3	n/a	n/a	omission	n/a	378.000	n/a
+379.000	0.466	good	3	2	n/a	n/a	2	2	0.4660	hit	0.4660	379.000	n/a
+380.000	0.277	good	1	1	n/a	n/a	1	1	0.2770	hit	0.2770	380.000	n/a
+381.000	0.404	good	3	1	n/a	n/a	1	1	0.4040	hit	0.4040	381.000	n/a
+382.000	0.550	good	1	2	n/a	n/a	2	2	0.5500	hit	0.5500	382.000	n/a
+383.000	0.393	good	3	1	n/a	n/a	1	1	0.3930	hit	0.3930	383.000	n/a
+384.000	0.319	good	2	2	n/a	n/a	2	2	0.3190	hit	0.3190	384.000	n/a
+385.000	0.515	good	1	1	n/a	n/a	1	1	0.5150	hit	0.5150	385.000	n/a
+386.000	0.363	good	2	3	n/a	n/a	3	3	0.3630	hit	0.3630	386.000	n/a
+387.000	0.800	both	1	2	1	3	2	2	0.5480	hit	0.5480	387.000	14
+388.000	0.800	good	1	1	n/a	n/a	1	n/a	n/a	omission	n/a	388.000	n/a
+389.000	0.309	good	2	3	n/a	n/a	3	3	0.3090	hit	0.3090	389.000	n/a
+390.000	0.584	good	2	1	n/a	n/a	1	1	0.5840	hit	0.5840	390.000	n/a
+391.000	0.391	good	1	3	n/a	n/a	3	3	0.3910	hit	0.3910	391.000	n/a
+392.000	0.236	good	3	3	n/a	n/a	3	3	0.2360	hit	0.2360	392.000	n/a
+393.000	0.287	good	3	1	n/a	n/a	1	1	0.2870	hit	0.2870	393.000	n/a
+394.000	0.800	bad	n/a	n/a	1	2	n/a	n/a	n/a	correct_rejection	n/a	394.000	21
+395.000	0.800	good	1	3	n/a	n/a	3	1	0.3920	omission	n/a	395.000	n/a
+396.000	0.459	good	3	3	n/a	n/a	3	3	0.4590	hit	0.4590	396.000	n/a
+397.000	0.800	good	2	3	n/a	n/a	3	n/a	n/a	omission	n/a	397.000	n/a
+398.000	0.502	good	2	1	n/a	n/a	1	1	0.5020	hit	0.5020	398.000	n/a
+399.000	0.800	both	1	2	2	3	2	2	0.4200	hit	0.4200	399.000	4
+400.000	0.257	good	3	2	n/a	n/a	2	2	0.2570	hit	0.2570	400.000	n/a
+401.000	0.392	good	2	3	n/a	n/a	3	3	0.3920	hit	0.3920	401.000	n/a
+402.000	0.800	both	3	1	2	2	1	1	0.3180	hit	0.3180	402.000	7
+403.000	0.406	good	1	1	n/a	n/a	1	1	0.4060	hit	0.4060	403.000	n/a
+404.000	0.281	good	2	1	n/a	n/a	1	1	0.2810	hit	0.2810	404.000	n/a
+405.000	0.352	good	3	1	n/a	n/a	1	1	0.3520	hit	0.3520	405.000	n/a
+406.000	0.467	good	1	1	n/a	n/a	1	1	0.4670	hit	0.4670	406.000	n/a
+407.000	0.394	good	2	1	n/a	n/a	1	1	0.3940	hit	0.3940	407.000	n/a
+408.000	0.424	good	3	1	n/a	n/a	1	1	0.4240	hit	0.4240	408.000	n/a
+409.000	0.454	good	2	3	n/a	n/a	3	3	0.4540	hit	0.4540	409.000	n/a
+410.000	0.383	good	3	1	n/a	n/a	1	1	0.3830	hit	0.3830	410.000	n/a
+411.000	0.393	good	2	3	n/a	n/a	3	3	0.3930	hit	0.3930	411.000	n/a
+412.000	0.397	bad	n/a	n/a	3	1	n/a	1	0.3970	commission	n/a	412.000	17
+413.000	0.557	good	1	3	n/a	n/a	3	3	0.5570	hit	0.5570	413.000	n/a
+414.000	0.498	good	3	2	n/a	n/a	2	2	0.4980	hit	0.4980	414.000	n/a
+415.000	0.800	both	1	2	2	1	2	2	0.4730	hit	0.4730	415.000	2
+416.000	0.354	good	1	1	n/a	n/a	1	1	0.3540	hit	0.3540	416.000	n/a
+417.000	0.532	good	1	3	n/a	n/a	3	3	0.5320	hit	0.5320	417.000	n/a
+418.000	0.463	good	1	1	n/a	n/a	1	1	0.4630	hit	0.4630	418.000	n/a
+419.000	0.553	good	2	2	n/a	n/a	2	2	0.5530	hit	0.5530	419.000	n/a
+420.000	0.385	good	3	2	n/a	n/a	2	2	0.3850	hit	0.3850	420.000	n/a
+421.000	0.400	good	1	1	n/a	n/a	1	1	0.4000	hit	0.4000	421.000	n/a
+422.000	0.458	good	3	3	n/a	n/a	3	3	0.4580	hit	0.4580	422.000	n/a
+423.000	0.800	bad	n/a	n/a	1	3	n/a	n/a	n/a	correct_rejection	n/a	423.000	10
+424.000	0.559	good	1	2	n/a	n/a	2	2	0.5590	hit	0.5590	424.000	n/a
+425.000	0.426	good	3	3	n/a	n/a	3	3	0.4260	hit	0.4260	425.000	n/a
+426.000	0.800	both	2	1	1	2	1	1	0.4990	hit	0.4990	426.000	2
+427.000	0.800	both	3	3	2	2	3	3	0.6020	hit	0.6020	427.000	3
+428.000	0.800	both	3	2	3	1	2	2	0.5280	hit	0.5280	428.000	4
+429.000	0.526	good	2	2	n/a	n/a	2	2	0.5260	hit	0.5260	429.000	n/a
+430.000	0.414	good	3	3	n/a	n/a	3	3	0.4140	hit	0.4140	430.000	n/a
+431.000	0.184	good	2	3	n/a	n/a	3	3	0.1840	hit	0.1840	431.000	n/a
+432.000	0.305	good	3	2	n/a	n/a	2	2	0.3050	hit	0.3050	432.000	n/a
+433.000	0.317	good	3	1	n/a	n/a	1	1	0.3170	hit	0.3170	433.000	n/a
+434.000	0.800	bad	n/a	n/a	3	2	n/a	n/a	n/a	correct_rejection	n/a	434.000	10
+435.000	0.369	good	2	2	n/a	n/a	2	2	0.3690	hit	0.3690	435.000	n/a
+436.000	0.562	good	2	1	n/a	n/a	1	1	0.5620	hit	0.5620	436.000	n/a
+437.000	0.383	good	3	1	n/a	n/a	1	1	0.3830	hit	0.3830	437.000	n/a
+438.000	0.800	bad	n/a	n/a	1	3	n/a	n/a	n/a	correct_rejection	n/a	438.000	3
+439.000	0.434	good	3	3	n/a	n/a	3	3	0.4340	hit	0.4340	439.000	n/a
+440.000	0.445	good	2	1	n/a	n/a	1	1	0.4450	hit	0.4450	440.000	n/a
+441.000	0.338	good	2	3	n/a	n/a	3	3	0.3380	hit	0.3380	441.000	n/a
+442.000	0.486	bad	n/a	n/a	3	2	n/a	2	0.4860	commission	n/a	442.000	3
+443.000	0.517	good	3	3	n/a	n/a	3	3	0.5170	hit	0.5170	443.000	n/a
+444.000	0.605	good	3	2	n/a	n/a	2	2	0.6050	hit	0.6050	444.000	n/a
+445.000	0.470	good	2	2	n/a	n/a	2	2	0.4700	hit	0.4700	445.000	n/a
+446.000	0.800	bad	n/a	n/a	3	2	n/a	n/a	n/a	correct_rejection	n/a	446.000	3
+447.000	0.557	good	3	3	n/a	n/a	3	3	0.5570	hit	0.5570	447.000	n/a
+448.000	0.467	good	2	1	n/a	n/a	1	1	0.4670	hit	0.4670	448.000	n/a
+449.000	0.525	good	2	2	n/a	n/a	2	2	0.5250	hit	0.5250	449.000	n/a
+450.000	0.800	bad	n/a	n/a	2	3	n/a	n/a	n/a	correct_rejection	n/a	450.000	3
+451.000	0.575	good	2	2	n/a	n/a	2	2	0.5750	hit	0.5750	451.000	n/a
+452.000	0.521	good	2	3	n/a	n/a	3	3	0.5210	hit	0.5210	452.000	n/a
+453.000	0.520	good	3	1	n/a	n/a	1	1	0.5200	hit	0.5200	453.000	n/a
+454.000	0.800	both	1	2	2	3	2	2	0.5160	hit	0.5160	454.000	3
+455.000	0.503	good	2	2	n/a	n/a	2	2	0.5030	hit	0.5030	455.000	n/a
+456.000	0.800	bad	n/a	n/a	1	1	n/a	n/a	n/a	correct_rejection	n/a	456.000	5
+457.000	0.437	good	2	2	n/a	n/a	2	2	0.4370	hit	0.4370	457.000	n/a
+458.000	0.800	both	3	3	3	1	3	3	0.5990	hit	0.5990	458.000	1
+459.000	0.461	good	2	3	n/a	n/a	3	3	0.4610	hit	0.4610	459.000	n/a
+460.000	0.800	bad	n/a	n/a	1	1	n/a	n/a	n/a	correct_rejection	n/a	460.000	3
+461.000	0.417	good	2	3	n/a	n/a	3	3	0.4170	hit	0.4170	461.000	n/a
+462.000	0.536	good	1	1	n/a	n/a	1	1	0.5360	hit	0.5360	462.000	n/a
+463.000	0.386	good	2	2	n/a	n/a	2	2	0.3860	hit	0.3860	463.000	n/a
+464.000	0.442	good	2	1	n/a	n/a	1	1	0.4420	hit	0.4420	464.000	n/a
+465.000	0.414	good	3	3	n/a	n/a	3	3	0.4140	hit	0.4140	465.000	n/a
+466.000	0.366	good	2	2	n/a	n/a	2	2	0.3660	hit	0.3660	466.000	n/a
+467.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	467.000	6
+468.000	0.800	both	3	1	1	2	1	1	0.4890	hit	0.4890	468.000	0
+469.000	0.383	good	2	2	n/a	n/a	2	2	0.3830	hit	0.3830	469.000	n/a
+470.000	0.613	good	2	3	n/a	n/a	3	3	0.6130	hit	0.6130	470.000	n/a
+471.000	0.800	both	1	1	3	3	1	1	0.4010	hit	0.4010	471.000	3
+472.000	0.800	bad	n/a	n/a	3	1	n/a	n/a	n/a	correct_rejection	n/a	472.000	4
+473.000	0.479	good	2	3	n/a	n/a	3	3	0.4790	hit	0.4790	473.000	n/a
+474.000	0.507	good	2	2	n/a	n/a	2	2	0.5070	hit	0.5070	474.000	n/a
+475.000	0.310	bad	n/a	n/a	1	3	n/a	3	0.3100	commission	n/a	475.000	2
+476.000	0.625	good	3	1	n/a	n/a	1	1	0.6250	hit	0.6250	476.000	n/a
+477.000	0.491	good	1	2	n/a	n/a	2	2	0.4910	hit	0.4910	477.000	n/a
+478.000	0.372	good	2	2	n/a	n/a	2	2	0.3720	hit	0.3720	478.000	n/a
+479.000	0.670	good	1	3	n/a	n/a	3	3	0.6700	hit	0.6700	479.000	n/a
+480.000	0.404	good	3	1	n/a	n/a	1	1	0.4040	hit	0.4040	480.000	n/a
+481.000	0.800	both	1	2	3	3	2	2	0.6910	hit	0.6910	481.000	5
+482.000	0.800	good	3	2	n/a	n/a	2	n/a	n/a	omission	n/a	482.000	n/a
+483.000	0.443	good	2	3	n/a	n/a	3	3	0.4430	hit	0.4430	483.000	n/a
+484.000	0.457	good	2	2	n/a	n/a	2	2	0.4570	hit	0.4570	484.000	n/a
+485.000	0.425	good	3	1	n/a	n/a	1	1	0.4250	hit	0.4250	485.000	n/a
+486.000	0.800	bad	n/a	n/a	1	3	n/a	n/a	n/a	correct_rejection	n/a	486.000	10
+487.000	0.800	both	3	3	3	1	3	n/a	n/a	omission	n/a	487.000	0
+488.000	0.519	good	1	2	n/a	n/a	2	2	0.5190	hit	0.5190	488.000	n/a
+489.000	0.398	good	3	1	n/a	n/a	1	1	0.3980	hit	0.3980	489.000	n/a
+490.000	0.402	good	1	1	n/a	n/a	1	1	0.4020	hit	0.4020	490.000	n/a
+491.000	0.800	bad	n/a	n/a	3	1	n/a	n/a	n/a	correct_rejection	n/a	491.000	4
+492.000	0.450	good	1	2	n/a	n/a	2	2	0.4500	hit	0.4500	492.000	n/a
+493.000	0.441	good	2	2	n/a	n/a	2	2	0.4410	hit	0.4410	493.000	n/a
+494.000	0.438	good	2	1	n/a	n/a	1	1	0.4380	hit	0.4380	494.000	n/a
+495.000	0.480	good	3	1	n/a	n/a	1	1	0.4800	hit	0.4800	495.000	n/a
+496.000	0.427	good	2	2	n/a	n/a	2	2	0.4270	hit	0.4270	496.000	n/a
+497.000	0.559	good	3	1	n/a	n/a	1	1	0.5590	hit	0.5590	497.000	n/a
+498.000	0.288	good	2	3	n/a	n/a	3	3	0.2880	hit	0.2880	498.000	n/a
+499.000	0.800	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	499.000	7
+500.000	0.409	good	1	2	n/a	n/a	2	2	0.4090	hit	0.4090	500.000	n/a
+501.000	0.513	good	1	1	n/a	n/a	1	1	0.5130	hit	0.5130	501.000	n/a
+502.000	0.445	good	1	3	n/a	n/a	3	3	0.4450	hit	0.4450	502.000	n/a
+503.000	0.800	both	2	1	2	2	1	1	0.4060	hit	0.4060	503.000	3
+504.000	0.507	good	1	2	n/a	n/a	2	2	0.5070	hit	0.5070	504.000	n/a
+505.000	0.585	good	3	1	n/a	n/a	1	1	0.5850	hit	0.5850	505.000	n/a
+506.000	0.506	good	2	1	n/a	n/a	1	1	0.5060	hit	0.5060	506.000	n/a
+507.000	0.566	good	1	1	n/a	n/a	1	1	0.5660	hit	0.5660	507.000	n/a
+508.000	0.344	good	2	3	n/a	n/a	3	3	0.3440	hit	0.3440	508.000	n/a
+509.000	0.800	both	3	3	2	2	3	3	0.5020	hit	0.5020	509.000	9
+510.000	0.800	bad	n/a	n/a	1	2	n/a	n/a	n/a	correct_rejection	n/a	510.000	10
+511.000	0.545	good	2	3	n/a	n/a	3	3	0.5450	hit	0.5450	511.000	n/a
+512.000	0.557	good	1	2	n/a	n/a	2	2	0.5570	hit	0.5570	512.000	n/a
+513.000	0.800	bad	n/a	n/a	3	1	n/a	n/a	n/a	correct_rejection	n/a	513.000	2
+514.000	0.423	good	2	1	n/a	n/a	1	1	0.4230	hit	0.4230	514.000	n/a
+515.000	0.485	good	3	1	n/a	n/a	1	1	0.4850	hit	0.4850	515.000	n/a
+516.000	0.496	good	1	1	n/a	n/a	1	1	0.4960	hit	0.4960	516.000	n/a
+517.000	0.518	good	1	3	n/a	n/a	3	3	0.5180	hit	0.5180	517.000	n/a
+518.000	0.643	good	2	2	n/a	n/a	2	2	0.6430	hit	0.6430	518.000	n/a
+519.000	0.535	good	2	3	n/a	n/a	3	3	0.5350	hit	0.5350	519.000	n/a
+520.000	0.800	bad	n/a	n/a	2	2	n/a	n/a	n/a	correct_rejection	n/a	520.000	6
+521.000	0.421	good	1	2	n/a	n/a	2	2	0.4210	hit	0.4210	521.000	n/a
+522.000	0.397	good	3	2	n/a	n/a	2	2	0.3970	hit	0.3970	522.000	n/a
+523.000	0.800	bad	n/a	n/a	1	2	n/a	n/a	n/a	correct_rejection	n/a	523.000	2
+524.000	0.617	good	1	1	n/a	n/a	1	1	0.6170	hit	0.6170	524.000	n/a
+525.000	0.626	both	2	2	2	3	2	2 3	0.4760 0.6260	commission	0.4760	525.000	1
+526.000	0.511	good	1	2	n/a	n/a	2	2	0.5110	hit	0.5110	526.000	n/a
+527.000	0.817	bad	n/a	n/a	3	2	n/a	n/a	n/a	correct_rejection	n/a	527.000	3
+528.000	0.392	good	3	3	n/a	n/a	3	3	0.3920	hit	0.3920	528.000	n/a
+529.000	0.532	good	1	1	n/a	n/a	1	1	0.5320	hit	0.5320	529.000	n/a
+530.000	0.467	good	2	2	n/a	n/a	2	2	0.4670	hit	0.4670	530.000	n/a
+531.000	0.817	good	1	3	n/a	n/a	3	n/a	n/a	omission	n/a	531.000	n/a
+532.000	0.817	good	2	1	n/a	n/a	1	n/a	n/a	omission	n/a	532.000	n/a
+533.000	0.817	both	3	2	1	1	2	2	0.5670	hit	0.5670	533.000	5
+534.000	0.483	good	3	1	n/a	n/a	1	1	0.4830	hit	0.4830	534.000	n/a
+535.000	0.492	good	1	3	n/a	n/a	3	3	0.4920	hit	0.4920	535.000	n/a
+536.000	0.561	good	3	1	n/a	n/a	1	1	0.5610	hit	0.5610	536.000	n/a
+537.000	0.577	good	3	3	n/a	n/a	3	3	0.5770	hit	0.5770	537.000	n/a
+538.000	0.716	good	2	3	n/a	n/a	3	3	0.7160	hit	0.7160	538.000	n/a
+539.000	0.817	both	3	1	3	3	1	3	0.3830	commission	n/a	539.000	11
+540.000	0.575	good	2	1	n/a	n/a	1	2 1	0.4050 0.5750	hit	0.5750	540.000	n/a
+541.000	0.505	good	3	1	n/a	n/a	1	1	0.5050	hit	0.5050	541.000	n/a
+542.000	0.535	good	3	3	n/a	n/a	3	3	0.5350	hit	0.5350	542.000	n/a
+543.000	0.497	good	1	3	n/a	n/a	3	3	0.4970	hit	0.4970	543.000	n/a
+544.000	0.817	both	2	2	3	3	2	2	0.5600	hit	0.5600	544.000	16
+545.000	0.635	good	1	3	n/a	n/a	3	3	0.6350	hit	0.6350	545.000	n/a
+546.000	0.323	good	1	2	n/a	n/a	2	2	0.3230	hit	0.3230	546.000	n/a
+547.000	0.422	good	1	1	n/a	n/a	1	1	0.4220	hit	0.4220	547.000	n/a
+548.000	0.428	bad	n/a	n/a	1	3	n/a	3	0.4280	commission	n/a	548.000	20
+549.000	0.279	good	1	1	n/a	n/a	1	1	0.2790	hit	0.2790	549.000	n/a
+550.000	0.278	good	2	3	n/a	n/a	3	3	0.2780	hit	0.2780	550.000	n/a
+551.000	0.817	bad	n/a	n/a	3	3	n/a	n/a	n/a	correct_rejection	n/a	551.000	2
+552.000	0.478	good	2	1	n/a	n/a	1	1	0.4780	hit	0.4780	552.000	n/a
+553.000	0.476	good	1	1	n/a	n/a	1	1	0.4760	hit	0.4760	553.000	n/a
+554.000	0.487	good	1	2	n/a	n/a	2	2	0.4870	hit	0.4870	554.000	n/a
+555.000	0.817	both	3	2	3	1	2	2	0.4980	hit	0.4980	555.000	3
+556.000	0.613	good	2	3	n/a	n/a	3	3	0.6130	hit	0.6130	556.000	n/a
+557.000	0.294	good	3	3	n/a	n/a	3	3	0.2940	hit	0.2940	557.000	n/a
+558.000	0.484	good	1	3	n/a	n/a	3	3	0.4840	hit	0.4840	558.000	n/a
+559.000	0.357	good	3	3	n/a	n/a	3	3	0.3570	hit	0.3570	559.000	n/a
+560.000	0.338	good	1	3	n/a	n/a	3	3	0.3380	hit	0.3380	560.000	n/a
+561.000	0.387	good	3	2	n/a	n/a	2	2	0.3870	hit	0.3870	561.000	n/a
+562.000	0.817	bad	n/a	n/a	1	3	n/a	n/a	n/a	correct_rejection	n/a	562.000	10
+563.000	0.527	good	1	2	n/a	n/a	2	2	0.5270	hit	0.5270	563.000	n/a
+564.000	0.499	good	2	2	n/a	n/a	2	2	0.4990	hit	0.4990	564.000	n/a
+565.000	0.471	good	3	3	n/a	n/a	3	3	0.4710	hit	0.4710	565.000	n/a
+566.000	0.543	good	3	1	n/a	n/a	1	1	0.5430	hit	0.5430	566.000	n/a
+567.000	0.817	both	1	2	1	3	2	2	0.4150	hit	0.4150	567.000	4
+568.000	0.477	good	3	3	n/a	n/a	3	3	0.4770	hit	0.4770	568.000	n/a
+569.000	0.416	good	3	1	n/a	n/a	1	1	0.4160	hit	0.4160	569.000	n/a
+570.000	0.538	good	1	1	n/a	n/a	1	1	0.5380	hit	0.5380	570.000	n/a
+571.000	0.480	good	3	2	n/a	n/a	2	2	0.4800	hit	0.4800	571.000	n/a
+572.000	0.304	good	3	3	n/a	n/a	3	3	0.3040	hit	0.3040	572.000	n/a
+573.000	0.817	both	2	2	2	3	2	2	0.4140	hit	0.4140	573.000	10
+574.000	0.467	good	2	1	n/a	n/a	1	1	0.4670	hit	0.4670	574.000	n/a
+575.000	0.817	bad	n/a	n/a	3	1	n/a	n/a	n/a	correct_rejection	n/a	575.000	12
+576.000	0.333	good	2	2	n/a	n/a	2	2	0.3330	hit	0.3330	576.000	n/a
+577.000	0.463	good	1	1	n/a	n/a	1	1	0.4630	hit	0.4630	577.000	n/a
+578.000	0.476	good	2	1	n/a	n/a	1	1	0.4760	hit	0.4760	578.000	n/a
+579.000	0.494	good	3	3	n/a	n/a	3	3	0.4940	hit	0.4940	579.000	n/a
+580.000	0.464	good	2	2	n/a	n/a	2	2	0.4640	hit	0.4640	580.000	n/a
+581.000	0.429	good	2	3	n/a	n/a	3	3	0.4290	hit	0.4290	581.000	n/a
+582.000	0.264	good	2	2	n/a	n/a	2	2	0.2640	hit	0.2640	582.000	n/a
+583.000	0.664	good	3	2	n/a	n/a	2	2	0.6640	hit	0.6640	583.000	n/a
+584.000	0.817	both	1	2	2	1	2	2	0.3910	hit	0.3910	584.000	8
+585.000	0.426	good	3	2	n/a	n/a	2	2	0.4260	hit	0.4260	585.000	n/a
+586.000	0.817	both	2	3	2	1	3	n/a	n/a	omission	n/a	586.000	10
+587.000	0.420	good	1	3	n/a	n/a	3	3	0.4200	hit	0.4200	587.000	n/a
+588.000	0.560	good	3	2	n/a	n/a	2	2	0.5600	hit	0.5600	588.000	n/a
+589.000	0.309	good	3	1	n/a	n/a	1	1	0.3090	hit	0.3090	589.000	n/a
+590.000	0.343	good	1	3	n/a	n/a	3	3	0.3430	hit	0.3430	590.000	n/a
+591.000	0.234	good	2	3	n/a	n/a	3	3	0.2340	hit	0.2340	591.000	n/a
+592.000	0.353	good	3	3	n/a	n/a	3	3	0.3530	hit	0.3530	592.000	n/a
+593.000	0.584	good	1	2	n/a	n/a	2	2	0.5840	hit	0.5840	593.000	n/a
+594.000	0.817	bad	n/a	n/a	2	1	n/a	n/a	n/a	correct_rejection	n/a	594.000	18
+595.000	0.511	good	1	1	n/a	n/a	1	1	0.5110	hit	0.5110	595.000	n/a
+596.000	0.817	good	2	2	n/a	n/a	2	n/a	n/a	omission	n/a	596.000	n/a
+597.000	0.392	good	2	3	n/a	n/a	3	3	0.3920	hit	0.3920	597.000	n/a
+598.000	0.302	good	3	2	n/a	n/a	2	2	0.3020	hit	0.3020	598.000	n/a
+599.000	0.389	good	3	3	n/a	n/a	3	3	0.3890	hit	0.3890	599.000	n/a
+600.000	0.351	good	1	3	n/a	n/a	3	3	0.3510	hit	0.3510	600.000	n/a
+601.000	0.432	good	3	1	n/a	n/a	1	1	0.4320	hit	0.4320	601.000	n/a

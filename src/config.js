@@ -80,7 +80,10 @@ export const DEFAULTS = Object.freeze({
   // Feedback. DECIDED(Q6): the participant sees nothing, so all four are off.
   // They exist to pilot variations (Rehaan Karnik, October 11, 2026); every run
   // records which were on (`feedbackVariant`).
-  showScore: false,             // Score in the corner: how many happy moles were hit.
+  showScore: false,             // Score in the corner, as a percentage (see engine.js):
+                                // happy moles hit minus scorePenalty per distractor hit,
+                                // over the happy moles so far.
+  scorePenalty: 10,             // Points lost for hitting a distractor (October 13, 2026).
   hitRings: false,              // White ring on a hit, red ring on a distractor pressed.
   sound: false,                 // A good sound on a hit, a bad sound on any wrong press.
   hammer: false,                // A hammer swings onto any mole that is pressed.
@@ -201,6 +204,7 @@ export function validateConfig(config) {
   }
   if (!(typeof c.trS === 'number' && Number.isFinite(c.trS) && c.trS > 0)) problems.push('trS must be a positive number (s)');
   for (const k of FEEDBACK_KEYS) if (typeof c[k] !== 'boolean') problems.push(`${k} must be a boolean`);
+  if (!isNonNegInt(c.scorePenalty)) problems.push('scorePenalty must be a non-negative integer');
   if (typeof c.showResultsOnDisplay !== 'boolean') problems.push('showResultsOnDisplay must be a boolean');
   if (!isInt(c.seed)) problems.push('seed must be an integer');
 
