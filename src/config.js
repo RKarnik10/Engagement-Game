@@ -66,14 +66,14 @@ export const DEFAULTS = Object.freeze({
   keys: LAYOUTS.grid3x3.keys,   // TODO(Q2): confirm the codes the scanner button box actually sends (README 4.2).
   triggerKey: 't',              // TODO(Q4): 't' simulates the scanner trigger in development.
   setting: 'behavioral',        // DECIDED: logged as scanner = 1, behavioral = 0.
-  onset: 'instant',             // TODO: pop-up vs. gradual rise (README 3.5) still open.
-  scene: 'garden',              // TODO: README 4.3 recommends plain grey for scanning; garden for piloting.
+  onset: 'instant',             // DECIDED (N, October 17, 2026): moles pop up instantly.
+  scene: 'garden',              // DECIDED (M, October 17, 2026): garden, scanning included. Grey kept as an option.
   rampMs: 350,                  // Rise/sink time, only used when onset is "gradual".
 
   // Timing. DECIDED: a fixed 1 s trial cycle, 600 trials, so a run is 10 minutes.
   nTrials: 600,
   trialMs: 1000,                // Onset-to-onset. Fixed, not jittered.
-  holdMs: 800,                  // TODO: how long the mole stays up inside the 1 s cycle.
+  holdMs: 800,                  // DECIDED (D, October 17, 2026): a mole stays up 800 ms of each 1 s trial.
   firstOnsetMs: 2000,           // TODO(Q4): depends on dummy scans.
 
   // Trial mix. DECIDED (Dr. Song, confirmed September 25, 2026): 80 / 10 / 10.
@@ -81,13 +81,14 @@ export const DEFAULTS = Object.freeze({
   badShare: 0.1,                // One bad mole: do nothing (it is not killed).
   bothShare: 0.1,               // A good and a bad mole at once, in different columns:
                                 // press the good one's column only.
-  badStim: 'mole_sad',          // TODO: sad mole or molerat as the bad picture.
+  badStim: 'mole_sad',          // DECIDED (A, October 17, 2026): the distractor is the sad mole.
 
   trS: 1.0,                     // TODO(Q4): TR, used for simulated volume events.
-  // Feedback. DECIDED(Q6): the participant sees nothing, so all four are off.
-  // They exist to pilot variations (Rehaan Karnik, October 11, 2026); every run
-  // records which were on (`feedbackVariant`).
-  showScore: false,             // Score in the corner, as a percentage (see engine.js):
+  // Feedback. Dr. Song's Q6 answer was no feedback at all. Rehaan Karnik
+  // decided on October 17, 2026 (open decision L) to show the score by
+  // default; rings, sound, and hammer stay off. Every run records which were
+  // on (`feedbackVariant`).
+  showScore: true,              // Score at the top centre, as a percentage (see engine.js):
                                 // happy moles hit minus scorePenalty per distractor hit,
                                 // over the happy moles so far.
   scorePenalty: 3,              // Points lost for hitting a distractor (10 on Oct 13, 5 then 3 on Oct 17, 2026).
@@ -99,6 +100,17 @@ export const DEFAULTS = Object.freeze({
   showResultsOnDisplay: false,  // Testing only: after a run, show results and downloads on the
                                 // participant display too. Off for real participants (Q6).
   seed: 1234,
+  // Who and which run (Phase 2, October 17, 2026). They label the files
+  // (sub-<participant>_task-whacamole_run-<run>_...) and the data.
+  participant: '',              // Letters and digits only, as BIDS requires; '' for unlabelled testing.
+  run: 1,
+  // Off: everyone gets the schedule from `seed`, so every run is identical.
+  // On: the schedule seed is worked out from seed, participant, and run, so
+  // each participant and run gets its own schedule, still reproducible.
+  // TODO: which one the study uses is an open decision (O).
+  seedFromIds: false,
+  // Save the three files to the downloads folder when a run ends.
+  autoSave: true,
   // DECIDED(Q5): continuous play, no rest blocks.
   // DECIDED(Q7): no adaptive difficulty; nothing in the engine adapts to performance.
   // DECIDED(Q11): a press on the wrong column is logged as wrong_hole; the trial continues.
@@ -150,6 +162,23 @@ const FEEDBACK_NAMES = Object.freeze({ showScore: 'score', hitRings: 'rings', so
 export function feedbackVariant(config) {
   const on = FEEDBACK_KEYS.filter((k) => config[k]).map((k) => FEEDBACK_NAMES[k]);
   return on.length ? on.join('+') : 'none';
+}
+
+/**
+ * The seed the schedule is actually built from. Normally `seed` itself. With
+ * seedFromIds on, a fixed hash (FNV-1a, 32-bit) of seed, participant, and run,
+ * so the same participant and run always get the same schedule, and different
+ * ones (almost always) get different schedules. Pure.
+ */
+export function scheduleSeed(config) {
+  if (!config.seedFromIds) return config.seed;
+  const text = `${config.seed}|${config.participant}|${config.run}`;
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h | 0;   // a signed 32-bit integer, like any other seed
 }
 
 /** Total run length in ms: lead-in plus every trial cycle. */
@@ -215,6 +244,12 @@ export function validateConfig(config) {
   if (!isNonNegInt(c.scorePenalty)) problems.push('scorePenalty must be a non-negative integer');
   if (typeof c.showResultsOnDisplay !== 'boolean') problems.push('showResultsOnDisplay must be a boolean');
   if (!isInt(c.seed)) problems.push('seed must be an integer');
+  if (typeof c.participant !== 'string' || !/^[A-Za-z0-9]{0,32}$/.test(c.participant)) {
+    problems.push('participant must be up to 32 letters or digits (no spaces, dashes, or underscores)');
+  }
+  if (!(isInt(c.run) && c.run >= 1 && c.run <= 99)) problems.push('run must be a whole number from 1 to 99');
+  if (typeof c.seedFromIds !== 'boolean') problems.push('seedFromIds must be a boolean');
+  if (typeof c.autoSave !== 'boolean') problems.push('autoSave must be a boolean');
 
   if (problems.length) throw new Error(`Invalid config:\n  - ${problems.join('\n  - ')}`);
   return config;
@@ -238,5 +273,6 @@ export function resolveConfig(partial = {}, preset) {
   // Derived, so the engine and the chart know how long the run is.
   merged.durationS = runDurationMs(merged) / 1000;
   merged.feedbackVariant = feedbackVariant(merged);
+  merged.scheduleSeed = scheduleSeed(merged);
   return Object.freeze(merged);
 }

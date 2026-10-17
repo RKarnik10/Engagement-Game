@@ -98,6 +98,15 @@ Feedback relayed by Rehaan Karnik: the decimals matter, and times should be save
 | Garden scene | The display shows sky with clouds, hills on the horizon, grass, and brown holes. Default for piloting; plain grey stays available (`scene: 'grey'`), as README 4.3 recommends for scanning. Which one to scan with is open. | `scene` in `src/config.js`; `styles.css` | 2026-10-17 |
 | Penalty | Hitting a sad mole now costs 3 points by default, down from 10 (and briefly 5, the same day). Rehaan Karnik judged −10 too harsh. Still adjustable in the console and in links (`penalty=`). The score formula is otherwise unchanged; the weight of one mistake still shrinks as the run goes on (an open question). | `scorePenalty` in `src/config.js` | 2026-10-17 |
 
+## Phase 2, October 17, 2026
+
+| Item | Decision | Where | Date |
+|------|----------|-------|------|
+| Participant and run | Every run can carry a participant ID (letters and digits, as BIDS requires) and a run number. They label the files (`sub-07_task-whacamole_run-02_...`), the first two columns of the run table, and the log. Without an ID, files keep the old `engagement-game_...` names. | `participant`, `run` in `src/config.js`; `exportFilename` in `src/export.js` | 2026-10-17 |
+| Per-run schedules | Optional (`seedFromIds`, off by default): the schedule seed is worked out from the seed, participant, and run, so each participant and run gets its own schedule that can always be recreated. Whether to use it is open decision O. | `scheduleSeed` in `src/config.js` | 2026-10-17 |
+| Auto-save | When a run ends, its three files are saved to the downloads folder automatically (`autoSave`, on by default): by the console, or by the display when it was opened from a labmate link. A run is saved once, never again after a console reload. | `downloadRun` in `src/export.js`; `src/main.js`; `src/display.js` | 2026-10-17 |
+| Picture matching | The happy and sad moles already matched; the molerat was darkened and scaled up 2.94%. All three are now within 0.3% in mean brightness and equal in area. Details: [stimuli.md](stimuli.md). | `src/render/skin-mole.js`; `scripts/measure-stimuli.py` | 2026-10-17 |
+
 ## Checklist against the September 21 feedback notes
 
 Every line of the feedback notes, and where it stands in the build.
@@ -106,11 +115,11 @@ Every line of the feedback notes, and where it stands in the build.
 |------|--------|
 | 9 holes, 3 buttons | Done. 3 by 3 grid; the three buttons sit in a row and each one covers a column. |
 | Hide settings; separate participant screen; experimenter and participant rooms | Done. The participant display is its own tab; settings and data stay in the console. |
-| No eggplants; molerat; happy and sad mole | Done. Happy mole is good. Bad is a sad mole by default, molerat as an option (open point A). |
+| No eggplants; molerat; happy and sad mole | Done. Happy mole is good. Bad is the sad mole (decided, A); molerat stays an option. |
 | 1 second per trial | Done. `trialMs: 1000`, fixed. |
 | Trials with correct, incorrect, and both (80-10-10) | Done. Good / bad / both at 80 / 10 / 10. |
 | Scanner or behavioral suite (1 or 0) | Done. `setting`; `in_scanner` 1 or 0 in the log; also in the file name. |
-| Record the 1 and 2 inputs rather than any other input | Partly. Only the three response buttons are recorded; every other key is ignored. "1 and 2" still needs confirming (open point B). |
+| Record the 1 and 2 inputs rather than any other input | Done. Only the three response buttons are recorded; every other key is ignored. "1 and 2" read as all three buttons (decided, B). |
 | Psychtoolbox is paywalled; maybe PsychoPy | Noted. Browser is fine (Q3). |
 | No colour change after a press | Done. Nothing on the display reacts to a press; only a hit mole goes down. |
 | 600 trials, 10 minutes, print the outcome CSV | Done. `examples/example_run.csv`. |
@@ -118,23 +127,27 @@ Every line of the feedback notes, and where it stands in the build.
 
 ## Still open, and how the code reads the feedback today
 
-These are the places where the written feedback could be read more than one
-way, where a value had to be picked to make the build run, or where a question
-came up while testing (H to N, October 17, 2026). Each needs a one-line answer.
-E was answered on September 25, 2026.
+Four points still need an answer. The rest were closed on October 17, 2026
+(next section). E was answered on September 25, 2026.
 
 | # | Open point | What the code does now | Why it needs confirming |
 |---|------------|------------------------|--------------------------|
-| A | Which picture is the bad mole | Sad mole by default; molerat as an option (`badStim`). | The notes mention both a molerat and a happy/sad mole. The sad mole is the same size and brightness as the happy one apart from its face, which helps the matching required in README 3.6, but it is harder to tell apart at one per second. The molerat is easier to spot. |
-| B | "Record the 1 and 2 inputs rather than any other input" | All three mapped buttons (1, 2, 3) are recorded as responses; every other key is ignored and never stored. | Q2 settled on three buttons, so "1 and 2" may be shorthand, or may name the exact codes the button box sends. |
 | C | Both trials, after the good mole is hit | The bad mole stays up until the window ends; pressing it later still counts as a commission, and the trial's outcome is then `commission`. | Part of the wider question H. The alternative is to take both moles down on the first press, which would make any second press a stray press instead. |
-| D | How long a mole stays up inside the 1 s cycle | 800 ms up, then 200 ms empty before the next trial. | The 1 s cycle is settled; the split inside it is not. |
 | F | Q4 remainder | TR 1 s, trigger key `t`, 2 s lead-in, one run. | Needed before any scan. Dr. Song said this is still to be discussed. |
-| G | Same-hole and same-column repeats | The same hole never repeats on consecutive trials; the same column may. | Carried over from v0.1 and never confirmed. |
 | H | Several presses in one trial: does every press count, or only the first? | **Every press counts.** Pressing a sad mole and then an empty column records both a sad-mole hit and a wrong-column press. A wrong-column press followed by the right one counts as a hit. In a both trial, hitting the happy mole and then the sad one counts as a hit and a sad-mole hit, and the trial's outcome is `commission`. | Raised by Rehaan Karnik on October 17, 2026. A "first press only" rule (later presses recorded with their times but ignored for scoring) was built and reverted the same day, because it also turns a quick correction into a miss, which Dr. Song's feedback described. Options: (1) every press counts, as now; (2) only the first press counts; (3) a middle way, e.g. only the first press *on a mole* counts, so a wrong-column press can still be corrected but a happy-mole hit cannot be followed by a sad-mole hit. Every press is recorded with its time whichever is chosen, so the analysis can apply any rule later. |
-| I | Should a wrong-column press cost points? | No: it is recorded (`wrong_hole`) but the score ignores it. | Only a sad-mole hit costs points (3). Raised October 17, 2026. |
-| J | Very fast presses | No lower limit: a press 50 ms after a mole appears counts as a hit. | People cannot react that fast, so such presses are anticipations. Attention studies often drop reaction times under about 100 to 150 ms. This can be applied in the analysis instead of the game. |
-| K | The score formula | Points (+1 hit, −3 per sad-mole hit) over the happy moles so far, as a percentage. | One mistake weighs much more early in the run than late (after 3 happy moles one sad-mole hit at −3 gives 0%; after 300 it costs 1 percentage point). A score over the last 50 happy moles would make every mistake weigh the same. Raised October 17, 2026. |
-| L | Which feedback, if any, stays | All off by default (Q6: the participant sees nothing). Score, rings, sound, and hammer exist for piloting with labmates. | Decide after piloting, with Dr. Song. Sound and hammer also turn up the "violence dial" of README section 8. |
-| M | Garden scene or plain grey | Garden (sky, hills, grass, brown holes) is the default; plain grey is one click away. | README 4.3 recommends plain grey for scanning, to keep screen brightness neutral. The garden is static, but brighter and busier. |
-| N | Pop-up or gradual rise | Moles pop up instantly; gradual rise is an option. | README 3.5: abrupt pop-ups grab attention automatically, which may make the task less sensitive to lapses than the lab's gradCPT. Never decided. |
+| O | Same schedule for everyone, or one per participant and run? | Same for everyone: every run uses the schedule from `seed` (1234), unless "Give each participant and run its own schedule" is ticked (`seedFromIds`). | The same schedule for everyone makes participants directly comparable trial by trial and keeps one fMRI design matrix; different schedules avoid order effects and stop anything tied to one particular sequence. Common in fMRI either way. Added October 17, 2026. |
+
+## Closed by Rehaan Karnik, October 17, 2026
+
+| # | Question | Decision | Change in the code |
+|---|----------|----------|--------------------|
+| A | Which picture is the distractor | **The sad mole.** The molerat stays available as an option. | None; it was already the default. |
+| B | "Record the 1 and 2 inputs" | **Record all three buttons;** every other key is ignored and never stored. Confirming the exact codes the scanner's button box sends is still a hardware check (README 4.2). | None. |
+| D | How long a mole stays up in the 1 s cycle | **800 ms up, 200 ms empty.** | None. |
+| G | Can the same hole come up twice in a row? | **Yes.** Any hole can come up on any trial, so the same hole (and column) can repeat. The two moles of a both trial still sit in different columns. | The no-repeat rule is removed from `src/schedule.js`. Schedules for a given seed differ from before. |
+| I | Should a wrong-column press cost points? | **No.** It is recorded but not scored. | None. |
+| J | Very fast presses | **No lower limit in the game.** Any cut-off for anticipations is left to the analysis. | None. |
+| K | The score formula | **Keep it:** (happy moles hit − 3 × sad moles hit) ÷ happy moles so far. | None. |
+| L | Which feedback stays | **The score is shown by default;** rings, sound, and hammer stay available but off. This departs from Dr. Song's Q6 answer (no feedback), so it is worth confirming with her before scanning. | `showScore` defaults to on in `src/config.js` and the console. Links now only mention the score to turn it off (`score=0`), and file names carry `_score_` by default. |
+| M | Garden scene or plain grey | **The garden,** scanning included. Plain grey stays available. Note for Dr. Song: README 4.3 recommended plain grey for scanning. | None; it was already the default. |
+| N | Pop-up or gradual rise | **Moles pop up instantly.** Gradual rise stays available. | None; it was already the default. |

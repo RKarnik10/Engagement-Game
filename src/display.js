@@ -19,7 +19,7 @@ import {
   runSummaryText, scoreText, scorePercent, scoreBand, scoreFill, scoreColor,
 } from './summary.js';
 import {
-  buildRunCSV, buildEventsTSV, buildFullLogJSON, exportFilename, downloadText,
+  buildRunCSV, buildEventsTSV, buildFullLogJSON, exportFilename, downloadText, downloadRun,
 } from './export.js';
 
 const SKINS = { mole: moleSkin };
@@ -131,6 +131,9 @@ const view = {
   },
   ended(reason, run) {
     finishedRun = run;
+    // Opened from a labmate link, there is no console to save the files, so
+    // the display saves them itself (Phase 2 auto-save).
+    if (standalone && run && run.config.autoSave) downloadRun(run);
     if (run && run.config.showResultsOnDisplay) {
       // Testing only: results and downloads on this screen as well.
       overlay.hidden = true;
@@ -210,7 +213,7 @@ holesEl.addEventListener('pointerdown', (e) => {
 
 const KIND = { csv: 'run', tsv: 'events', json: 'log' };
 const MIME = { csv: 'text/csv', tsv: 'text/tab-separated-values', json: 'application/json' };
-const BUILD = { csv: (r) => buildRunCSV(r.trials), tsv: (r) => buildEventsTSV(r.trials), json: (r) => buildFullLogJSON(r) };
+const BUILD = { csv: (r) => buildRunCSV(r.trials, r.config), tsv: (r) => buildEventsTSV(r.trials), json: (r) => buildFullLogJSON(r) };
 for (const m of ['csv', 'tsv', 'json']) {
   $(`dl-${m}`).addEventListener('click', () => {
     if (!finishedRun) return;

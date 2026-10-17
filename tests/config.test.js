@@ -17,8 +17,9 @@ test('config: defaults are the September 21 and 25, 2026 decisions', () => {
   assert.equal(c.bothShare, 0.1);
   assert.equal(c.badStim, 'mole_sad');
   assert.equal(c.version, '0.3');
-  for (const k of ['showScore', 'hitRings', 'sound', 'hammer']) assert.equal(c[k], false, `${k} off: no feedback (Q6)`);
-  assert.equal(c.feedbackVariant, 'none');
+  assert.equal(c.showScore, true, 'score on by default (decision L, October 17, 2026)');
+  for (const k of ['hitRings', 'sound', 'hammer']) assert.equal(c[k], false, `${k} off by default`);
+  assert.equal(c.feedbackVariant, 'score');
   assert.equal(c.setting, 'behavioral');
   assert.equal(c.durationS, 602, '600 trials of 1 s plus a 2 s lead-in');
   assert.ok(Object.isFrozen(c));

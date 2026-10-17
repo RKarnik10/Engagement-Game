@@ -35,7 +35,7 @@ const orNA = (v) => (v == null ? NA : v);
 
 /** Column order of the run CSV. */
 export const CSV_COLUMNS = Object.freeze([
-  'trial', 'onset_s', 'trial_type',
+  'participant', 'run', 'trial', 'onset_s', 'trial_type',
   'good_row', 'good_col', 'bad_row', 'bad_col',
   'correct_action', 'expected_button', 'n_presses', ...pressHeaders('ms'), 'first_press_ms', 'good_hit_ms',
   'good_outcome', 'bad_outcome', 'outcome', 'correct', 'score_points', 'score_pct',
@@ -72,12 +72,17 @@ function csvCell(v) {
  * precision. Each of the first PRESS_COLUMNS presses gets a button column
  * and a time column, in the order pressed; n_presses gives the count.
  */
-export function buildRunCSV(trials) {
+export function buildRunCSV(trials, config = {}) {
   const rows = [CSV_COLUMNS.slice()];
+  // Who and which run, on every row, so run tables can be stacked for analysis.
+  const who = config.participant ? config.participant : NA;
+  const run = config.run ?? NA;
   for (const a of shownTrials(trials)) {
     const g = goodOf(a);
     const b = badOf(a);
     rows.push([
+      who,
+      run,
       a.trial,
       sec(a.actualOnsetMs),
       a.type,
@@ -175,6 +180,9 @@ export function buildFullLog({ config, trials, events, frameStats, userAgent, cr
       version: config.version,
       created,
       setting: config.setting,
+      participant: config.participant || null,
+      run: config.run ?? null,
+      schedule_seed: config.scheduleSeed ?? config.seed,
       in_scanner: config.setting === 'scanner' ? 1 : 0,
       feedback_variant: config.feedbackVariant || 'none',
       trial_mix: { good: config.goodShare, bad: config.badShare, both: config.bothShare },
@@ -211,7 +219,39 @@ export function exportFilename(config, kind, date = new Date()) {
   const ext = { run: 'run.csv', events: 'events.tsv', log: 'log.json' }[kind];
   if (!ext) throw new Error(`export: unknown file kind "${kind}"`);
   const variant = config.feedbackVariant && config.feedbackVariant !== 'none' ? `_${config.feedbackVariant}` : '';
-  return `engagement-game_${exportStamp(date)}_${config.setting}_seed${config.seed}${variant}_${ext}`;
+  const seed = config.scheduleSeed ?? config.seed;
+  // With a participant ID, BIDS-style labels come first, so a participant's
+  // files sort together: sub-01_task-whacamole_run-02_...
+  const who = config.participant
+    ? `sub-${config.participant}_task-whacamole_run-${String(config.run).padStart(2, '0')}`
+    : 'engagement-game';
+  return `${who}_${exportStamp(date)}_${config.setting}_seed${seed}${variant}_${ext}`;
+}
+
+/**
+ * The three files of a finished run, as { name, text, mime }. Pure.
+ * @param {object} run  { config, trials, events, frameStats, userAgent, created }
+ */
+export function runFiles(run) {
+  const date = new Date(run.created);
+  return [
+    { name: exportFilename(run.config, 'run', date), text: buildRunCSV(run.trials, run.config), mime: 'text/csv' },
+    { name: exportFilename(run.config, 'events', date), text: buildEventsTSV(run.trials), mime: 'text/tab-separated-values' },
+    { name: exportFilename(run.config, 'log', date), text: buildFullLogJSON(run), mime: 'application/json' },
+  ];
+}
+
+/**
+ * Save all three files of a run (auto-save, Phase 2). The downloads are
+ * spaced out a little, because browsers handle several downloads at once
+ * badly. The first time, a browser may ask whether this site may download
+ * several files; allowing it once is enough. Browser only.
+ * @returns {string[]} the file names
+ */
+export function downloadRun(run, spacingMs = 400) {
+  const files = runFiles(run);
+  files.forEach((f, i) => setTimeout(() => downloadText(f.name, f.text, f.mime), i * spacingMs));
+  return files.map((f) => f.name);
 }
 
 /** Download text as a file via a Blob URL and a temporary <a download>. */

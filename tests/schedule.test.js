@@ -43,12 +43,10 @@ function checkConstraints(trials, config, label) {
     assert.equal(trials.filter((t) => t.type === type).length, c[type], `${label}: ${type} count`);
   }
 
-  // First 3 good; no two bad in a row; no hole reused from the previous trial.
+  // First 3 good; no two bad in a row. (The same hole may repeat: decision G.)
   for (let i = 0; i < Math.min(LEAD_IN_GO_TRIALS, n); i++) assert.equal(trials[i].type, TRIAL.GOOD, `${label}: lead-in`);
   for (let i = 1; i < n; i++) {
     assert.ok(!(trials[i].type === TRIAL.BAD && trials[i - 1].type === TRIAL.BAD), `${label}: bad trials adjacent at ${i + 1}`);
-    const prev = trials[i - 1].targets.map((x) => x.hole);
-    for (const x of trials[i].targets) assert.ok(!prev.includes(x.hole), `${label}: hole reused at trial ${i + 1}`);
   }
 
   // Moles never overlap across trials.
@@ -172,3 +170,22 @@ test('schedule: trialCounts is exact, and caps bad trials by the no-adjacent rul
   assert.deepEqual(c(10, 0.0, 1.0, 0.0), { good: 6, bad: 4, both: 0 }, 'at most every other trial after the lead-in');
   assert.deepEqual(c(3, 0.8, 0.1, 0.1), { good: 3, bad: 0, both: 0 }, 'the lead-in is all good');
 });
+
+test('schedule: the same hole can come up twice in a row (decision G), at about the chance rate', () => {
+  // With 9 holes chosen freely, a good-after-good repeat of the exact hole
+  // happens about 1 time in 9. Check it happens, and not wildly off chance.
+  let repeats = 0;
+  let pairs = 0;
+  for (let seed = 1; seed <= 50; seed++) {
+    const trials = buildSchedule(cfg({ seed }));
+    for (let i = 1; i < trials.length; i++) {
+      if (trials[i].type !== 'good' || trials[i - 1].type !== 'good') continue;
+      pairs++;
+      if (trials[i].targets[0].hole === trials[i - 1].targets[0].hole) repeats++;
+    }
+  }
+  const rate = repeats / pairs;
+  assert.ok(repeats > 0, 'repeats happen');
+  assert.ok(rate > 0.08 && rate < 0.14, `repeat rate ${rate.toFixed(3)} near 1/9`);
+});
+

@@ -21,7 +21,7 @@ import { buildRunCSV, buildEventsTSV, buildFullLogJSON } from '../src/export.js'
 
 const outDir = process.argv[2] || path.join(import.meta.dirname, '.');
 const seed = Number(process.argv[3] || 1234);
-const config = resolveConfig({ seed, setting: 'behavioral' });
+const config = resolveConfig({ seed, setting: 'behavioral', participant: 'example', run: 1 });
 const schedule = buildSchedule(config);
 
 /* ---- a simulated participant ----
@@ -113,7 +113,7 @@ while (pending) {
 const trials = engine.trials();
 const created = new Date('2026-09-21T15:00:00.000Z');
 const files = {
-  'example_run.csv': buildRunCSV(trials),
+  'example_run.csv': buildRunCSV(trials, config),
   'example_events.tsv': buildEventsTSV(trials),
   'example_log.json': buildFullLogJSON({
     config, trials, events: logger.toArray(), frameStats: engine.frameStats(),

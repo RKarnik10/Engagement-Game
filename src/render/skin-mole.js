@@ -19,8 +19,10 @@
  * up, the sad mole's curves down, and the molerat has a bald head, big ears,
  * and two front teeth.
  *
- * TODO(Q8): the three drawings are not yet matched for size and average
- * brightness. That matching is required before scanning (README 3.6).
+ * Matched for size and average brightness (README 3.6) on October 17, 2026:
+ * the happy and sad moles are the same drawing apart from the face; the
+ * molerat was darkened and scaled to match. Measurements: docs/stimuli.md,
+ * re-run with scripts/measure-stimuli.py (macOS).
  */
 
 const C = {
@@ -28,8 +30,10 @@ const C = {
   muzzle: '#9C7A5E',
   nose: '#D9938A',
   eye: '#17110D',
-  ratBody: '#B08C88',
-  ratMuzzle: '#D8BDB6',
+  // Darkened from #B08C88 / #D8BDB6 on October 17, 2026 so the molerat
+  // matches the mole's average brightness (docs/stimuli.md).
+  ratBody: '#644F4C',
+  ratMuzzle: '#7C6C68',
   ratTooth: '#F2EBDD',
 };
 
@@ -69,7 +73,9 @@ export const moleSkin = Object.freeze({
     )}</g>`,
 
     // Bad (alternative): a different animal: bald head, big ears, buck teeth.
-    molerat: `<g class="mole-art">` +
+    // Scaled up 2.94% about the hole's centre so its visible area matches the
+    // mole's (docs/stimuli.md).
+    molerat: `<g class="mole-art"><g transform="translate(60 92) scale(1.0294) translate(-60 -92)">` +
       `<ellipse fill="${C.ratBody}" cx="34" cy="44" rx="9" ry="10"/>` +
       `<ellipse fill="${C.ratBody}" cx="86" cy="44" rx="9" ry="10"/>` +
       `<path fill="${C.ratBody}" d="M30 118 V58 C30 38 43 26 60 26 C77 26 90 38 90 58 V118 Z"/>` +
@@ -79,7 +85,7 @@ export const moleSkin = Object.freeze({
       `<path fill="none" stroke="${C.eye}" stroke-width="2" stroke-linecap="round" d="M51 74 Q60 79 69 74"/>` +
       `<path fill="${C.ratTooth}" d="M55 76 H65 V83 Q65 86 62 86 H58 Q55 86 55 83 Z"/>` +
       `<path fill="none" stroke="${C.ratMuzzle}" stroke-width="0.9" d="M60 77 V85"/>` +
-    `</g>`,
+    `</g></g>`,
   }),
 
   /** Plain names for the instructions. */

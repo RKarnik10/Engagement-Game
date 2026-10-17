@@ -25,6 +25,7 @@ Same seed, same files, every time.
 
 | | |
 |---|---|
+| Labels | participant `example`, run 1 (the first two columns of the run table) |
 | Trials | 600, one per second, 10.0 minutes |
 | Trial mix | 480 good, 60 bad, 60 both |
 | Layout | 9 holes in a 3 by 3 grid, 3 buttons, one per column |

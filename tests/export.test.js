@@ -168,7 +168,7 @@ test('export: builders are pure (same input, same output)', () => {
 });
 
 test('export: file names carry date, time, setting, seed, and kind', () => {
-  const config = resolveConfig({ seed: 42, setting: 'scanner' });
+  const config = resolveConfig({ seed: 42, setting: 'scanner', showScore: false });   // no variant in the name
   const d = new Date(2026, 8, 25, 14, 5, 2);
   assert.equal(exportFilename(config, 'run', d), 'engagement-game_20260925-140502_scanner_seed42_run.csv');
   assert.equal(exportFilename(config, 'events', d), 'engagement-game_20260925-140502_scanner_seed42_events.tsv');

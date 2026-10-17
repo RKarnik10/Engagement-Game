@@ -11,7 +11,7 @@ import { configToQuery } from './query.js';
 import { trialCounts } from './schedule.js';
 import { CHANNEL, createConsoleLink } from './link.js';
 import {
-  buildRunCSV, buildEventsTSV, buildFullLogJSON, exportFilename, downloadText,
+  buildRunCSV, buildEventsTSV, buildFullLogJSON, exportFilename, downloadText, downloadRun,
 } from './export.js';
 import { renderBoard, renderKeycaps, setTarget, setStimulus, applyScene } from './render/board.js';
 import { moleSkin } from './render/skin-mole.js';
@@ -50,7 +50,8 @@ const MOLE_DOWN = new Set(['hit', 'commission', 'omission', 'correct_rejection',
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 let config = null;          // settings from the form (null while invalid)
-let shown = null;           // the run on screen, live or finished (see beginRun)
+let shown = null;
+const savedRuns = new Set();   // runs already auto-saved by this console           // the run on screen, live or finished (see beginRun)
 let exportMode = 'csv';
 
 /* ---------- link to the participant display ---------- */
@@ -116,6 +117,10 @@ function readConfig() {
     sound: f.get('sound') === 'on',
     hammer: f.get('hammer') === 'on',
     scorePenalty: Math.round(clamp(num('scorePenalty', 3), 0, 100)),
+    participant: String(f.get('participant') || '').trim(),
+    run: Math.round(clamp(num('run', 1), 1, 99)),
+    seedFromIds: f.get('seedFromIds') === 'on',
+    autoSave: f.get('autoSave') === 'on',
   });
 }
 
@@ -139,6 +144,8 @@ function syncSettings() {
   }
   showSettingsError('');
   const c = trialCounts(config.nTrials, config);
+  $('file-preview').textContent = `Files will be named like ${exportFilename(config, 'run')}` +
+    (config.seedFromIds ? `. Schedule seed for this participant and run: ${config.scheduleSeed}.` : '.');
   $('mix-note').textContent = `${c.good} happy moles, ${c.bad} distractors, ${c.both} happy + distractor.`;
   $('run-length').textContent =
     `Run length ${(runDurationMs(config) / 60000).toFixed(1)} minutes (${config.nTrials} trials every ` +
@@ -254,6 +261,9 @@ function onEvent(record, trial, runId) {
 }
 
 function onRun(run) {
+  // Auto-save only a run this console watched finish. A run recovered after
+  // the console was reloaded, or sent twice, is never saved again.
+  const watched = !!(shown && shown.runId === run.runId && !shown.finished);
   // The authoritative copy of the run: rebuild everything from it.
   if (!shown || shown.runId !== run.runId) {
     beginRun(run.runId);          // e.g. this console was reloaded after the run
@@ -265,7 +275,7 @@ function onRun(run) {
   shown.finished = true;
   shown.created = new Date(run.created);
   shown.exports = {
-    csv: buildRunCSV(run.trials),
+    csv: buildRunCSV(run.trials, run.config),
     tsv: buildEventsTSV(run.trials),
     json: buildFullLogJSON(run),
   };
@@ -277,6 +287,14 @@ function onRun(run) {
   if (end) moveCursor(cursorEl, end.t_ms, run.config.durationS);
   showExport();
   for (const id of ['dl-csv', 'dl-tsv', 'dl-json', 'copy']) $(id).disabled = false;
+  if (watched && run.config.autoSave && !savedRuns.has(run.runId)) {
+    savedRuns.add(run.runId);
+    const names = downloadRun(run);
+    $('save-status').textContent = `Saved automatically to your downloads folder: ${names.join(', ')}. `
+      + 'If they are not there, the browser blocked them; use the buttons below.';
+  } else {
+    $('save-status').textContent = run.config.autoSave ? '' : 'Automatic saving is off: use the buttons below.';
+  }
   mirrorIdle({ ...link.state(), phase: 'ended' });
 }
 

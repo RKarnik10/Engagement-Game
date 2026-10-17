@@ -107,11 +107,12 @@ Inside `src/`, in case you want to look at one thing:
 A complete example of all three, from a ten-minute run, is in the `examples/`
 folder. No person took part: a simulated participant played the real game.
 
-**Run table** (`..._run.csv`). The one to open first. One row per trial,
+**Run table** (`..._run.csv`). The one to open first. Files save themselves to the downloads folder when a run ends; with a participant ID, their names start like `sub-07_task-whacamole_run-02_`. One row per trial,
 opens in Excel.
 
 | Column | Meaning |
 |---|---|
+| `participant`, `run` | Who played and which of their runs this was, as typed in the console. `n/a` when left blank. |
 | `trial` | 1 to 600, in order. |
 | `onset_s` | When the moles appeared, in seconds from the start pulse. |
 | `trial_type` | `good` (one happy mole), `bad` (one sad mole), or `both`. |

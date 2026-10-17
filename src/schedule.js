@@ -13,10 +13,12 @@
  *       both - a good and a bad mole at the same time, in different
  *              columns: press the good one's column only.
  *
+ * Repeats are allowed: the same hole (and so the same column) can come up on
+ * consecutive trials (decided October 17, 2026, open decision G).
+ *
  * Rules kept from v0.1 (placeholders until the PI says otherwise):
  *   - the first LEAD_IN_GO_TRIALS trials are "good";
  *   - no two "bad" trials in a row;
- *   - no hole is reused from one trial to the next;
  *   - each trial type's count is exact per run.
  *
  * Trial record (0-based hole and response; exports convert to 1-based):
@@ -73,7 +75,8 @@ function target(config, valence, stim, hole) {
  * @returns {Array<object>}
  */
 export function buildSchedule(config) {
-  const rand = mulberry32(config.seed);
+  // scheduleSeed is `seed`, or derived from seed, participant, and run (config.js).
+  const rand = mulberry32(config.scheduleSeed ?? config.seed);
   const layout = LAYOUTS[config.layout];
   const n = config.nTrials;
   const leadIn = LEAD_IN_GO_TRIALS;
@@ -91,14 +94,12 @@ export function buildSchedule(config) {
   for (let i = leadIn; i < n; i++) if (types[i] !== TRIAL.BAD) open.push(i);
   shuffle(open, rand).slice(0, counts.both).forEach((i) => { types[i] = TRIAL.BOTH; });
 
-  // 2. Holes. Never reuse a hole from the previous trial. In a "both" trial
-  //    the two moles sit in different columns (different buttons).
-  const allHoles = Array.from({ length: layout.holes }, (_, i) => i);
+  // 2. Holes, any of them on any trial, so the same hole can repeat. In a
+  //    "both" trial the two moles sit in different columns (different buttons).
+  const free = Array.from({ length: layout.holes }, (_, i) => i);
   const windowMs = trialWindowMs(config);
   const trials = [];
-  let prevHoles = [];
   for (let i = 0; i < n; i++) {
-    const free = allHoles.filter((h) => !prevHoles.includes(h));
     const type = types[i];
     const targets = [];
     if (type === TRIAL.BAD) {
@@ -118,7 +119,6 @@ export function buildSchedule(config) {
       scheduledOnsetMs: config.firstOnsetMs + i * config.trialMs,
       windowMs,
     });
-    prevHoles = targets.map((t) => t.hole);
   }
 
   // 3. preceding_go (README 3.2): trials in a row that required a press

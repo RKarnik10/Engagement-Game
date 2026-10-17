@@ -89,7 +89,7 @@ legend{font-weight:700;font-size:.92rem;margin-bottom:4px;padding:0}
 .opts label{display:flex;gap:8px;align-items:baseline;font-size:.92rem;cursor:pointer}
 .opts label.disabled{color:var(--muted);cursor:not-allowed}
 .row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:8px;font-size:.92rem}
-.row input[type=number]{width:5.6rem;font:inherit;font-size:.92rem;padding:4px 6px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--ink);font-variant-numeric:tabular-nums}
+.row input[type=number],.row input[type=text]{width:5.6rem;font:inherit;font-size:.92rem;padding:4px 6px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--ink);font-variant-numeric:tabular-nums}
 .range-row{margin-bottom:10px;font-size:.92rem}
 .range-row .top{display:flex;justify-content:space-between}
 .range-row output{font-weight:700;font-variant-numeric:tabular-nums}

@@ -11,11 +11,12 @@ import { DEFAULTS, resolveConfig } from './config.js';
 
 const BOOL = Object.freeze({
   score: 'showScore', rings: 'hitRings', sound: 'sound', hammer: 'hammer', results: 'showResultsOnDisplay',
+  idseed: 'seedFromIds', autosave: 'autoSave',
 });
 const INT = Object.freeze({
-  trials: 'nTrials', trialms: 'trialMs', holdms: 'holdMs', seed: 'seed', penalty: 'scorePenalty',
+  trials: 'nTrials', trialms: 'trialMs', holdms: 'holdMs', seed: 'seed', penalty: 'scorePenalty', run: 'run',
 });
-const TEXT = Object.freeze({ setting: 'setting', layout: 'layout', onset: 'onset', scene: 'scene' });
+const TEXT = Object.freeze({ setting: 'setting', layout: 'layout', onset: 'onset', scene: 'scene', sub: 'participant' });
 const DISTRACTOR = Object.freeze({ sad: 'mole_sad', molerat: 'molerat' });
 
 const pct = (x) => Math.round(x * 100);
@@ -58,7 +59,11 @@ export function configToQuery(config, force = {}) {
   }
   if (c.badStim !== DEFAULTS.badStim) q.set('distractor', c.badStim === 'mole_sad' ? 'sad' : c.badStim);
   for (const [k, field] of Object.entries(TEXT)) if (c[field] !== DEFAULTS[field]) q.set(k, c[field]);
-  for (const [k, field] of Object.entries(BOOL)) if (c[field]) q.set(k, '1');
+  // Only switches that differ from the default: score is on by default, so
+  // a link turns it off with score=0; the others are off and turned on with 1.
+  for (const [k, field] of Object.entries(BOOL)) {
+    if (c[field] !== DEFAULTS[field]) q.set(k, c[field] ? '1' : '0');
+  }
   const s = q.toString();
   return s ? `?${s}` : '';
 }

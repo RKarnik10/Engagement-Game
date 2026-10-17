@@ -44,13 +44,16 @@ while (clock.pending) {
   clock.frame();
 }
 await new Promise((r) => setTimeout(r, 20));
-$('dl-csv').click();
 await new Promise((r) => setTimeout(r, 400));   // let the hammer sinks finish
 out.leftUp = $('holes').children.filter((h) => h.dataset.stim).length;
 out.leftStruck = $('holes').children.filter((h) => h.classList.contains('struck')).length;
 out.sceneGarden = $('stage').classList.contains('scene-garden');
 out.resultsHidden = $('results').hidden;
 out.summary = $('results-summary').textContent;
-out.download = created.filter((e) => e.tagName === 'A').at(-1)?.download;
+await new Promise((r) => setTimeout(r, 1000));   // the auto-saved files are spaced 400 ms apart
+const names = () => created.filter((e) => e.tagName === 'A').map((a) => a.download);
+out.autoSaved = names();
+$('dl-csv').click();
+out.download = names().at(-1);
 parentPort.postMessage(out);
 setTimeout(() => process.exit(0), 10);

@@ -77,7 +77,11 @@ test('pages: a labmate link runs the game alone, with score, rings, sound, and h
   assert.equal(out.resultsHidden, false, 'results on screen at the end');
   assert.match(out.summary, /^Run finished after 20 of 20 trials\./);
   assert.match(out.summary, /Feedback shown to the player: score\+rings\+sound\+hammer\./);
-  assert.match(out.download, /_behavioral_seed1234_score\+rings\+sound\+hammer_run\.csv$/);
+  // Auto-save: a labmate link saves all three files itself when the run ends.
+  assert.equal(out.autoSaved.length, 3, `auto-saved: ${out.autoSaved.join(', ')}`);
+  assert.deepEqual(out.autoSaved.map((n) => n.split('_').at(-1)), ['run.csv', 'events.tsv', 'log.json']);
+  assert.ok(out.autoSaved.every((n) => n.startsWith('engagement-game_')), 'no participant ID in the link: unlabelled names');
+  assert.match(out.download, /_behavioral_seed1234_score\+rings\+sound\+hammer_run\.csv$/, 'the button still works too');
 });
 
 test('pages: console and display tabs, with pause, early stop, and results that stay', async () => {
@@ -87,7 +91,7 @@ test('pages: console and display tabs, with pause, early stop, and results that 
   assert.equal(r.loadCheckHidden, true);
   assert.match(r.link, /not open/);
   assert.equal(r.startDisabled, true);
-  assert.equal(r.share, 'https://example.org/Engagement-Game/display.html?trials=30&distractor=molerat&score=1&results=1',
+  assert.equal(r.share, 'https://example.org/Engagement-Game/display.html?trials=30&run=2&distractor=molerat&sub=07&results=1',
     'the labmate link carries the settings and turns results on');
   con.postMessage('copy');
   r = await c.next((m) => m.cmd === 'copy', 'copy');
@@ -130,13 +134,25 @@ test('pages: console and display tabs, with pause, early stop, and results that 
     assert.match(x.hits, /^[1-9]\d* \/ \d+$/, `${when}: hits`);
     assert.equal(x.pauses, '1 (2.0 s)', `${when}: pauses`);
     assert.match(x.trace, /class="vtc"/, `${when}: trace`);
-    assert.equal(x.csv, 'trial,onset_s,trial_type,good_row,good_col,bad_row,bad_col,correct_action,expected_button,n_presses,press_1_button,press_1_ms,press_2_button,press_2_ms,press_3_button,press_3_ms,press_4_button,press_4_ms,press_5_button,press_5_ms,first_press_ms,good_hit_ms,good_outcome,bad_outcome,outcome,correct,score_points,score_pct,scheduled_onset_s,onset_lag_ms,preceding_go');
+    assert.equal(x.csv, 'participant,run,trial,onset_s,trial_type,good_row,good_col,bad_row,bad_col,correct_action,expected_button,n_presses,press_1_button,press_1_ms,press_2_button,press_2_ms,press_3_button,press_3_ms,press_4_button,press_4_ms,press_5_button,press_5_ms,first_press_ms,good_hit_ms,good_outcome,bad_outcome,outcome,correct,score_points,score_pct,scheduled_onset_s,onset_lag_ms,preceding_go');
   };
   check(r, 'after End run');
   con.postMessage('touch');
   r = await c.next((m) => m.cmd === 'touch', 'touch');
   check(r, 'after changing a setting');
+  // Auto-save: the console saved all three files once, labelled with participant and run.
+  await new Promise((res) => setTimeout(res, 1000));
+  con.postMessage('report');
+  r = await c.next((m) => m.cmd === 'report', 'report');
+  assert.equal(r.downloads.length, 3, `auto-saved once: ${r.downloads.join(', ')}`);
+  for (const n of r.downloads) assert.match(n, /^sub-07_task-whacamole_run-02_\d{8}-\d{6}_behavioral_seed1234_score_(run\.csv|events\.tsv|log\.json)$/);
+  assert.match(r.saveStatus, /^Saved automatically to your downloads folder/);
   con.postMessage('download');
   r = await c.next((m) => m.cmd === 'download', 'download');
-  assert.match(r.downloads.at(-1), /_behavioral_seed1234_score_run\.csv$/);
+  assert.equal(r.downloads.length, 4, 'the button adds one more');
+  assert.match(r.downloads.at(-1), /^sub-07_task-whacamole_run-02_.*_score_run\.csv$/);
+  // Changing a setting afterwards must not save the run again.
+  con.postMessage('touch');
+  r = await c.next((m) => m.cmd === 'touch', 'touch');
+  assert.equal(r.downloads.length, 4, 'no second auto-save');
 });

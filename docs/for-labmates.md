@@ -11,8 +11,10 @@ browser (Chrome, Safari, Firefox, or Edge) on a computer with a keyboard.*
 4. Play: press **1**, **2**, or **3** for the **column** a happy mole pops up in.
    Leave sad moles (or molerats) alone. When a happy mole and a sad one appear
    together, press only for the happy one.
-5. At the end you'll see your results and three **Download** buttons. Click
-   **Download run table (CSV)** and send that file to Rehaan.
+5. At the end you'll see your results. Three files save themselves to your
+   **Downloads** folder (your browser may ask once whether the site can save
+   several files: say yes). Send the one ending in **run.csv** to Rehaan. If
+   nothing saved, use the **Download run table (CSV)** button instead.
 
 Keys while playing: **P** pauses and resumes, **Esc** ends the run early
 (press it twice if the game is in full screen). **F** before starting makes it
@@ -31,8 +33,8 @@ feedback, to see which feels best:
 
 | Version | What you'll notice |
 |---|---|
-| No feedback | Nothing reacts when you press. This is the design for the real study. |
-| Score | A percentage at the top, with a bar that fills up and changes colour as you go: dark red when low, through orange and yellow, to green when you're doing well. You get +1 for each happy mole you hit and −3 for each sad mole you hit, out of the happy moles so far. Perfect play stays at 100% and green. |
+| No feedback | Nothing reacts when you press. |
+| Score (shown by default) | A percentage at the top, with a bar that fills up and changes colour as you go: dark red when low, through orange and yellow, to green when you're doing well. You get +1 for each happy mole you hit and −3 for each sad mole you hit, out of the happy moles so far. Perfect play stays at 100% and green. |
 | Rings | A white ring when you hit a happy mole, a red one if you hit a sad one. |
 | Sound and hammer | A good sound when you hit a happy mole, a bad one when you hit a sad one, and a little hammer that swings down and bonks the mole into its hole. Pressing a column with no mole makes no sound. Turn your volume on. |
 
