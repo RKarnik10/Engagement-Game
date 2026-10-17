@@ -1,13 +1,12 @@
 /**
  * Append-only event log (README 6.3).
  *
- * Every record has `t_ms` (milliseconds from the trigger, one decimal) and
+ * Every record has `t_ms` (milliseconds from the trigger, full precision) and
  * `event` (trigger, volume, target_on, an outcome code, or run_end), followed
  * by whatever fields the caller passes. Records are never edited or removed.
  * Pure: no DOM, no clock; the caller supplies every timestamp.
  */
 
-const round1 = (x) => +x.toFixed(1);
 
 export function createLogger() {
   const events = [];
@@ -24,7 +23,8 @@ export function createLogger() {
     log(event, data, tMs) {
       if (typeof event !== 'string' || !event) throw new Error('logger: event name required');
       if (!Number.isFinite(tMs)) throw new Error(`logger: t_ms must be finite, got ${tMs}`);
-      const record = { t_ms: round1(tMs), event, ...(data || {}) };
+      // Full precision, as the clock gave it (October 16, 2026): no rounding.
+      const record = { t_ms: tMs, event, ...(data || {}) };
       events.push(record);
       for (const fn of listeners) fn(record);
       return record;

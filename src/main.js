@@ -13,7 +13,7 @@ import { CHANNEL, createConsoleLink } from './link.js';
 import {
   buildRunCSV, buildEventsTSV, buildFullLogJSON, exportFilename, downloadText,
 } from './export.js';
-import { renderBoard, renderKeycaps, setTarget, setStimulus } from './render/board.js';
+import { renderBoard, renderKeycaps, setTarget, setStimulus, applyScene } from './render/board.js';
 import { moleSkin } from './render/skin-mole.js';
 import { drawTrace, moveCursor } from './render/trace.js';
 import { summarize, eventCounts, runSummaryText, scoreText } from './summary.js';
@@ -99,6 +99,7 @@ function readConfig() {
   return resolveConfig({
     setting: f.get('setting') || 'behavioral',
     layout: f.get('layout') || 'grid3x3',
+    scene: f.get('scene') || 'garden',
     onset: f.get('onset') || 'instant',
     goodShare: clamp(num('goodPct', 80), 0, 100) / 100,
     badShare: clamp(num('badPct', 10), 0, 100) / 100,
@@ -114,7 +115,7 @@ function readConfig() {
     hitRings: f.get('hitRings') === 'on',
     sound: f.get('sound') === 'on',
     hammer: f.get('hammer') === 'on',
-    scorePenalty: Math.round(clamp(num('scorePenalty', 10), 0, 100)),
+    scorePenalty: Math.round(clamp(num('scorePenalty', 3), 0, 100)),
   });
 }
 
@@ -185,6 +186,7 @@ function mirrorIdle(st) {
   const c = config || resolveConfig({});
   renderBoard(holesEl, c, SKINS[c.skin] || moleSkin);
   renderKeycaps(capsEl, c);
+  applyScene($('stage'), c);
   if (!st.connected) {
     ovTitle.textContent = 'Not connected';
     ovBody.innerHTML = '<p>Open the participant display to start.</p>';
@@ -215,6 +217,7 @@ function beginRun(runId) {
   shown = freshRun(runId, runConfig);
   renderBoard(holesEl, runConfig, SKINS[runConfig.skin] || moleSkin);
   renderKeycaps(capsEl, runConfig);
+  applyScene($('stage'), runConfig);
   overlay.hidden = true;
   logEl.replaceChildren();
   exportBox.value = '';

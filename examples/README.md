@@ -47,19 +47,19 @@ shows how several presses in one trial are recorded.
 - **`expected_button` always equals `good_col`**, and is `n/a` on bad trials.
   A button is a column, so the row a mole appears in never changes the answer.
 - **On both trials, `good_col` and `bad_col` always differ.**
-- **`pressed_buttons` lists every press in order, and `press_times_ms` their
-  times.** Trial 34, for example, is `1 2` at `383.0 553.0`: a wrong column
-  first, then the right one 170 ms later. `first_press_ms` is the first press;
-  `good_hit_ms` is the one that hit the good mole. When loading in pandas, read
-  both as text (`dtype={"pressed_buttons": str, "press_times_ms": str}`), or
-  runs with no double presses will load them as numbers.
-- **Times keep a decimal.** Here they end in .0, .3, or .7 because the
-  simulated player presses on a 60 Hz clock; real runs give the browser's
-  0.1 ms timer readings.
+- **Each press has its own columns.** Trial 34, for example, has
+  `n_presses` 2: `press_1_button` 1 at about 383 ms (a wrong column), then
+  `press_2_button` 2 at about 553 ms (the right one). `press_3` to `press_5`
+  are `n/a`, which pandas reads as NaN with no extra options, so every time
+  column loads as a number. `first_press_ms` is the first press; `good_hit_ms`
+  is the one that hit the good mole.
+- **Times are saved exactly, not rounded.** Values like `382.999999999367`
+  are how computers store decimals (here, a simulated 60 Hz clock); real runs
+  look similar.
 - **`score_points` and `score_pct`** are the running score: +1 per happy mole
-  hit, −10 per sad mole hit, over the happy moles so far. This simulated
-  player ends at 279 points out of 540, 51.7%: 23 sad moles hit cost 230
-  points.
+  hit, −3 per sad mole hit, over the happy moles so far. This simulated
+  player ends at 440 points out of 540, 81.5%: 23 sad moles hit cost
+  69 points.
 - **Both trials cover all four combinations** of good and bad outcome: 48 fully
   right, 3 with the good mole hit and the bad one pressed too, 6 with the bad
   one pressed instead, and 3 with nothing pressed.

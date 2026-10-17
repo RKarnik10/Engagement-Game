@@ -9,12 +9,15 @@ import { createDisplaySession } from './session.js';
 import { interpretKey } from './input.js';
 import {
   renderBoard, renderKeycaps, setTarget, setStimulus, rampVisibility, keysDescription, flashRing, swingHammer,
+  sinkStruck, cancelSink, applyScene,
 } from './render/board.js';
 import { createSounds } from './render/sound.js';
 import { configFromQuery, hasQuerySettings } from './query.js';
 import { moleSkin } from './render/skin-mole.js';
 import { drawTrace } from './render/trace.js';
-import { runSummaryText, scoreText } from './summary.js';
+import {
+  runSummaryText, scoreText, scorePercent, scoreBand, scoreFill, scoreColor,
+} from './summary.js';
 import {
   buildRunCSV, buildEventsTSV, buildFullLogJSON, exportFilename, downloadText,
 } from './export.js';
@@ -39,9 +42,19 @@ const standalone = hasQuerySettings(location.search);
 
 let config = null;
 let finishedRun = null;
+// Holes just hit while the hammer is on: their mole waits for the hammer before sinking.
+const struck = new Set();
 function showScore(points = 0, due = 0) {
-  scoreEl.textContent = `Score ${scoreText(points, due)}`;
+  const pct = scorePercent(points, due);
+  $('score-text').textContent = `Score ${scoreText(points, due)}`;
+  const fill = $('score-fill');
+  fill.style.setProperty('width', `${scoreFill(pct)}%`);
+  fill.dataset.band = scoreBand(pct) || '';
+  fill.style.setProperty('background-color', scoreColor(pct));
+  $('score-bar').setAttribute('aria-valuenow', String(Math.round(scoreFill(pct))));
   scoreEl.hidden = !config.showScore;
+  // Make room for the score above the grid.
+  stage.classList.toggle('has-score', !!config.showScore);
 }
 
 function showOverlay(title, html) {
@@ -56,6 +69,8 @@ const view = {
     const skin = SKINS[c.skin] || moleSkin;
     renderBoard(holesEl, c, skin);
     renderKeycaps(capsEl, c);
+    applyScene(stage, c);
+    struck.clear();
     const start = standalone
       ? '<p>Click this page once, then press <kbd>T</kbd> to start. <kbd>P</kbd> pauses, <kbd>Esc</kbd> ends the run.</p>'
       : '<p>Please wait for the task to start.</p>';
@@ -82,6 +97,9 @@ const view = {
     for (const t of active.targets) if (!t.outcome) setTarget(holesEl, t.hole, p);
   },
   moleUp(hole, stim) {
+    // A hole is never reused on the next trial, but never let a sinking mole
+    // hide a new one.
+    if (cancelSink(holesEl, hole)) struck.delete(hole);
     setStimulus(holesEl, hole, stim);
     setTarget(holesEl, hole, config.onset === 'gradual' ? 0 : 1);
   },
@@ -90,15 +108,26 @@ const view = {
     const ev = record.event;
     const onMole = ev === 'hit' || ev === 'commission';
     if (config.hitRings && onMole) flashRing(holesEl, record.hole - 1, ev);
-    if (config.hammer && onMole) swingHammer(holesEl, record.hole - 1);
-    if (config.sound) sounds.play(ev === 'hit' ? 'good' : 'bad');
+    if (config.hammer && onMole) {
+      swingHammer(holesEl, record.hole - 1);
+      struck.add(record.hole - 1);
+    }
+    // Sound only when a mole is actually hit: good for a happy mole, bad for a
+    // sad one. A press on an empty column is silent (October 17, 2026).
+    if (config.sound && onMole) sounds.play(ev === 'hit' ? 'good' : 'bad');
   },
   score(points, due) {
     showScore(points, due);
   },
   moleDown(hole) {
-    setTarget(holesEl, hole, 0);
-    setStimulus(holesEl, hole, '');
+    const clear = () => {
+      setTarget(holesEl, hole, 0);
+      setStimulus(holesEl, hole, '');
+    };
+    // Hammer on and this mole was just hit: it waits for the hammer to land,
+    // gets squashed, then sinks. Otherwise it drops at once, as before.
+    if (struck.delete(hole)) sinkStruck(holesEl, hole, clear);
+    else clear();
   },
   ended(reason, run) {
     finishedRun = run;

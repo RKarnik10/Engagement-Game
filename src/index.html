@@ -74,6 +74,13 @@
             </div>
           </fieldset>
           <fieldset>
+            <legend>Background</legend>
+            <div class="opts">
+              <label><input type="radio" name="scene" value="garden" checked> Garden: sky, hills, grass, brown holes</label>
+              <label><input type="radio" name="scene" value="grey"> Plain grey (recommended for scanning)</label>
+            </div>
+          </fieldset>
+          <fieldset>
             <legend>Layout</legend>
             <div class="opts">
               <label><input type="radio" name="layout" value="grid3x3" checked> 3 by 3 holes, 3 buttons, one per column</label>
@@ -102,7 +109,7 @@
               <label><input type="checkbox" name="sound"> Sound: good on a hit, bad on a wrong press</label>
               <label><input type="checkbox" name="hammer"> Hammer swings onto a pressed mole</label>
             </div>
-            <div class="row"><label for="scorePenalty">Points lost per distractor hit</label><input type="number" id="scorePenalty" name="scorePenalty" min="0" max="100" step="1" value="10"></div>
+            <div class="row"><label for="scorePenalty">Points lost per distractor hit</label><input type="number" id="scorePenalty" name="scorePenalty" min="0" max="100" step="1" value="3"></div>
             <p class="small muted">All off is Dr. Song's design (no feedback). Each run records which were on, and the file names include it, for example <code>_score_</code>. Sound needs one key press or click in the display tab first; browsers block sound until then.</p>
           </fieldset>
           <fieldset>

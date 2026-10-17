@@ -80,6 +80,19 @@ export function installDom({ formInputs = [], search = '', href = 'http://localh
     constructor() { this.m = new Map(formInputs.filter((i) => i.checked !== false).map((i) => [i.name, i.value])); }
     get(k) { return this.m.has(k) ? this.m.get(k) : null; }
   };
+  // A fake sound system: records each tone as 'good' (sine) or 'bad' (square)
+  // so tests can count which sounds played. No real audio.
+  const tones = [];
+  globalThis.AudioContext = class {
+    constructor() { this.state = 'running'; this.currentTime = 0; this.destination = {}; }
+    resume() { return Promise.resolve(); }
+    createGain() { const p = { setValueAtTime() {}, exponentialRampToValueAtTime() {} }; return { gain: p, connect: (x) => x }; }
+    createOscillator() {
+      const o = { type: 'sine', frequency: { setValueAtTime() {}, exponentialRampToValueAtTime() {} },
+        connect: (x) => x, stop() {}, start() { tones.push(o.type === 'square' ? 'bad' : 'good'); } };
+      return o;
+    }
+  };
   globalThis.URL.createObjectURL = () => 'blob:fake';
   globalThis.URL.revokeObjectURL = () => {};
   const keydown = (key, extra = {}) => {
@@ -87,7 +100,7 @@ export function installDom({ formInputs = [], search = '', href = 'http://localh
       fn({ key, repeat: false, metaKey: false, ctrlKey: false, altKey: false, target: { tagName: 'DIV' }, preventDefault() {}, ...extra });
     }
   };
-  return { $: (id) => document.getElementById(id), keydown, created, clipboard: () => clip };
+  return { $: (id) => document.getElementById(id), keydown, created, clipboard: () => clip, tones };
 }
 
 /** A fake 60 Hz clock and animation-frame loop for a page. */

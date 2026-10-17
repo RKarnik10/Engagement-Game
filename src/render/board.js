@@ -16,7 +16,8 @@ import { LAYOUTS } from '../config.js';
 export const STIMULUS_BACKGROUND = '#808080';
 
 /** Hole colors, identical in every skin and theme. */
-const HOLE = Object.freeze({ mound: '#6E6258', pit: '#2A231D', lip: '#574B40' });
+// Hole colours come from styles.css (.mound, .pit, .lip), so each scene can
+// colour them: brown earth in the garden scene, muted grey-brown on plain grey.
 
 /** Vertical travel of the target group inside its clip, in SVG units. */
 const TRAVEL = 84;
@@ -47,11 +48,13 @@ export function holeSVG(i, skin) {
   return (
     `<svg viewBox="0 0 120 120" aria-hidden="true">` +
       `<defs><clipPath id="clip-${i}"><rect x="-10" y="-10" width="140" height="102"/></clipPath></defs>` +
-      `<ellipse fill="${HOLE.mound}" cx="60" cy="95" rx="57" ry="19"/>` +
-      `<ellipse fill="${HOLE.pit}" cx="60" cy="92" rx="45" ry="12"/>` +
+      `<ellipse class="mound" cx="60" cy="95" rx="57" ry="19"/>` +
+      `<ellipse class="pit" cx="60" cy="92" rx="45" ry="12"/>` +
       `<g clip-path="url(#clip-${i})"><g class="target" transform="translate(0 ${TRAVEL})">${arts}</g></g>` +
-      `<path fill="none" stroke="${HOLE.lip}" stroke-width="5" stroke-linecap="round" d="M15 92 A45 12 0 0 0 105 92"/>` +
-      `<ellipse class="fx" cx="60" cy="92" rx="53" ry="17"/>` +
+      `<path class="lip" fill="none" stroke-width="5" stroke-linecap="round" d="M15 92 A45 12 0 0 0 105 92"/>` +
+      // Feedback ring: only the front arc, below the hole's rim, so it never
+      // crosses a mole that is still up (October 17, 2026).
+      `<path class="fx" stroke-linecap="round" d="M7 92 A53 17 0 0 0 113 92"/>` +
       HAMMER +
     `</svg>`
   );
@@ -115,9 +118,52 @@ export function flashRing(holesEl, i, kind) {
   replay(holesEl, i, cls, ['fx-hit', 'fx-com'], 260);
 }
 
+/**
+ * Hammer timing, in ms from the press. The hammer lands at HAMMER_LAND_MS;
+ * the mole it hits waits for it, gets squashed, and sinks by
+ * HAMMER_SINK_DONE_MS. Must match the keyframes in styles.css.
+ */
+export const HAMMER_LAND_MS = 90;
+export const HAMMER_SINK_DONE_MS = 300;
+
 /** Swing the hammer onto a hole (config.hammer). */
 export function swingHammer(holesEl, i) {
   replay(holesEl, i, 'swing', [], 300);
+}
+
+/**
+ * With the hammer on, a hit mole stays up until the hammer lands, then gets
+ * squashed and sinks (October 17, 2026). Display only: the data records the
+ * hit at the moment of the press, as always. `done` runs once it is down.
+ */
+export function sinkStruck(holesEl, i, done) {
+  const h = holesEl.children[i];
+  if (!h) { done(); return; }
+  h.classList.remove('struck');
+  void h.offsetWidth; // restart the animation
+  h.classList.add('struck');
+  clearTimeout(h._sink);
+  h._sink = setTimeout(() => {
+    h.classList.remove('struck');
+    h._sink = null;
+    done();
+  }, HAMMER_SINK_DONE_MS);
+}
+
+/** Stop a pending sink, e.g. if a new mole needs the hole. */
+export function cancelSink(holesEl, i) {
+  const h = holesEl.children[i];
+  if (!h || !h._sink) return false;
+  clearTimeout(h._sink);
+  h._sink = null;
+  h.classList.remove('struck');
+  return true;
+}
+
+/** Put the scene on the stage: `scene-garden` or `scene-grey` (styles.css). */
+export function applyScene(stageEl, config) {
+  stageEl.classList.toggle('scene-garden', config.scene === 'garden');
+  stageEl.classList.toggle('scene-grey', config.scene !== 'garden');
 }
 
 /** Select which picture is shown in a hole, or '' for none. */

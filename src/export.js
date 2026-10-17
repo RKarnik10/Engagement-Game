@@ -11,16 +11,25 @@
  * The builders are pure and unit-tested. Only `downloadText` touches the DOM.
  */
 
-const round1 = (x) => +x.toFixed(1);
-const sec = (ms) => (ms / 1000).toFixed(3);
 /**
- * Reaction times keep a decimal (feedback of October 13, 2026): 0.1 ms in
- * the CSV, 0.0001 s in the TSV. That is the resolution browsers give
- * performance.now() (about 0.1 ms; coarser in some browsers), not the
- * accuracy of the screen, which only changes every frame (about 16.7 ms).
+ * Times are written at full precision, exactly as the clock gave them
+ * (feedback of October 16, 2026). Nothing is rounded, so analysis can round
+ * later if it wants to. The browser's clock is itself coarsened (about
+ * 0.1 ms in Chrome; coarser in some browsers), and the screen only changes
+ * every frame (about 16.7 ms), so digits past the first decimal are mostly
+ * noise; they are kept anyway, because they cost nothing.
  */
-const ms1 = (ms) => ms.toFixed(1);
-const sec4 = (ms) => (ms / 1000).toFixed(4);
+const ms = (x) => String(x);
+const sec = (x) => String(x / 1000);
+
+/**
+ * Up to this many presses per trial get their own button and time columns
+ * (press_1_button, press_1_ms, ...). Missing ones are n/a, which pandas
+ * reads as NaN. A trial with more presses still lists them all in the full
+ * log, and n_presses gives the true count.
+ */
+export const PRESS_COLUMNS = 5;
+const pressHeaders = (unit) => Array.from({ length: PRESS_COLUMNS }, (_, i) => [`press_${i + 1}_button`, `press_${i + 1}_${unit}`]).flat();
 const NA = 'n/a';
 const orNA = (v) => (v == null ? NA : v);
 
@@ -28,7 +37,7 @@ const orNA = (v) => (v == null ? NA : v);
 export const CSV_COLUMNS = Object.freeze([
   'trial', 'onset_s', 'trial_type',
   'good_row', 'good_col', 'bad_row', 'bad_col',
-  'correct_action', 'expected_button', 'pressed_buttons', 'press_times_ms', 'first_press_ms', 'good_hit_ms',
+  'correct_action', 'expected_button', 'n_presses', ...pressHeaders('ms'), 'first_press_ms', 'good_hit_ms',
   'good_outcome', 'bad_outcome', 'outcome', 'correct', 'score_points', 'score_pct',
   'scheduled_onset_s', 'onset_lag_ms', 'preceding_go',
 ]);
@@ -36,7 +45,7 @@ export const CSV_COLUMNS = Object.freeze([
 /** Column order of the BIDS-style events table. */
 export const TSV_COLUMNS = Object.freeze([
   'onset', 'duration', 'trial_type', 'good_row', 'good_col', 'bad_row', 'bad_col',
-  'expected_button', 'pressed_buttons', 'press_times', 'outcome', 'response_time', 'scheduled_onset', 'preceding_go',
+  'expected_button', 'n_presses', ...pressHeaders('time'), 'outcome', 'response_time', 'scheduled_onset', 'preceding_go',
 ]);
 
 /** Trials that were actually shown (the run may end before the schedule does). */
@@ -46,9 +55,11 @@ export function shownTrials(trials) {
 
 const goodOf = (a) => a.targets.find((x) => x.valence === 'good') || null;
 const badOf = (a) => a.targets.find((x) => x.valence === 'bad') || null;
-const pressedList = (a) => (a.presses.length ? a.presses.map((p) => p.button + 1).join(' ') : NA);
-/** Time of every press in the trial, in order, matching pressedList. */
-const pressTimes = (a, fmt) => (a.presses.length ? a.presses.map((p) => fmt(p.rtMs)).join(' ') : NA);
+/** The first PRESS_COLUMNS presses as [button, time] pairs, n/a where there was none. */
+const pressCells = (a, fmt) => Array.from({ length: PRESS_COLUMNS }, (_, i) => {
+  const p = a.presses[i];
+  return p ? [p.button + 1, fmt(p.rtMs)] : [NA, NA];
+}).flat();
 const pctText = (a) => (a.scoreDue > 0 ? (100 * a.scorePoints / a.scoreDue).toFixed(1) : NA);
 
 function csvCell(v) {
@@ -57,9 +68,9 @@ function csvCell(v) {
 }
 
 /**
- * Run CSV: one row per trial shown. Reaction times are whole milliseconds.
- * `pressed_buttons` lists every button pressed while the trial's moles were
- * up, in order, separated by spaces.
+ * Run CSV: one row per trial shown. Times are milliseconds at full
+ * precision. Each of the first PRESS_COLUMNS presses gets a button column
+ * and a time column, in the order pressed; n_presses gives the count.
  */
 export function buildRunCSV(trials) {
   const rows = [CSV_COLUMNS.slice()];
@@ -76,10 +87,10 @@ export function buildRunCSV(trials) {
       b ? b.col : NA,
       g ? 'press' : 'withhold',
       g ? g.response + 1 : NA,
-      pressedList(a),
-      pressTimes(a, ms1),
-      a.presses.length ? ms1(a.presses[0].rtMs) : NA,
-      a.goodRtMs != null ? ms1(a.goodRtMs) : NA,
+      a.presses.length,
+      ...pressCells(a, ms),
+      a.presses.length ? ms(a.presses[0].rtMs) : NA,
+      a.goodRtMs != null ? ms(a.goodRtMs) : NA,
       g ? orNA(g.outcome) : NA,
       b ? orNA(b.outcome) : NA,
       orNA(a.outcome),
@@ -87,7 +98,7 @@ export function buildRunCSV(trials) {
       a.scoreDue != null ? a.scorePoints : NA,
       a.scoreDue != null ? pctText(a) : NA,
       sec(a.scheduledOnsetMs),
-      ms1(a.actualOnsetMs - a.scheduledOnsetMs),
+      ms(a.actualOnsetMs - a.scheduledOnsetMs),
       orNA(a.precedingGo),
     ]);
   }
@@ -112,10 +123,10 @@ export function buildEventsTSV(trials) {
       b ? b.row : NA,
       b ? b.col : NA,
       g ? g.response + 1 : NA,
-      pressedList(a),
-      pressTimes(a, sec4),
+      a.presses.length,
+      ...pressCells(a, sec),
       orNA(a.outcome),
-      a.goodRtMs != null ? sec4(a.goodRtMs) : NA,
+      a.goodRtMs != null ? sec(a.goodRtMs) : NA,
       sec(a.scheduledOnsetMs),
       orNA(a.precedingGo),
     ]);
@@ -129,11 +140,11 @@ export function trialTable(trials) {
     trial: a.trial,
     type: a.type,
     scheduled_onset_ms: a.scheduledOnsetMs,
-    actual_onset_ms: round1(a.actualOnsetMs),
-    offset_ms: a.offsetMs != null ? round1(a.offsetMs) : null,
+    actual_onset_ms: a.actualOnsetMs,
+    offset_ms: a.offsetMs != null ? a.offsetMs : null,
     outcome: a.outcome || null,
     correct: a.correct,
-    good_rt_ms: a.goodRtMs != null ? round1(a.goodRtMs) : null,
+    good_rt_ms: a.goodRtMs != null ? a.goodRtMs : null,
     score_points: a.scoreDue != null ? a.scorePoints : null,
     score_due: a.scoreDue != null ? a.scoreDue : null,
     preceding_go: a.precedingGo,
@@ -146,12 +157,12 @@ export function trialTable(trials) {
       col: x.col,
       button: x.response + 1,
       outcome: x.outcome || null,
-      rt_ms: x.rtMs != null ? round1(x.rtMs) : null,
-      offset_ms: x.offsetMs != null ? round1(x.offsetMs) : null,
+      rt_ms: x.rtMs != null ? x.rtMs : null,
+      offset_ms: x.offsetMs != null ? x.offsetMs : null,
       input: x.source || null,
     })),
     presses: a.presses.map((p) => ({
-      button: p.button + 1, rt_ms: round1(p.rtMs), outcome: p.outcome, input: p.source || null,
+      button: p.button + 1, rt_ms: p.rtMs, outcome: p.outcome, input: p.source || null,
     })),
   }));
 }

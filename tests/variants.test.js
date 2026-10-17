@@ -26,7 +26,7 @@ test('variants never change the schedule: same seed, same trials', () => {
   }
 });
 
-test('the score: +1 per happy mole hit, -10 per distractor hit, over the happy moles so far', () => {
+test('the score: +1 per happy mole hit, -3 per distractor hit (default), over the happy moles so far', () => {
   const config = resolveConfig({ seed: 1234, nTrials: 60 });
   const schedule = buildSchedule(config);
   const goods = schedule.filter((t) => t.type === 'good').slice(0, 3);
@@ -37,10 +37,10 @@ test('the score: +1 per happy mole hit, -10 per distractor hit, over the happy m
   ];
   const { state, trials } = simulateRun({ config, trials: schedule, presses });
   assert.equal(trials.filter((t) => t.outcome === 'commission').length, 1);
-  assert.equal(state.score, 3 - 10, 'points');
+  assert.equal(state.score, 3 - 3, 'points');
   const goodMoles = trials.flatMap((t) => t.targets).filter((x) => x.valence === 'good' && x.outcome !== 'truncated');
   assert.equal(state.scoreDue, goodMoles.length, 'every happy mole counts once, hit or missed');
-  assert.equal(state.scorePct, (100 * -7) / goodMoles.length);
+  assert.equal(state.scorePct, 0);
   // Each trial carries the running score at its end.
   const t1 = trials[0];
   assert.deepEqual([t1.scorePoints, t1.scoreDue], [1, 1], 'after one hit: 100%');
@@ -125,15 +125,15 @@ test('score: the percentage, its text, and the penalty setting', async () => {
   assert.equal(scoreText(0, 0), '–');
   assert.equal(scoreText(9, 10), '90%');
   assert.equal(scoreText(-11, 20), '-55%', 'a hit distractor can push it below zero');
-  assert.equal(resolveConfig().scorePenalty, 10);
-  assert.equal(resolveConfig(configFromQuery('?penalty=5')).scorePenalty, 5);
+  assert.equal(resolveConfig().scorePenalty, 3);
+  assert.equal(resolveConfig(configFromQuery('?penalty=10')).scorePenalty, 10);
   assert.equal(configToQuery(resolveConfig({ scorePenalty: 0 })), '?penalty=0');
   assert.throws(() => resolveConfig({ scorePenalty: -1 }), /scorePenalty/);
-  const config = resolveConfig({ seed: 1234, nTrials: 40, scorePenalty: 3 });
+  const config = resolveConfig({ seed: 1234, nTrials: 40, scorePenalty: 7 });
   const schedule = buildSchedule(config);
   const bad = schedule.find((t) => t.type === 'bad');
   const { state } = simulateRun({ config, trials: schedule, presses: [{ tMs: bad.scheduledOnsetMs + 200, button: bad.targets[0].response }] });
-  assert.equal(state.score, -3);
+  assert.equal(state.score, -7);
 });
 
 test('score: a wrong column costs nothing, a missed happy mole only grows the denominator', () => {
@@ -145,3 +145,35 @@ test('score: a wrong column costs nothing, a missed happy mole only grows the de
   assert.deepEqual([trials[0].scorePoints, trials[0].scoreDue], [0, 1], 'wrong column then missed: 0 of 1');
 });
 
+test('score bar: red below 50%, yellow 50 to 75%, green from 75%; fill stays within 0 to 100', async () => {
+  const { scoreBand, scoreFill } = await import('../src/summary.js');
+  const cases = [[null, null], [-120, 'low'], [0, 'low'], [49.9, 'low'], [50, 'mid'], [62, 'mid'], [74.9, 'mid'], [75, 'high'], [100, 'high']];
+  for (const [pct, band] of cases) assert.equal(scoreBand(pct), band, `band at ${pct}`);
+  assert.deepEqual([null, -50, 0, 37.5, 100].map(scoreFill), [0, 0, 0, 37.5, 100]);
+});
+
+test('score bar colour: a smooth scale from dark red through orange and yellow to green', async () => {
+  const { scoreColor, SCORE_GRADIENT } = await import('../src/summary.js');
+  for (const [pct, hex] of SCORE_GRADIENT) assert.equal(scoreColor(pct), hex, `stop at ${pct}`);
+  assert.equal(scoreColor(-40), '#7A1414', 'below zero stays dark red');
+  assert.equal(scoreColor(null), '#7A1414');
+  assert.equal(scoreColor(130), '#3FA34D');
+  assert.equal(scoreColor(15), '#A82D2B', 'halfway between dark red and red');
+  // Smooth: no jump bigger than a small step between neighbouring percentages.
+  const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  for (let p = 0; p < 100; p++) {
+    const a = rgb(scoreColor(p)); const b = rgb(scoreColor(p + 1));
+    assert.ok(a.every((x, k) => Math.abs(x - b[k]) <= 12), `jump between ${p}% and ${p + 1}%`);
+  }
+});
+
+test('scene: garden by default, plain grey on request, carried in links', async () => {
+  const { SCENES } = await import('../src/config.js');
+  assert.deepEqual([...SCENES], ['garden', 'grey']);
+  assert.equal(resolveConfig().scene, 'garden');
+  assert.equal(resolveConfig({ scene: 'grey' }).scene, 'grey');
+  assert.throws(() => resolveConfig({ scene: 'beach' }), /scene must be one of/);
+  assert.equal(configToQuery(resolveConfig({ scene: 'grey' })), '?scene=grey');
+  assert.equal(resolveConfig(configFromQuery('?scene=grey')).scene, 'grey');
+  assert.equal(configToQuery(resolveConfig()), '', 'the default scene is left out of links');
+});

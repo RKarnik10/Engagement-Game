@@ -52,6 +52,12 @@ export const BAD_STIMS = Object.freeze(['mole_sad', 'molerat']);
 export const ONSETS = Object.freeze(['instant', 'gradual']);
 /** Where the run is happening. Logged with the data as 1 (scanner) or 0 (behavioral). */
 export const SETTINGS = Object.freeze(['scanner', 'behavioral']);
+/**
+ * What the participant display looks like behind the holes.
+ *   garden: sky, a horizon with hills, and grass; brown holes (October 17, 2026).
+ *   grey:   plain mid-grey, as README 4.3 recommends for scanning.
+ */
+export const SCENES = Object.freeze(['garden', 'grey']);
 
 export const DEFAULTS = Object.freeze({
   version: VERSION,
@@ -61,6 +67,7 @@ export const DEFAULTS = Object.freeze({
   triggerKey: 't',              // TODO(Q4): 't' simulates the scanner trigger in development.
   setting: 'behavioral',        // DECIDED: logged as scanner = 1, behavioral = 0.
   onset: 'instant',             // TODO: pop-up vs. gradual rise (README 3.5) still open.
+  scene: 'garden',              // TODO: README 4.3 recommends plain grey for scanning; garden for piloting.
   rampMs: 350,                  // Rise/sink time, only used when onset is "gradual".
 
   // Timing. DECIDED: a fixed 1 s trial cycle, 600 trials, so a run is 10 minutes.
@@ -83,7 +90,7 @@ export const DEFAULTS = Object.freeze({
   showScore: false,             // Score in the corner, as a percentage (see engine.js):
                                 // happy moles hit minus scorePenalty per distractor hit,
                                 // over the happy moles so far.
-  scorePenalty: 10,             // Points lost for hitting a distractor (October 13, 2026).
+  scorePenalty: 3,              // Points lost for hitting a distractor (10 on Oct 13, 5 then 3 on Oct 17, 2026).
   hitRings: false,              // White ring on a hit, red ring on a distractor pressed.
   sound: false,                 // A good sound on a hit, a bad sound on any wrong press.
   hammer: false,                // A hammer swings onto any mole that is pressed.
@@ -167,6 +174,7 @@ export function validateConfig(config) {
   if (!SKINS.includes(c.skin)) problems.push(`skin must be one of ${SKINS.join(', ')}`);
   if (!ONSETS.includes(c.onset)) problems.push(`onset must be one of ${ONSETS.join(', ')}`);
   if (!SETTINGS.includes(c.setting)) problems.push(`setting must be one of ${SETTINGS.join(', ')}`);
+  if (!SCENES.includes(c.scene)) problems.push(`scene must be one of ${SCENES.join(', ')}`);
 
   if (!Array.isArray(c.keys) || !c.keys.every((k) => typeof k === 'string' && k.length > 0)) {
     problems.push('keys must be an array of non-empty strings');

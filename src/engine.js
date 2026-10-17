@@ -22,14 +22,14 @@ import {
 import { runDurationMs } from './config.js';
 import { scorePercent } from './summary.js';
 
-const round1 = (x) => +x.toFixed(1);
+// Times are logged at full precision (October 16, 2026); no rounding here.
 
 /** A frame interval above this counts as "slow" in the frame statistics (README 4.5). */
 export const SLOW_FRAME_MS = 20;
 
 /**
  * Score (feedback relayed by Rehaan Karnik, October 13, 2026):
- *   points = happy moles hit x 1 - distractors hit x scorePenalty (10)
+ *   points = happy moles hit x 1 - distractors hit x scorePenalty (3)
  *   due    = happy moles that could have been hit so far (each one counts once
  *            it is hit or goes down missed), so a perfect player is at 100%
  *   shown  = points / due, as a percentage (scorePercent in summary.js)
@@ -109,7 +109,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       x.rtMs = press.rtMs;
       x.source = press.source;
       d.pressed_button = press.button + 1;
-      d.rt_ms = round1(press.rtMs);
+      d.rt_ms = press.rtMs;
       d.source = press.source;
     }
     if (outcome === OUTCOME.HIT) s.points += 1;
@@ -170,7 +170,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       s.active = a;
       for (const x of a.targets) {
         emit('target_on', {
-          ...moleFields(a, x), scheduled_ms: a.scheduledOnsetMs, lag_ms: round1(t - a.scheduledOnsetMs),
+          ...moleFields(a, x), scheduled_ms: a.scheduledOnsetMs, lag_ms: t - a.scheduledOnsetMs,
         }, t, a);
       }
     }
@@ -218,7 +218,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       s.counts.wrong_hole++;
       emit(outcome, {
         trial: a.trial, type: a.type, pressed_button: button + 1,
-        up_buttons: up.map((x) => x.response + 1), rt_ms: round1(t - a.actualOnsetMs), source,
+        up_buttons: up.map((x) => x.response + 1), rt_ms: t - a.actualOnsetMs, source,
       }, t, a);
     } else {
       s.counts.no_target_press++;
@@ -271,7 +271,7 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     s.pausedTotalMs += pausedFor;
     s.paused = false;
     s.lastFrame = null;      // the paused stretch is not a slow frame
-    emit('resume', { pause: s.pauses, paused_ms: round1(pausedFor) }, elapsed());
+    emit('resume', { pause: s.pauses, paused_ms: pausedFor }, elapsed());
     s.rafId = requestFrame(tick);
     return true;
   }

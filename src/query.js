@@ -15,7 +15,7 @@ const BOOL = Object.freeze({
 const INT = Object.freeze({
   trials: 'nTrials', trialms: 'trialMs', holdms: 'holdMs', seed: 'seed', penalty: 'scorePenalty',
 });
-const TEXT = Object.freeze({ setting: 'setting', layout: 'layout', onset: 'onset' });
+const TEXT = Object.freeze({ setting: 'setting', layout: 'layout', onset: 'onset', scene: 'scene' });
 const DISTRACTOR = Object.freeze({ sad: 'mole_sad', molerat: 'molerat' });
 
 const pct = (x) => Math.round(x * 100);

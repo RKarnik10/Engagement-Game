@@ -119,28 +119,28 @@ opens in Excel.
 | `bad_row`, `bad_col` | Where the sad mole appeared. `n/a` on a good trial. |
 | `correct_action` | `press` or `withhold`. |
 | `expected_button` | The button that should have been pressed: the happy mole's column. `n/a` on a bad trial. |
-| `pressed_buttons` | Every button pressed while the moles were up, in order, for example `1 3`. `n/a` if none. |
-| `press_times_ms` | The time of each of those presses, in the same order, for example `383.0 553.0`. |
-| `first_press_ms` | Milliseconds from the moles appearing to the first press, to a tenth of a millisecond. |
+| `n_presses` | How many buttons were pressed while the moles were up. |
+| `press_1_button`, `press_1_ms` … `press_5_button`, `press_5_ms` | Each press in order: which button, and how many milliseconds after the moles appeared. Up to five; empty (`n/a`) where there was no such press. The full log keeps any beyond five. |
+| `first_press_ms` | Milliseconds from the moles appearing to the first press. |
 | `good_hit_ms` | Milliseconds to the press that hit the happy mole. This is the reaction time the attention analysis uses. |
 | `good_outcome` | `hit` or `omission` (missed the happy mole). |
 | `bad_outcome` | `commission` (pressed the sad mole) or `correct_rejection` (left it alone). |
 | `outcome` | One word for the whole trial. On a both trial, pressing the sad mole makes it `commission` even if the happy one was hit too. |
 | `correct` | 1 or 0. `n/a` for a trial cut off by the end of the run. |
-| `score_points`, `score_pct` | The running score after this trial: points (+1 per happy mole hit, −10 per sad mole hit), and points as a percentage of the happy moles so far. Recorded even when the score isn't shown. |
+| `score_points`, `score_pct` | The running score after this trial: points (+1 per happy mole hit, −3 per sad mole hit), and points as a percentage of the happy moles so far. Recorded even when the score isn't shown. |
 | `scheduled_onset_s` | When it was planned to appear. |
 | `onset_lag_ms` | How late it actually was. Should be under about 17 ms. |
 | `preceding_go` | On trials with a sad mole: how many trials in a row needed a press before it. |
 
-Five example rows from the example run (some columns left out):
+Five example rows from the example run (some columns left out). Times are saved exactly as measured, so they have many digits; numbers like `382.999999999367` are how computers store decimals, and equal 383 for every practical purpose:
 
 ```
-trial,trial_type,good_col,bad_col,expected_button,pressed_buttons,press_times_ms,good_hit_ms,outcome,correct,score_pct
-1,good,3,n/a,3,3,292.0,292.0,hit,1,100.0
-34,good,2,n/a,2,1 2,383.0 553.0,553.0,hit,1,68.8
-14,bad,n/a,3,n/a,n/a,n/a,n/a,correct_rejection,1,100.0
-19,both,1,3,1,1,351.0,351.0,hit,1,100.0
-124,both,2,1,2,1,536.0,n/a,commission,0,42.5
+trial,trial_type,expected_button,n_presses,press_1_button,press_1_ms,press_2_button,press_2_ms,good_hit_ms,outcome,score_pct
+1,good,3,1,3,291.9999999999966,n/a,n/a,291.9999999999966,hit,100.0
+34,good,2,2,1,382.999999999367,2,552.999999999367,552.999999999367,hit,90.6
+14,bad,n/a,0,n/a,n/a,n/a,n/a,n/a,correct_rejection,100.0
+19,both,1,1,1,350.99999999997453,n/a,n/a,350.99999999997453,hit,100.0
+124,both,2,1,1,535.9999999865104,n/a,n/a,n/a,commission,79.6
 ```
 
 **Events table** (`..._events.tsv`). The same trials in the BIDS layout for

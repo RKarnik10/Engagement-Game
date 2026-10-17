@@ -1,11 +1,11 @@
 # Engagement Game: a whac-a-mole attention task for fMRI
 
-**Status:** Blueprint v0.3. Drafted September 18, 2026; revised September 21 after Dr. Song's first round of feedback, and September 25 when the trial mix was clarified.
+**Status:** Blueprint v0.3. Drafted September 18, 2026; revised September 21 after Dr. Song's first round of feedback, September 25 when the trial mix was clarified, and October 11 to 17 after piloting feedback. Thirteen open decisions are listed in section 11.2.
 The open questions in section 2 now carry her answers. Values still marked *(placeholder)* are starting guesses, not decisions.
 
 **Author:** Rehaan Karnik (undergraduate RA). Drafted with AI assistance; references were pulled from search and are listed in section 10 with notes on what was and was not verified.
 
-**Build status (September 25, 2026):** Phases 0 and 1 of section 7 are done, and `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, and no on-screen feedback. Each trial shows a good (happy) mole to press, a bad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console. 96 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
+**Build status (October 17, 2026):** Phases 0 and 1 of section 7 are done, and `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run, and no on-screen feedback by default. Each trial shows a happy mole to press, a sad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console, and the game is published at the link below. For piloting there are optional feedback variants (a percentage score with a coloured bar, rings, sound, and a hammer) and a garden scene. Every press is saved with its full-precision time. 101 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
 
 **Contributors and AI disclosure:** see [section 12](#12-contributors-and-ai-disclosure). Code and documentation in this repository were written by an AI assistant under the author's direction, as recorded there.
 
@@ -27,7 +27,7 @@ The game records:
 
 Attention and engagement measures are computed from those logs offline (section 5).
 
-**Published game:** https://rkarnik10.github.io/Engagement-Game/ (the experimenter console; labmate links point to `display.html` under it). It is rebuilt from `src/` by `.github/workflows/pages.yml` on every push to `main`, once the tests pass. The original v0.1 prototype is kept at https://rkarnik10.github.io/Engagement-Game/prototype/ . Publishing needs a one-time switch by the repository owner: **Settings > Pages > Source: GitHub Actions**. Labmates: see [docs/for-labmates.md](docs/for-labmates.md).
+**Published game:** https://rkarnik10.github.io/Engagement-Game/ (the experimenter console; labmate links point to `display.html` under it). It is rebuilt from `src/` by `.github/workflows/pages.yml` on every push to `main`, once the tests pass. The original v0.1 prototype is kept at https://rkarnik10.github.io/Engagement-Game/prototype/ . Publishing is switched on (repository Settings > Pages > Source: GitHub Actions); after a push, the site may show the old version for about 10 minutes because of caching. Labmates: see [docs/for-labmates.md](docs/for-labmates.md).
 
 `index.html` is the v0.1 prototype: one self-contained HTML file with no dependencies. It implements sections 3 and 4.5 of this document with placeholder parameters. The modular build described in sections 6 and 7 will live in `src/` and should not replace `index.html` until it matches the prototype's behavior.
 
@@ -177,7 +177,7 @@ Requirements for the real build (not done in the demo):
 ### 4.3 Display
 
 - The participant display runs in its own browser tab or window, separate from the experimenter console, so the participant never sees the settings or the data. See section 6.4.
-- Background is a fixed mid-grey in every theme. Large brightness changes on screen produce responses in visual cortex that we don't want mixed into the attention signal.
+- Background is a fixed mid-grey in every theme. Large brightness changes on screen produce responses in visual cortex that we don't want mixed into the attention signal. Since October 17, 2026 the display can instead show a static garden scene (sky, hills, grass, brown holes) for piloting; it is the default, and plain grey is one click away in the console (`scene`). The garden never changes during a run, so it adds no brightness changes over time, but it is brighter and busier than grey; which one to scan with is still open.
 - Confirm projector resolution, refresh rate, and visual angle (Q10) before finalizing hole spacing.
 
 ### 4.4 Timing precision
@@ -194,22 +194,26 @@ Each run writes three files. A complete example of all three is in
 1. **Run table (CSV).** The one to open first, and the one Dr. Song asked for
    on September 21, 2026. One row per trial: `trial, onset_s, trial_type,
    good_row, good_col, bad_row, bad_col, correct_action, expected_button,
-   pressed_buttons, press_times_ms, first_press_ms, good_hit_ms, good_outcome,
-   bad_outcome, outcome, correct, score_points, score_pct, scheduled_onset_s,
-   onset_lag_ms, preceding_go`. Opens in Excel. Missing values are `n/a`.
-   `pressed_buttons` lists every button pressed while the trial's moles were
-   up, in order, separated by spaces (for example `1 3`), and
-   `press_times_ms` gives each of those presses' times in the same order (for
-   example `383.0 553.0`); read both as text. Times keep one decimal (0.1 ms),
-   the resolution browsers give their timer. `score_points` and `score_pct`
+   n_presses, press_1_button, press_1_ms, … press_5_button, press_5_ms,
+   first_press_ms, good_hit_ms, good_outcome, bad_outcome, outcome, correct,
+   score_points, score_pct, scheduled_onset_s, onset_lag_ms, preceding_go`.
+   Opens in Excel. Missing values are `n/a`, which pandas reads as NaN with no
+   options. Each of the first five presses in a trial gets its own button and
+   time column, filled from `press_1` in the order pressed; `n_presses` is the
+   true count, and the full log keeps every press beyond five. All times are
+   written at full precision, exactly as the browser's clock gave them, so
+   every time column loads as a number (October 16, 2026). Trailing digits
+   such as `291.999999999997` are how computers store decimals, not real
+   precision; the browser clock is itself coarsened (about 0.1 ms in Chrome)
+   and the screen updates about every 16.7 ms. `score_points` and `score_pct`
    are the running score at the end of the trial (section 6.4), recorded
    whether or not the player saw it.
 2. **Events table (TSV), BIDS-style.** The same trials with `onset` and
    `duration` in seconds from the trigger, for the fMRI design matrix.
    Columns: `onset, duration, trial_type, good_row, good_col, bad_row,
-   bad_col, expected_button, pressed_buttons, press_times, outcome,
-   response_time, scheduled_onset, preceding_go`. Reaction times are in
-   seconds to four decimals (0.1 ms). *(Column names beyond `onset`/`duration`
+   bad_col, expected_button, n_presses, press_1_button, press_1_time, …
+   press_5_button, press_5_time, outcome, response_time, scheduled_onset,
+   preceding_go`. Times are in seconds at full precision. *(Column names beyond `onset`/`duration`
    should be checked against the current BIDS specification before we rely
    on them.)*
 3. **Full log (JSON).** Metadata (task version, whether the run was in the
@@ -376,8 +380,8 @@ The experimenter console (`index.html`) and the participant display (`display.ht
 - The display must stay visible for the whole run. Drag its tab out into its own window on the participant's screen. If it is hidden anyway, the gap is logged as `display_hidden`.
 - The display keeps its last run. A console that is reloaded asks for it again, so data is not lost.
 - If two displays are open, the console warns and sends Start only to the newest.
-- **Feedback variants for piloting** (October 11, 2026). Four switches in the console, all off by default because of Q6: a score, rings (white on a hit, red on a distractor pressed), sound (good on a hit, bad on any wrong press), and a hammer that swings onto a pressed mole. They never change the schedule. Each run records its variant (`feedback_variant` in the log, and in the file names, e.g. `_score_`). Sound and hammer turn up the "violence dial" that section 8 kept low, so they are for piloting only. Sound is synthesised with the Web Audio API and needs one key press or click in the display first.
-- **The score** (feedback of October 13, 2026) is a percentage, so it does not reveal how many trials are left: points = happy moles hit × 1 − distractors hit × 10 (`scorePenalty`, adjustable), divided by the happy moles that could have been hit so far (each counts once it is hit or goes down missed). A perfect player stays at 100%; hitting distractors can push it below zero. Wrong-column presses cost nothing. Every trial records the running score in the data, shown or not.
+- **Feedback variants for piloting** (October 11, 2026). Four switches in the console, all off by default because of Q6: a score, rings (white on a hit, red on a distractor pressed; only the front arc below the hole's rim, so it never crosses a mole), sound (good when a happy mole is hit, bad when a sad mole is hit; a press on an empty column is silent since October 17, 2026), and a hammer that swings onto a pressed mole. With the hammer on, a hit mole stays up until the hammer lands (about 90 ms), is squashed, and sinks, all within 300 ms; this is display only, and the data records the hit at the moment of the press. They never change the schedule. Each run records its variant (`feedback_variant` in the log, and in the file names, e.g. `_score_`). Sound and hammer turn up the "violence dial" that section 8 kept low, so they are for piloting only. Sound is synthesised with the Web Audio API and needs one key press or click in the display first.
+- **The score** (feedback of October 13, 2026) is a percentage, so it does not reveal how many trials are left: points = happy moles hit × 1 − distractors hit × 3 (`scorePenalty`, adjustable; 10 until October 17, 2026, briefly 5), divided by the happy moles that could have been hit so far (each counts once it is hit or goes down missed). A perfect player stays at 100%; hitting distractors can push it below zero. It is shown at the top centre of the display, above the grid, with a bar that fills to the percentage. Its colour slides smoothly with the score: dark red, red, orange, yellow through the 50s to the low 70s, light green, then green at 100% (`scoreColor` in `src/summary.js`; October 17, 2026). A negative score shows an empty bar. Wrong-column presses cost nothing. Every trial records the running score in the data, shown or not.
 - **Labmate links.** Settings can travel in the display's web address (`display.html?trials=60&score=1&results=1`; `src/query.js`). A display opened from such a link runs on its own: the tester presses T and sees the results and downloads at the end. The console builds the link for its current settings under "Link for labmates".
 - The participant display shows no results by default (Q6). For testing, the console's "Testing" option also shows the results, the reaction-time trace, and the downloads on the display after a run (`showResultsOnDisplay`).
 - BroadcastChannel is supported in all current major browsers (Safari since 15.4, 2022). Full screen uses `requestFullscreen`, with the `webkit` prefix for Safari before 16.4.
@@ -509,38 +513,56 @@ around this repository without reading code),
   console, so the participant never sees settings or data.
 - A ten-minute example run, played by a simulated participant through the real
   engine, is in [examples/](examples/) as all three output files.
-- 96 automated tests pass (`npm test`).
-- Feedback variants for piloting (score, rings, sound, hammer) and one-click links for labmates; the game publishes itself to GitHub Pages once Pages is switched on.
+- 101 automated tests pass (`npm test`), including both pages running together.
+- Published at https://rkarnik10.github.io/Engagement-Game/ , rebuilt after every push once the tests pass. Labmates get one-click links with the settings built in ([docs/for-labmates.md](docs/for-labmates.md)).
+- Piloting options, all off by default: a percentage score (+1 per happy mole, −3 per sad mole) with a bar that slides from dark red to green; white and red rings; good and bad sounds; a hammer that strikes and sinks the mole. A garden scene (sky, hills, grass) is the default background; plain grey is kept for scanning.
+- Every press in a trial is saved with its own button and full-precision time (up to five per trial in the run table; all in the full log).
 
 ### 11.2 Still open
 
-Six points need a one-line answer. The full version, with what the code does
-today for each, is at the end of [docs/decisions.md](docs/decisions.md). (Decided September 25: the
-button labels under each column stay.)
+Thirteen points need a one-line answer. The full version, with what the code
+does today for each, is at the end of [docs/decisions.md](docs/decisions.md).
+Letters match that table. (Decided September 25: the button labels under each
+column stay.)
 
-1. **The bad mole's picture.** A sad mole by default; a molerat is the
-   alternative. The notes mention both.
-2. **Both trials, after the good mole is hit.** The bad mole stays up until the
-   window ends, and pressing it then still counts as a commission. The
-   alternative is to take both moles down on the first press.
-3. **Which inputs to record.** All three buttons are recorded; every other key
-   is ignored. The note said "the 1 and 2 inputs", which may name exact codes
-   the button box sends.
-4. **How long a mole stays up** inside the one-second cycle. Currently 800 ms
-   up, 200 ms empty.
-5. **The rest of Q4:** TR, number of runs, trigger key, dummy scans.
-6. **Repeats:** no hole is reused from one trial to the next, but the same
-   column can be. Carried over from v0.1 and never confirmed.
+From Dr. Song's first feedback:
+
+- **A. The bad mole's picture:** sad mole (default) or molerat.
+- **B. "Record the 1 and 2 inputs":** all three buttons are recorded now; the
+  note may name exact button-box codes.
+- **C. Both trials, after the happy mole is hit:** the sad mole stays up, and
+  pressing it later still counts (part of H).
+- **D. How long a mole stays up** inside the one-second cycle: 800 ms now.
+- **F. The rest of Q4:** TR, number of runs, trigger key, dummy scans.
+- **G. Repeats:** no hole is reused from one trial to the next, but the same
+  column can be.
+
+Raised while testing, October 17, 2026:
+
+- **H. Several presses in one trial:** every press counts now. Should only the
+  first count? (Tried and reverted: it turns a quick correction into a miss.)
+- **I. Wrong-column presses:** recorded, but cost no points. Should they?
+- **J. Very fast presses:** a press 50 ms after a mole appears counts as a hit.
+  Set a lower limit (in the game or in the analysis)?
+- **K. The score formula:** one mistake weighs far more early in the run than
+  late. Keep it, or score the last 50 happy moles?
+- **L. Which feedback stays:** score, rings, sound, hammer, or none (Q6).
+- **M. Background for scanning:** garden (default) or plain grey.
+- **N. Pop-up or gradual rise** (README 3.5): never decided.
 
 ### 11.3 Next
 
-1. Look at [examples/example_run.csv](examples/) together, as Dr. Song
-   suggested, and confirm the columns are what the analysis needs.
-2. Try a full run with the display in its own window, to check it feels right,
-   especially whether no feedback at all is too frustrating.
-3. Build the analysis script (Phase 3) and run it on the example file.
-4. Match the drawings for size and brightness (Phase 2).
-5. Confirm whether this falls under an existing IRB protocol or needs an
+1. Answer the open decisions in 11.2, with Dr. Song where they are hers
+   (especially F, H, L, M, N).
+2. Pilot the feedback variants with labmates and compare which keeps people
+   focused (L).
+3. Look at [examples/example_run.csv](examples/) with Dr. Song and confirm the
+   columns are what the analysis needs.
+4. Add participant and run numbers to the data files, and save them
+   automatically when a run ends (Phase 2).
+5. Build the analysis script (Phase 3) and run it on the example file.
+6. Match the drawings for size and brightness (Phase 2).
+7. Confirm whether this falls under an existing IRB protocol or needs an
    amendment, and who will validate timing on the scanner computer (Phase 4).
 
 ## 12. Contributors and AI disclosure
@@ -550,7 +572,7 @@ This is research software that may be used with human participants, so how it wa
 | Contributor | Role |
 |---|---|
 | Rehaan Karnik (undergraduate RA, Song Lab) | Human author. Defined the task, wrote the blueprint (sections 1 to 10) and `research-notes.md` with AI assistance, directed and reviewed the AI-written work, and is responsible for this repository. |
-| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. On October 11, 2026 (model Claude Opus 5.5), added the four feedback variants for piloting (`sound.js`, ring and hammer drawing in `board.js`), labmate links (`query.js`), the GitHub Pages workflow (`.github/workflows/pages.yml`), `docs/for-labmates.md`, and page-level tests (`tests/pages.test.js`, `tests/pages/`). On October 13, 2026 (model Claude Opus 5.5), recorded every press time, kept decimals in reaction times, and changed the score to a percentage with a 10-point penalty for hitting a distractor. Also checked that the exported files load in pandas. |
+| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. On October 11, 2026 (model Claude Opus 5.5), added the four feedback variants for piloting (`sound.js`, ring and hammer drawing in `board.js`), labmate links (`query.js`), the GitHub Pages workflow (`.github/workflows/pages.yml`), `docs/for-labmates.md`, and page-level tests (`tests/pages.test.js`, `tests/pages/`). On October 13, 2026 (model Claude Opus 5.5), recorded every press time, kept decimals in reaction times, and changed the score to a percentage with a 10-point penalty for hitting a distractor. On October 16, 2026 (model Claude Opus 5.5), gave each of the first five presses its own button and time columns and stopped rounding times anywhere in the data. On October 17, 2026 (model Claude Opus 5.5), lowered the default penalty to 3, moved the score to the top centre with a progress bar whose colour slides from dark red to green, made a hit mole wait for the hammer before sinking, silenced presses on empty columns, kept only the front arc of the feedback ring so it no longer crosses a raised mole, and added the garden scene. Also checked that the exported files load in pandas. |
 
 **What the AI did not do.** It did not run the game in a real browser (the pages were exercised under a simulated page in Node, and the drawings were checked as rendered images), did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
 

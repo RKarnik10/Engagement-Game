@@ -32,9 +32,9 @@ feedback, to see which feels best:
 | Version | What you'll notice |
 |---|---|
 | No feedback | Nothing reacts when you press. This is the design for the real study. |
-| Score | A percentage, top left: +1 for each happy mole you hit, −10 for each sad mole you hit, out of the happy moles so far. Perfect play stays at 100%. |
+| Score | A percentage at the top, with a bar that fills up and changes colour as you go: dark red when low, through orange and yellow, to green when you're doing well. You get +1 for each happy mole you hit and −3 for each sad mole you hit, out of the happy moles so far. Perfect play stays at 100% and green. |
 | Rings | A white ring when you hit a happy mole, a red one if you hit a sad one. |
-| Sound and hammer | A good or bad sound with each press, and a little hammer that swings onto the mole. Turn your volume on. |
+| Sound and hammer | A good sound when you hit a happy mole, a bad one when you hit a sad one, and a little hammer that swings down and bonks the mole into its hole. Pressing a column with no mole makes no sound. Turn your volume on. |
 
 Please try each version you're sent and say which one kept you most focused,
 and which one felt most annoying.

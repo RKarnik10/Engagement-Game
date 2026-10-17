@@ -187,20 +187,39 @@ a.button.primary{background:var(--signal);border-color:var(--signal);color:var(-
 
 /* ---- Feedback variants for piloting (all off by default, Q6) ---- */
 /* Ring around a hole: white for a hit, red for a distractor pressed. */
-.fx{fill:none;stroke:transparent;stroke-width:5}
+.fx{fill:none;stroke:transparent;stroke-width:6}
 .hole.fx-hit .fx{stroke:#F2F2F2}
-.hole.fx-com .fx{stroke:#C0392B}
-/* Hammer: hidden until it swings down from above, pivoting on its handle end. */
+.hole.fx-com .fx{stroke:#F0443A}
+/* Hammer: hidden until it swings down from above, pivoting on its handle end.
+   It lands at 35% of 260 ms (about 90 ms, HAMMER_LAND_MS in board.js). */
 .hammer{opacity:0;transform-box:view-box;transform-origin:116px 8px;transform:rotate(50deg);pointer-events:none}
-.hole.swing .hammer{animation:hammer-swing 280ms ease-in forwards}
+.hole.swing .hammer{animation:hammer-swing 260ms ease-in forwards}
 @keyframes hammer-swing{
   0%{opacity:1;transform:rotate(50deg)}
-  40%{opacity:1;transform:rotate(0deg)}
+  35%{opacity:1;transform:rotate(0deg)}
   80%{opacity:1;transform:rotate(0deg)}
   100%{opacity:0;transform:rotate(0deg)}
 }
-/* Score, top left of the participant display. */
-.display-score{position:absolute;top:2%;left:3%;font-size:clamp(1.2rem,3.2vh,2.2rem);font-weight:700;color:#1C1C1C;font-variant-numeric:tabular-nums;pointer-events:none}
+/* A mole hit with the hammer on waits for the hammer (90 ms), is squashed,
+   then sinks; all done by 300 ms (HAMMER_SINK_DONE_MS). Display only. */
+.hole.struck .target{animation:mole-struck 210ms ease-in 90ms both;transform-box:view-box;transform-origin:60px 92px}
+@keyframes mole-struck{
+  0%{transform:translate(0px,0px) scale(1,1)}
+  25%{transform:translate(0px,4px) scale(1.08,0.8)}
+  100%{transform:translate(0px,84px) scale(1,1)}
+}
+/* Score, top centre of the participant display, with a bar that fills to the
+   percentage. Its colour slides from dark red through orange and yellow to
+   green (scoreColor in summary.js). */
+.scorebox{position:absolute;top:1.5%;left:50%;transform:translateX(-50%);width:min(34vw,420px);text-align:center;pointer-events:none}
+.score-text{font-size:clamp(1.1rem,3vh,2rem);font-weight:700;color:#1C1C1C;font-variant-numeric:tabular-nums;line-height:1.2}
+.score-bar{margin-top:.5vh;height:clamp(10px,1.8vh,18px);background:#5A5A5A;border:2px solid #2B2B2B;border-radius:999px;overflow:hidden}
+.score-fill{height:100%;width:0;background:#5A5A5A;border-radius:999px;transition:width .25s ease,background-color .25s ease}
+/* Fill colour is set by display.js from scoreColor: a smooth dark red to green. */
+/* With the score on, the grid moves down so the score never covers a mole. */
+.display-page .stage.has-score .holes.grid3x3,
+.display-page .stage.has-score .holes.grid9{top:13%}
+.display-page .stage.has-score .holes.row4{top:26%}
 
 /* Link for labmates (console). */
 .share{margin:16px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
@@ -208,3 +227,23 @@ a.button.primary{background:var(--signal);border-color:var(--signal);color:var(-
 .share-row{display:flex;gap:6px;flex-wrap:wrap}
 .share-row input{flex:1 1 12rem;min-width:0;font:inherit;font-size:.82rem;padding:6px 8px;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink)}
 .share-row button,.share-row a.button{padding:6px 11px;font-size:.88rem}
+
+/* ---- Scenes behind the holes (config.scene) ----
+   grey:   plain mid-grey, as README 4.3 recommends for scanning.
+   garden: sky with a few clouds, hills on the horizon, and grass, with brown
+           holes (October 17, 2026). It is static: nothing in it changes
+           during a run. */
+.mound{fill:#6E6258}
+.pit{fill:#2A231D}
+.lip{stroke:#574B40}
+.stage.scene-garden{background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 200' preserveAspectRatio='none'%3E%3Cg fill='%23FFFFFF' fill-opacity='.85'%3E%3Cellipse cx='140' cy='70' rx='70' ry='22'/%3E%3Cellipse cx='185' cy='58' rx='45' ry='24'/%3E%3Cellipse cx='790' cy='95' rx='80' ry='20'/%3E%3Cellipse cx='840' cy='82' rx='46' ry='22'/%3E%3Cellipse cx='470' cy='40' rx='50' ry='14'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 16% no-repeat,
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cpath fill='%235E9C46' d='M0 100V58C90 30 170 34 250 52S410 40 500 30 660 22 760 46 900 60 1000 40V100Z'/%3E%3Cpath fill='%2373B550' d='M0 100V78C120 60 230 64 340 76S560 60 680 70 870 82 1000 68V100Z'/%3E%3C/svg%3E") 0 18% / 100% 12% no-repeat,
+  linear-gradient(#6DB6E8, #CDE9F6) 0 0 / 100% 24% no-repeat,
+  linear-gradient(#7BC24D, #4E9733) 0 100% / 100% 76% no-repeat,
+  #7BC24D}
+.stage.scene-garden .mound{fill:#8A5A2E}
+.stage.scene-garden .pit{fill:#3A2213}
+.stage.scene-garden .lip{stroke:#6B4423}
+.stage.scene-garden .keycap{background:#F1E6CF;color:#3A2213}
+.stage.scene-garden .display-hint{color:#1E3A12}

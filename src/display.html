@@ -13,8 +13,14 @@
   <strong>The display's code has not loaded.</strong> Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Windows: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) to reload without the cache. If you opened the file by double-clicking it, run <code>npm run serve</code> and use http://localhost:8000/display.html instead.
 </div>
 <div class="stage display-stage" id="stage" tabindex="0">
-  <!-- Piloting only (showScore): how many happy moles were hit. -->
-  <div class="display-score" id="score" hidden>Score 0</div>
+  <!-- Piloting only (showScore): the score as a percentage, with a bar that
+       fills to it: red below 50%, yellow 50 to 75%, green from 75%. -->
+  <div class="scorebox" id="score" hidden>
+    <div class="score-text" id="score-text">Score –</div>
+    <div class="score-bar" role="progressbar" aria-label="Score" aria-valuemin="0" aria-valuemax="100" id="score-bar">
+      <div class="score-fill" id="score-fill"></div>
+    </div>
+  </div>
   <div class="holes grid3x3 skin-mole" id="holes"></div>
   <div class="keycaps grid3x3" id="keycaps"></div>
   <div class="overlay" id="overlay" aria-live="polite">

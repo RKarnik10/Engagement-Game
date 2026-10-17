@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { resolveConfig } from '../src/config.js';
 import { buildSchedule } from '../src/schedule.js';
 import {
-  CSV_COLUMNS, TSV_COLUMNS, buildRunCSV, buildEventsTSV, buildFullLog, buildFullLogJSON,
+  PRESS_COLUMNS, CSV_COLUMNS, TSV_COLUMNS, buildRunCSV, buildEventsTSV, buildFullLog, buildFullLogJSON,
   exportFilename, shownTrials,
 } from '../src/export.js';
 import { simulateRun } from './_sim.js';
@@ -17,7 +17,8 @@ function sampleRun(extra = {}) {
   const both = schedule.find((t) => t.type === 'both');
   const wrong = schedule[1];
   const presses = [
-    { tMs: t1.scheduledOnsetMs + 300, button: t1.targets[0].response, source: 'key 1' },
+    // An awkward time on purpose: it must come out unrounded.
+    { tMs: t1.scheduledOnsetMs + 300.123456, button: t1.targets[0].response, source: 'key 1' },
     { tMs: wrong.scheduledOnsetMs + 120, button: (wrong.targets[0].response + 1) % 3, source: 'key x' },
     { tMs: wrong.scheduledOnsetMs + 350, button: wrong.targets[0].response, source: 'key y' },
     { tMs: bad.scheduledOnsetMs + 200, button: bad.targets[0].response, source: 'key 2' },
@@ -42,7 +43,8 @@ test('export: the run CSV has what Dr. Song asked for', () => {
   const { header, rows } = readTable(buildRunCSV(trials), ',');
   assert.deepEqual(header, [...CSV_COLUMNS]);
   // Which mole appeared (row and column), what should be pressed, what was pressed, reaction time.
-  for (const c of ['good_row', 'good_col', 'bad_row', 'bad_col', 'expected_button', 'pressed_buttons', 'press_times_ms', 'first_press_ms', 'good_hit_ms', 'score_pct']) {
+  for (const c of ['good_row', 'good_col', 'bad_row', 'bad_col', 'expected_button', 'n_presses',
+    'press_1_button', 'press_1_ms', 'press_5_button', 'press_5_ms', 'first_press_ms', 'good_hit_ms', 'score_pct']) {
     assert.ok(header.includes(c), `${c} is present`);
   }
   assert.equal(rows.length, shownTrials(trials).length);
@@ -66,25 +68,34 @@ test('export: run CSV rows are right for each trial type', () => {
     if (type === 'both') assert.notEqual(get(r, 'good_col'), get(r, 'bad_col'));
   }
 
-  // Trial 1: good mole hit at 300 ms.
-  assert.equal(get(row(1), 'onset_s'), '2.000');
-  assert.equal(get(row(1), 'pressed_buttons'), get(row(1), 'expected_button'));
-  assert.equal(get(row(1), 'first_press_ms'), '300.0', 'reaction times keep a decimal');
-  assert.equal(get(row(1), 'good_hit_ms'), '300.0');
-  assert.equal(get(row(1), 'press_times_ms'), '300.0');
+  // Trial 1: good mole hit at 300 ms. Onsets are written exactly too: 2 s is "2".
+  assert.equal(Number(get(row(1), 'onset_s')), 2);
+  // Full precision: the awkward 300.123456 ms survives, not rounded to 300.1.
+  const full = (v) => Math.abs(Number(v) - 300.123456) < 1e-6 && v.split('.')[1].length >= 6;
+  assert.equal(get(row(1), 'n_presses'), '1');
+  assert.equal(get(row(1), 'press_1_button'), get(row(1), 'expected_button'));
+  assert.ok(full(get(row(1), 'press_1_ms')), `press_1_ms unrounded: ${get(row(1), 'press_1_ms')}`);
+  assert.ok(full(get(row(1), 'first_press_ms')), 'first_press_ms unrounded');
+  assert.ok(full(get(row(1), 'good_hit_ms')), 'good_hit_ms unrounded');
+  for (let k = 2; k <= PRESS_COLUMNS; k++) {
+    assert.deepEqual([get(row(1), `press_${k}_button`), get(row(1), `press_${k}_ms`)], ['n/a', 'n/a'], `press ${k} empty`);
+  }
   assert.deepEqual([get(row(1), 'score_points'), get(row(1), 'score_pct')], ['1', '100.0']);
   assert.deepEqual([get(row(1), 'outcome'), get(row(1), 'correct')], ['hit', '1']);
 
   // Trial 2: wrong column first, then the right one; every press is listed in order.
   const w = schedule[1].targets[0];
-  assert.equal(get(row(2), 'pressed_buttons'), `${((w.response + 1) % 3) + 1} ${w.response + 1}`);
-  assert.equal(get(row(2), 'press_times_ms'), '120.0 350.0', 'every press has its own time, in order');
-  assert.equal(get(row(2), 'first_press_ms'), '120.0');
-  assert.equal(get(row(2), 'good_hit_ms'), '350.0');
+  // Two presses: wrong column, then the right one, each in its own columns, in order.
+  assert.equal(get(row(2), 'n_presses'), '2');
+  assert.deepEqual([get(row(2), 'press_1_button'), get(row(2), 'press_1_ms')], [String(((w.response + 1) % 3) + 1), '120']);
+  assert.deepEqual([get(row(2), 'press_2_button'), get(row(2), 'press_2_ms')], [String(w.response + 1), '350']);
+  assert.equal(get(row(2), 'press_3_ms'), 'n/a');
+  assert.equal(get(row(2), 'first_press_ms'), '120');
+  assert.equal(get(row(2), 'good_hit_ms'), '350');
   assert.equal(get(row(2), 'outcome'), 'hit');
 
   // The bad trial that was pressed.
-  const badRow = rows.find((r) => get(r, 'trial_type') === 'bad' && get(r, 'pressed_buttons') !== 'n/a');
+  const badRow = rows.find((r) => get(r, 'trial_type') === 'bad' && get(r, 'n_presses') !== '0');
   assert.deepEqual([get(badRow, 'bad_outcome'), get(badRow, 'outcome'), get(badRow, 'correct')], ['commission', 'commission', '0']);
   assert.equal(get(badRow, 'good_hit_ms'), 'n/a');
   assert.match(get(badRow, 'preceding_go'), /^\d+$/);
@@ -95,10 +106,10 @@ test('export: run CSV rows are right for each trial type', () => {
     [get(bothRow, 'good_outcome'), get(bothRow, 'bad_outcome'), get(bothRow, 'outcome'), get(bothRow, 'correct')],
     ['hit', 'correct_rejection', 'hit', '1'],
   );
-  assert.equal(get(bothRow, 'good_hit_ms'), '330.0');
-  // The pressed sad mole cost 10 points; the score stays a running total.
+  assert.equal(get(bothRow, 'good_hit_ms'), '330');
+  // The pressed sad mole cost 3 points; the score stays a running total.
   assert.ok(Number(get(badRow, 'score_points')) < Number(get(row(2), 'score_points')));
-  for (const r of rows) assert.match(get(r, 'onset_lag_ms'), /^\d+\.\d$/, 'onset lag keeps a decimal');
+  for (const r of rows) assert.ok(Number.isFinite(Number(get(r, 'onset_lag_ms'))), 'onset lag is a number');
 });
 
 test('export: the events TSV keeps the BIDS layout', () => {
@@ -106,11 +117,11 @@ test('export: the events TSV keeps the BIDS layout', () => {
   const { header, rows, get } = readTable(buildEventsTSV(trials), '\t');
   assert.deepEqual(header, [...TSV_COLUMNS]);
   assert.deepEqual(header.slice(0, 2), ['onset', 'duration']);
-  const numeric = /^\d+\.\d{3}$/;
+  const numeric = (v) => v !== '' && Number.isFinite(Number(v));
   for (const r of rows) {
-    if (get(r, 'response_time') !== 'n/a') assert.match(get(r, 'response_time'), /^\d+\.\d{4}$/, 'seconds to 0.1 ms');
-    assert.match(get(r, 'onset'), numeric);
-    assert.match(get(r, 'duration'), numeric);
+    if (get(r, 'response_time') !== 'n/a') assert.ok(Number.isFinite(Number(get(r, 'response_time'))), 'response time is a number');
+    assert.ok(numeric(get(r, 'onset')), 'onset is a number');
+    assert.ok(numeric(get(r, 'duration')), 'duration is a number');
     assert.ok(['good', 'bad', 'both'].includes(get(r, 'trial_type')));
   }
 });
@@ -164,3 +175,29 @@ test('export: file names carry date, time, setting, seed, and kind', () => {
   assert.equal(exportFilename(config, 'log', d), 'engagement-game_20260925-140502_scanner_seed42_log.json');
   assert.throws(() => exportFilename(config, 'nope', d), /unknown file kind/);
 });
+
+test('export: more than five presses in a trial: five in columns, the count and the full log keep all', () => {
+  const config = resolveConfig({ seed: 1234, nTrials: 20 });
+  const schedule = buildSchedule(config);
+  const t1 = schedule[0];
+  const other = (t1.targets[0].response + 1) % 3;
+  // Seven wrong-column presses 50 ms apart, all while the mole is up.
+  const presses = Array.from({ length: 7 }, (_, i) => ({ tMs: t1.scheduledOnsetMs + 100 + 50 * i, button: other }));
+  const { trials, events, config: c } = { ...simulateRun({ config, trials: schedule, presses }), config };
+  const { rows, get } = readTable(buildRunCSV(trials), ',');
+  assert.equal(get(rows[0], 'n_presses'), '7');
+  assert.deepEqual([1, 2, 3, 4, 5].map((k) => get(rows[0], `press_${k}_ms`)), ['100', '150', '200', '250', '300']);
+  const log = buildFullLog({ config: c, trials, events, frameStats: null, userAgent: 'x', created: 'c' });
+  assert.equal(log.trials[0].presses.length, 7, 'the full log keeps all seven');
+});
+
+test('export: full precision in the JSON log too', () => {
+  const { config, trials, events } = sampleRun();
+  const log = buildFullLog({ config, trials, events, frameStats: null, userAgent: 'x', created: 'c' });
+  const rt = log.trials[0].presses[0].rt_ms;
+  assert.ok(Math.abs(rt - 300.123456) < 1e-6, `JSON keeps ${rt}`);
+  const hit = log.events.find((e) => e.event === 'hit');
+  assert.ok(Math.abs(hit.rt_ms - 300.123456) < 1e-6, 'event records keep it too');
+  assert.ok(Math.abs(hit.t_ms - (trials[0].actualOnsetMs + 300.123456)) < 1e-6, 'event times are not rounded');
+});
+

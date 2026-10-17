@@ -45,19 +45,34 @@ test('pages: a labmate link runs the game alone, with score, rings, sound, and h
   assert.match(out.idleText, /press <kbd>T<\/kbd> to start/i, 'tells the tester how to start');
   assert.equal(out.scoreHiddenIdle, true);
   assert.equal(out.started, true, 'T starts the run');
-  assert.deepEqual(out.presses.map((p) => [p.kind, p.ring, p.swing]), [
+  // Presses in time order: hits on happy moles, one empty-column press, one sad mole hit.
+  const moles = out.presses.filter((p) => p.kind !== 'empty');
+  const emptyPress = out.presses.find((p) => p.kind === 'empty');
+  assert.deepEqual(moles.map((p) => [p.kind, p.ring, p.swing]), [
     ['hit', 'white', true], ['hit', 'white', true], ['hit', 'white', true], ['com', 'red', true],
   ]);
-  // Score as a percentage. Three hits out of three so far: 100% each time.
-  // Then a distractor hit costs 10, and every happy mole shown before it
-  // counts in the denominator, hit or missed: (3 - 10) / goodBefore.
+  // Sound only when a mole is hit: two good tones for a happy mole, one bad for a sad one.
+  assert.deepEqual(moles.map((p) => p.sounds), ['good,good', 'good,good', 'good,good', 'bad']);
+  assert.equal(emptyPress.sounds, '', 'an empty-column press is silent');
+  assert.equal(emptyPress.swing, false, 'and gets no hammer');
+  // Hammer on: a hit mole stays up, struck, until the hammer lands, then sinks.
+  assert.ok(moles.every((p) => p.struck && p.stillShown), 'each hit mole waits for the hammer');
+  assert.equal(out.leftUp, 0, 'every struck mole is gone once the hammer finishes');
+  assert.equal(out.leftStruck, 0);
+  assert.equal(out.sceneGarden, true, 'the garden scene is the default');
   const { resolveConfig } = await import('../src/config.js');
   const { buildSchedule } = await import('../src/schedule.js');
   const sched = buildSchedule(resolveConfig({ nTrials: 20 }));
   const bad = sched.find((t) => t.type === 'bad');
   const goodBefore = sched.filter((t) => t.trial < bad.trial && t.type !== 'bad').length;
-  assert.deepEqual(out.presses.map((p) => p.score),
-    ['Score 100%', 'Score 100%', 'Score 100%', `Score ${Math.round((100 * (3 - 10)) / goodBefore)}%`]);
+  const after = (100 * (3 - 3)) / goodBefore;   // three hits, then the default -3
+  assert.deepEqual(moles.map((p) => p.score),
+    ['Score 100%', 'Score 100%', 'Score 100%', `Score ${Math.round(after)}%`]);
+  // The bar: full and green at 100%; at 0% it empties and turns dark red.
+  assert.deepEqual(moles.map((p) => [p.fill, p.band]),
+    [['100%', 'high'], ['100%', 'high'], ['100%', 'high'], ['0%', 'low']]);
+  assert.deepEqual(moles.map((p) => p.color), ['#3FA34D', '#3FA34D', '#3FA34D', '#7A1414'], 'green when perfect, dark red at zero');
+  assert.ok(out.presses.every((p) => p.roomMade), 'the grid moves down to make room');
   assert.ok(out.presses.every((p) => !p.scoreHidden));
   assert.equal(out.resultsHidden, false, 'results on screen at the end');
   assert.match(out.summary, /^Run finished after 20 of 20 trials\./);
@@ -115,7 +130,7 @@ test('pages: console and display tabs, with pause, early stop, and results that 
     assert.match(x.hits, /^[1-9]\d* \/ \d+$/, `${when}: hits`);
     assert.equal(x.pauses, '1 (2.0 s)', `${when}: pauses`);
     assert.match(x.trace, /class="vtc"/, `${when}: trace`);
-    assert.equal(x.csv, 'trial,onset_s,trial_type,good_row,good_col,bad_row,bad_col,correct_action,expected_button,pressed_buttons,press_times_ms,first_press_ms,good_hit_ms,good_outcome,bad_outcome,outcome,correct,score_points,score_pct,scheduled_onset_s,onset_lag_ms,preceding_go');
+    assert.equal(x.csv, 'trial,onset_s,trial_type,good_row,good_col,bad_row,bad_col,correct_action,expected_button,n_presses,press_1_button,press_1_ms,press_2_button,press_2_ms,press_3_button,press_3_ms,press_4_button,press_4_ms,press_5_button,press_5_ms,first_press_ms,good_hit_ms,good_outcome,bad_outcome,outcome,correct,score_points,score_pct,scheduled_onset_s,onset_lag_ms,preceding_go');
   };
   check(r, 'after End run');
   con.postMessage('touch');
