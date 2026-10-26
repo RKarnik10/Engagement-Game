@@ -117,6 +117,11 @@ function readConfig() {
     sound: f.get('sound') === 'on',
     hammer: f.get('hammer') === 'on',
     scorePenalty: Math.round(clamp(num('scorePenalty', 3), 0, 100)),
+    gameStyle: f.get('gameStyle') || 'score',
+    healthSadHit: Math.round(clamp(num('healthSadHit', 10), 0, 100)),
+    healthMiss: Math.round(clamp(num('healthMiss', 3), 0, 100)),
+    healthStreak: Math.round(clamp(num('healthStreak', 5), 1, 100)),
+    healthRegen: Math.round(clamp(num('healthRegen', 5), 0, 100)),
     participant: String(f.get('participant') || '').trim(),
     run: Math.round(clamp(num('run', 1), 1, 99)),
     seedFromIds: f.get('seedFromIds') === 'on',
@@ -315,6 +320,8 @@ function updateMeasures() {
   $('m-pauses').textContent = c.pauses ? `${c.pauses} (${(c.pausedMs / 1000).toFixed(1)} s)` : 'none';
   const last = [...shown.trials.values()].reduce((m, t) => (t.scoreDue != null && (!m || t.trial > m.trial) ? t : m), null);
   $('m-score').textContent = last ? scoreText(last.scorePoints, last.scoreDue) : '–';
+  const lastH = [...shown.trials.values()].reduce((m, t) => (t.health != null && (!m || t.trial > m.trial) ? t : m), null);
+  $('m-health').textContent = lastH ? String(Math.round(lastH.health)) : '–';
   $('m-rt').textContent = s.rts.length ? `${Math.round(s.meanRt)} ms` : '–';
   $('m-cv').textContent = s.rts.length > 1 ? s.cv.toFixed(2) : '–';
 }

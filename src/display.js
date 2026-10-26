@@ -9,10 +9,11 @@ import { createDisplaySession } from './session.js';
 import { interpretKey } from './input.js';
 import {
   renderBoard, renderKeycaps, setTarget, setStimulus, rampVisibility, keysDescription, flashRing, swingHammer,
-  sinkStruck, cancelSink, applyScene,
+  sinkStruck, cancelSink, applyScene, HAMMER_LAND_MS,
 } from './render/board.js';
 import { createSounds } from './render/sound.js';
 import { configFromQuery, hasQuerySettings } from './query.js';
+import { HEALTH_MAX } from './config.js';
 import { moleSkin } from './render/skin-mole.js';
 import { drawTrace } from './render/trace.js';
 import {
@@ -44,17 +45,44 @@ let config = null;
 let finishedRun = null;
 // Holes just hit while the hammer is on: their mole waits for the hammer before sinking.
 const struck = new Set();
-function showScore(points = 0, due = 0) {
-  const pct = scorePercent(points, due);
-  $('score-text').textContent = `Score ${scoreText(points, due)}`;
+/**
+ * Draw the bar at the top. Layout, top to bottom: the value in large bold
+ * numerals, the bar, and a small spaced-out label ("SCORE" or "HEALTH").
+ * `pct` (null before it means anything) sets the bar; the same bar serves both
+ * game styles, and its colour slides from dark red to green with the value.
+ */
+function drawBar(label, valueText, pct) {
+  $('score-value').textContent = valueText;
+  $('score-label').textContent = label;
+  $('score-bar').setAttribute('aria-label', label);
   const fill = $('score-fill');
   fill.style.setProperty('width', `${scoreFill(pct)}%`);
   fill.dataset.band = scoreBand(pct) || '';
   fill.style.setProperty('background-color', scoreColor(pct));
   $('score-bar').setAttribute('aria-valuenow', String(Math.round(scoreFill(pct))));
   scoreEl.hidden = !config.showScore;
-  // Make room for the score above the grid.
+  // Make room for the bar above the grid.
   stage.classList.toggle('has-score', !!config.showScore);
+}
+
+function showScore(points = 0, due = 0) {
+  drawBar('Score', scoreText(points, due), scorePercent(points, due));
+}
+
+// Health bar (game style "health"): starts full, drops on errors, and
+// regenerates after a streak of correct trials.
+let lastHealth = HEALTH_MAX;
+function showHealth(value = HEALTH_MAX) {
+  drawBar('Health', String(Math.round(value)), value);
+  scoreEl.classList.toggle('low', value <= 25);
+  if (value < lastHealth) {
+    // Hurt: a quick shake and red flash on the bar.
+    scoreEl.classList.remove('hurt');
+    void scoreEl.offsetWidth;
+    scoreEl.classList.add('hurt');
+    setTimeout(() => scoreEl.classList.remove('hurt'), 350);
+  }
+  lastHealth = value;
 }
 
 function showOverlay(title, html) {
@@ -73,7 +101,8 @@ const view = {
     struck.clear();
     const start = standalone
       ? '<p>Click this page once, then press <kbd>T</kbd> to start. <kbd>P</kbd> pauses, <kbd>Esc</kbd> ends the run.</p>'
-      : '<p>Please wait for the task to start.</p>';
+      : '<p>Please wait for the task to start.</p>' +
+        (c.sound ? '<p class="small">Sound is on: click this page once so the browser allows it.</p>' : '');
     showOverlay('Ready', `<p>${skin.instructions(keysDescription(c), c)}</p>${start}`);
     scoreEl.hidden = true;
     results.hidden = true;
@@ -81,7 +110,9 @@ const view = {
     hint.hidden = false;
   },
   running() {
-    showScore();
+    lastHealth = HEALTH_MAX;
+    if (config.gameStyle === 'health') showHealth(HEALTH_MAX);
+    else showScore();
     overlay.hidden = true;
     results.hidden = true;
     hint.hidden = true;
@@ -114,10 +145,14 @@ const view = {
     }
     // Sound only when a mole is actually hit: good for a happy mole, bad for a
     // sad one. A press on an empty column is silent (October 17, 2026).
-    if (config.sound && onMole) sounds.play(ev === 'hit' ? 'good' : 'bad');
+    // With the hammer on, the bonk is heard when the hammer lands, not on the key press.
+    if (config.sound && onMole) sounds.play(ev === 'hit' ? 'good' : 'bad', config.hammer ? HAMMER_LAND_MS / 1000 : 0);
   },
   score(points, due) {
-    showScore(points, due);
+    if (config.gameStyle !== 'health') showScore(points, due);
+  },
+  health(value) {
+    if (config.gameStyle === 'health') showHealth(value);
   },
   moleDown(hole) {
     const clear = () => {

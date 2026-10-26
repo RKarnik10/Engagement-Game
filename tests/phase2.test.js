@@ -24,12 +24,12 @@ test('participant and run: defaults, and what is allowed', () => {
 
 test('file names: BIDS-style labels first when there is a participant ID', () => {
   const d = new Date(2026, 9, 17, 9, 30, 0);
-  const plain = resolveConfig({ seed: 5, showScore: false });
+  const plain = resolveConfig({ seed: 5, showScore: false, hitRings: false, sound: false, hammer: false });
   assert.equal(exportFilename(plain, 'events', d), 'engagement-game_20261017-093000_behavioral_seed5_events.tsv');
-  const labelled = resolveConfig({ seed: 5, showScore: false, participant: '07', run: 2 });
+  const labelled = resolveConfig({ seed: 5, showScore: false, hitRings: false, sound: false, hammer: false, participant: '07', run: 2 });
   assert.equal(exportFilename(labelled, 'events', d), 'sub-07_task-whacamole_run-02_20261017-093000_behavioral_seed5_events.tsv');
   assert.equal(exportFilename(resolveConfig({ participant: 'A', run: 11, seed: 5 }), 'run', d),
-    'sub-A_task-whacamole_run-11_20261017-093000_behavioral_seed5_score_run.csv');
+    'sub-A_task-whacamole_run-11_20261017-093000_behavioral_seed5_score+rings+sound+hammer_run.csv');
 });
 
 test('per-run schedules: off, every run gets the seed; on, each participant and run gets its own, reproducibly', () => {

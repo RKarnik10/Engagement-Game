@@ -57,6 +57,7 @@ shows how several presses in one trial are recorded.
 - **Times are saved exactly, not rounded.** Values like `382.999999999367`
   are how computers store decimals (here, a simulated 60 Hz clock); real runs
   look similar.
+- **`health`** is the health bar value after each trial (100 at the start; −10 per sad mole hit, −3 per miss, +5 per five correct in a row). This simulated player misses 31 happy moles and hits 23 sad ones; its health bottoms out at 69 and ends at 100.
 - **`score_points` and `score_pct`** are the running score: +1 per happy mole
   hit, −3 per sad mole hit, over the happy moles so far. This simulated
   player ends at 440 points out of 540, 81.5%: 23 sad moles hit cost

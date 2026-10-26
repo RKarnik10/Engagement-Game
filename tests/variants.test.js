@@ -12,16 +12,19 @@ import { createDisplaySession } from '../src/session.js';
 import { configFromQuery, configToQuery, hasQuerySettings, linkMatches } from '../src/query.js';
 import { simulateRun } from './_sim.js';
 
-test('variant names: score by default, none with everything off, joined in a fixed order otherwise', () => {
-  assert.equal(feedbackVariant(resolveConfig()), 'score');
-  assert.equal(resolveConfig({ showScore: false }).feedbackVariant, 'none');
-  assert.equal(resolveConfig({ showScore: false, hammer: true, sound: true }).feedbackVariant, 'sound+hammer');
-  assert.equal(resolveConfig({ hammer: true, hitRings: true, showScore: true, sound: true }).feedbackVariant, 'score+rings+sound+hammer');
+const OFF = { showScore: false, hitRings: false, sound: false, hammer: false };
+
+test('variant names: everything on by default, none with everything off, joined in a fixed order otherwise', () => {
+  assert.equal(feedbackVariant(resolveConfig()), 'score+rings+sound+hammer');
+  assert.equal(resolveConfig(OFF).feedbackVariant, 'none');
+  assert.equal(resolveConfig({ ...OFF, hammer: true, sound: true }).feedbackVariant, 'sound+hammer');
+  assert.equal(resolveConfig({ ...OFF, showScore: true }).feedbackVariant, 'score');
+  assert.equal(resolveConfig({ hammer: false, hitRings: false }).feedbackVariant, 'score+sound');
 });
 
 test('variants never change the schedule: same seed, same trials', () => {
   const base = buildSchedule(resolveConfig({ nTrials: 60 }));
-  for (const p of [{ showScore: true }, { hitRings: true }, { sound: true, hammer: true }]) {
+  for (const p of [{ showScore: false }, { hitRings: false }, { sound: false, hammer: false }]) {
     assert.deepEqual(buildSchedule(resolveConfig({ nTrials: 60, ...p })), base, JSON.stringify(p));
   }
 });
@@ -48,16 +51,17 @@ test('the score: +1 per happy mole hit, -3 per distractor hit (default), over th
 
 test('file names and the log say which variant a run used', () => {
   const d = new Date(2026, 9, 11, 9, 0, 0);
-  assert.equal(exportFilename(resolveConfig({ seed: 5, showScore: false }), 'run', d), 'engagement-game_20261011-090000_behavioral_seed5_run.csv');
-  assert.equal(exportFilename(resolveConfig({ seed: 5 }), 'run', d), 'engagement-game_20261011-090000_behavioral_seed5_score_run.csv');
-  assert.equal(exportFilename(resolveConfig({ seed: 5, showScore: false, sound: true, hammer: true }), 'run', d),
+  assert.equal(exportFilename(resolveConfig({ seed: 5, ...OFF }), 'run', d), 'engagement-game_20261011-090000_behavioral_seed5_run.csv');
+  assert.equal(exportFilename(resolveConfig({ seed: 5 }), 'run', d), 'engagement-game_20261011-090000_behavioral_seed5_score+rings+sound+hammer_run.csv');
+  assert.equal(exportFilename(resolveConfig({ seed: 5, ...OFF, sound: true, hammer: true }), 'run', d),
     'engagement-game_20261011-090000_behavioral_seed5_sound+hammer_run.csv');
-  const config = resolveConfig({ showScore: true, nTrials: 10 });
+  const config = resolveConfig({ ...OFF, showScore: true, nTrials: 10 });
   const { trials, events } = simulateRun({ config, trials: buildSchedule(config) });
   const log = buildFullLog({ config, trials, events, frameStats: null, userAgent: 'x', created: 'c' });
   assert.equal(log.meta.feedback_variant, 'score');
   assert.match(runSummaryText({ config, trials, events }), /Feedback shown to the player: score\./);
-  assert.doesNotMatch(runSummaryText({ config: resolveConfig({ nTrials: 10, showScore: false }), trials, events }), /Feedback shown/);
+  assert.equal(resolveConfig({ nTrials: 10 }).feedbackVariant, 'score+rings+sound+hammer', 'everything on by default');
+  assert.doesNotMatch(runSummaryText({ config: resolveConfig({ nTrials: 10, ...OFF }), trials, events }), /Feedback shown/);
 });
 
 test('the display hears about hits, pressed distractors, and wrong columns, and nothing else', () => {
@@ -96,16 +100,22 @@ test('links: settings round-trip, defaults are left out', () => {
     setting: 'scanner', showScore: true, hitRings: true, sound: true, hammer: true,
   });
   const q = configToQuery(c);
-  assert.equal(q, '?trials=60&seed=7&mix=70-20-10&distractor=molerat&setting=scanner&rings=1&sound=1&hammer=1', 'score is the default, so it is left out');
+  assert.equal(q, '?trials=60&seed=7&mix=70-20-10&distractor=molerat&setting=scanner', 'score, rings, sound, and hammer are the defaults, so they are left out');
+  // Turning features off is what a link has to say.
+  const off = resolveConfig({ ...OFF, hammer: true });
+  const qo = configToQuery(off);
+  assert.equal(qo, '?score=0&rings=0&sound=0');
+  const backOff = resolveConfig(configFromQuery(qo));
+  for (const k of ['showScore', 'hitRings', 'sound', 'hammer']) assert.equal(backOff[k], off[k], k);
   assert.ok(linkMatches(c, q));
   const back = resolveConfig(configFromQuery(q));
   for (const k of Object.keys(DEFAULTS)) assert.deepEqual(back[k], c[k], k);
 });
 
 test('links: results can be forced on, for labmates testing alone', () => {
-  const q = configToQuery(resolveConfig({ hitRings: true }), { showResultsOnDisplay: true });
-  assert.equal(q, '?rings=1&results=1');
-  assert.equal(configToQuery(resolveConfig({ showScore: false })), '?score=0', 'turning the default score off');
+  const q = configToQuery(resolveConfig({ hitRings: false }), { showResultsOnDisplay: true });
+  assert.equal(q, '?rings=0&results=1');
+  assert.equal(configToQuery(resolveConfig({ showScore: false })), '?score=0', 'turning the score off');
   assert.equal(resolveConfig(configFromQuery('?score=0')).showScore, false);
   assert.equal(resolveConfig(configFromQuery(q)).showResultsOnDisplay, true);
 });

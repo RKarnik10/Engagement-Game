@@ -147,7 +147,7 @@ test('export: full JSON log parses and carries metadata, the trial table with mo
   assert.equal(log.meta.bad_stimulus, 'mole_sad');
   const both = log.trials.find((t) => t.type === 'both');
   assert.equal(both.targets.length, 2);
-  assert.deepEqual(Object.keys(both.targets[0]), ['target', 'valence', 'stimulus', 'hole', 'row', 'col', 'button', 'outcome', 'rt_ms', 'offset_ms', 'input']);
+  assert.deepEqual(Object.keys(both.targets[0]), ['target', 'valence', 'stimulus', 'hole', 'row', 'col', 'button', 'outcome', 'counted', 'rt_ms', 'offset_ms', 'input']);
   assert.deepEqual(log.trials[1].presses.map((p) => p.outcome), ['wrong_hole', 'hit']);
   assert.equal(log.events[0].event, 'trigger');
   assert.equal(log.events.at(-1).event, 'run_end');
@@ -168,7 +168,7 @@ test('export: builders are pure (same input, same output)', () => {
 });
 
 test('export: file names carry date, time, setting, seed, and kind', () => {
-  const config = resolveConfig({ seed: 42, setting: 'scanner', showScore: false });   // no variant in the name
+  const config = resolveConfig({ seed: 42, setting: 'scanner', showScore: false, hitRings: false, sound: false, hammer: false });   // no variant in the name
   const d = new Date(2026, 8, 25, 14, 5, 2);
   assert.equal(exportFilename(config, 'run', d), 'engagement-game_20260925-140502_scanner_seed42_run.csv');
   assert.equal(exportFilename(config, 'events', d), 'engagement-game_20260925-140502_scanner_seed42_events.tsv');

@@ -29,6 +29,14 @@ const TRAVEL = 84;
  * A plain cartoon mallet; no impact effect.
  */
 const HAMMER =
+  // The impact burst: short rays and two small stars around the point where
+  // the hammer meets the mole's head. Shown for a moment as the hammer lands
+  // (October 26, 2026: "a hammer that interacts with the mole").
+  `<g class="impact" aria-hidden="true">` +
+    `<path fill="none" stroke="#FFF3B0" stroke-width="3.2" stroke-linecap="round" d="M58 18 V6 M44 21 L34 12 M72 21 L82 12 M38 27 L26 25 M78 27 L90 25"/>` +
+    `<path fill="#FFE066" stroke="#C99700" stroke-width="1" d="M30 8 l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7z"/>` +
+    `<path fill="#FFE066" stroke="#C99700" stroke-width="1" d="M90 6 l1.8 3.8 4.2.6-3 2.9.7 4.2-3.7-2-3.7 2 .7-4.2-3-2.9 4.2-.6z"/>` +
+  `</g>` +
   `<g class="hammer" aria-hidden="true">` +
     `<rect fill="#A8763E" stroke="#5E3F1E" stroke-width="1.5" x="70" y="4" width="50" height="8" rx="4"/>` +
     `<rect fill="#4A4F57" stroke="#22252A" stroke-width="1.5" x="45" y="-8" width="27" height="30" rx="5"/>` +

@@ -58,6 +58,10 @@ export const SETTINGS = Object.freeze(['scanner', 'behavioral']);
  *   grey:   plain mid-grey, as README 4.3 recommends for scanning.
  */
 export const SCENES = Object.freeze(['garden', 'grey']);
+/** What the on-screen bar shows: the percentage score, or a health bar. */
+export const GAME_STYLES = Object.freeze(['score', 'health']);
+/** The top of the health bar. */
+export const HEALTH_MAX = 100;
 
 export const DEFAULTS = Object.freeze({
   version: VERSION,
@@ -91,12 +95,27 @@ export const DEFAULTS = Object.freeze({
   showScore: true,              // Score at the top centre, as a percentage (see engine.js):
                                 // happy moles hit minus scorePenalty per distractor hit,
                                 // over the happy moles so far.
+  // Game style (piloting, October 26, 2026; feedback from Irene):
+  //   score:  the percentage score above.
+  //   health: a health bar. Starts at 100; a sad mole hit costs healthSadHit,
+  //           a missed happy mole costs healthMiss, and every healthStreak
+  //           correct trials in a row give back healthRegen, up to 100.
+  //           Health never ends the run: it stops at 0 and the run carries on,
+  //           because the schedule is fixed (open decision P).
+  // showScore decides whether the score or the health bar is shown at all.
+  gameStyle: 'score',
+  healthSadHit: 10,             // 3 on October 26, 2026; 10 later the same day
+  healthMiss: 3,                // 1 on October 26, 2026; 3 later the same day
+  healthStreak: 5,
+  healthRegen: 5,               // 5 on October 26, 2026; briefly 2 then 3, back to 5 later the same day
   scorePenalty: 3,              // Points lost for hitting a distractor (10 on Oct 13, 5 then 3 on Oct 17, 2026).
-  hitRings: false,              // White ring on a hit, red ring on a distractor pressed.
-  sound: false,                 // A good sound on a hit, a bad sound on any wrong press.
-  hammer: false,                // A hammer swings onto any mole that is pressed.
-  // README section 8 kept the "violence dial" low (no hammer, no impact, no
-  // sound); sound and hammer turn it up, so they are for piloting only.
+  // All four feedback features are on by default (Rehaan Karnik, October 26,
+  // 2026), for piloting. Dr. Song's Q6 answer was no feedback, and README
+  // section 8 kept the "violence dial" low (no hammer, no impact, no sound),
+  // so whether any of this stays for the study is open decision L.
+  hitRings: true,               // White ring on a hit, red ring on a distractor pressed.
+  sound: true,                  // A bonk when a mole is hit (plus a buzz for a sad mole).
+  hammer: true,                 // A hammer swings onto any mole that is pressed.
   showResultsOnDisplay: false,  // Testing only: after a run, show results and downloads on the
                                 // participant display too. Off for real participants (Q6).
   seed: 1234,
@@ -160,7 +179,9 @@ const FEEDBACK_NAMES = Object.freeze({ showScore: 'score', hitRings: 'rings', so
  * Goes in the file names and the log so runs from different variants never mix.
  */
 export function feedbackVariant(config) {
-  const on = FEEDBACK_KEYS.filter((k) => config[k]).map((k) => FEEDBACK_NAMES[k]);
+  const on = FEEDBACK_KEYS.filter((k) => config[k]).map((k) => (
+    // The on-screen bar is "health" in the health game style, "score" otherwise.
+    k === 'showScore' && config.gameStyle === 'health' ? 'health' : FEEDBACK_NAMES[k]));
   return on.length ? on.join('+') : 'none';
 }
 
@@ -250,6 +271,11 @@ export function validateConfig(config) {
   if (!(isInt(c.run) && c.run >= 1 && c.run <= 99)) problems.push('run must be a whole number from 1 to 99');
   if (typeof c.seedFromIds !== 'boolean') problems.push('seedFromIds must be a boolean');
   if (typeof c.autoSave !== 'boolean') problems.push('autoSave must be a boolean');
+  if (!GAME_STYLES.includes(c.gameStyle)) problems.push(`gameStyle must be one of ${GAME_STYLES.join(', ')}`);
+  for (const k of ['healthSadHit', 'healthMiss', 'healthRegen']) {
+    if (!(isInt(c[k]) && c[k] >= 0 && c[k] <= HEALTH_MAX)) problems.push(`${k} must be a whole number from 0 to ${HEALTH_MAX}`);
+  }
+  if (!(isInt(c.healthStreak) && c.healthStreak >= 1 && c.healthStreak <= 100)) problems.push('healthStreak must be a whole number from 1 to 100');
 
   if (problems.length) throw new Error(`Invalid config:\n  - ${problems.join('\n  - ')}`);
   return config;

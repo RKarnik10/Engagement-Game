@@ -128,6 +128,7 @@ opens in Excel.
 | `bad_outcome` | `commission` (pressed the sad mole) or `correct_rejection` (left it alone). |
 | `outcome` | One word for the whole trial. On a both trial, pressing the sad mole makes it `commission` even if the happy one was hit too. |
 | `correct` | 1 or 0. `n/a` for a trial cut off by the end of the run. |
+| `health` | The health bar value after this trial (100 at the start; −10 per sad mole hit, −3 per missed happy mole, +5 per five correct trials in a row, between 0 and 100). Recorded even when the health bar isn't shown. |
 | `score_points`, `score_pct` | The running score after this trial: points (+1 per happy mole hit, −3 per sad mole hit), and points as a percentage of the happy moles so far. Recorded even when the score isn't shown. |
 | `scheduled_onset_s` | When it was planned to appear. |
 | `onset_lag_ms` | How late it actually was. Should be under about 17 ms. |

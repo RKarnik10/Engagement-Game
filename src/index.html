@@ -114,13 +114,21 @@
           <fieldset>
             <legend>Feedback to the player (piloting)</legend>
             <div class="opts">
-              <label><input type="checkbox" name="showScore" checked> Score, as a percentage: +1 per happy mole hit, minus a penalty per distractor hit, out of the happy moles so far</label>
-              <label><input type="checkbox" name="hitRings"> Rings: white on a hit, red on a distractor</label>
-              <label><input type="checkbox" name="sound"> Sound: good on a hit, bad on a wrong press</label>
-              <label><input type="checkbox" name="hammer"> Hammer swings onto a pressed mole</label>
+              <label><input type="checkbox" name="showScore" checked> Show the score or health bar at the top</label>
+              <label><input type="checkbox" name="hitRings" checked> Rings: white on a hit, red on a distractor</label>
+              <label><input type="checkbox" name="sound" checked> Sound: good on a hit, bad on a wrong press</label>
+              <label><input type="checkbox" name="hammer" checked> Hammer swings onto a pressed mole</label>
             </div>
-            <div class="row"><label for="scorePenalty">Points lost per distractor hit</label><input type="number" id="scorePenalty" name="scorePenalty" min="0" max="100" step="1" value="3"></div>
-            <p class="small muted">Score is on by default (decided October 17, 2026); all off is Dr. Song's original no-feedback design. Each run records which were on, and the file names include it, for example <code>_score_</code>. Sound needs one key press or click in the display tab first; browsers block sound until then.</p>
+            <div class="opts">
+              <label><input type="radio" name="gameStyle" value="score" checked> Score: a percentage. +1 per happy mole hit, minus a penalty per distractor hit, out of the happy moles so far</label>
+              <label><input type="radio" name="gameStyle" value="health"> Health bar: starts at 100; losing health on mistakes, regenerating after a streak of correct trials</label>
+            </div>
+            <div class="row"><label for="scorePenalty">Score: points lost per distractor hit</label><input type="number" id="scorePenalty" name="scorePenalty" min="0" max="100" step="1" value="3"></div>
+            <div class="row"><label for="healthSadHit">Health: lost per distractor hit</label><input type="number" id="healthSadHit" name="healthSadHit" min="0" max="100" step="1" value="10"></div>
+            <div class="row"><label for="healthMiss">Health: lost per missed happy mole</label><input type="number" id="healthMiss" name="healthMiss" min="0" max="100" step="1" value="3"></div>
+            <div class="row"><label for="healthStreak">Health: correct trials in a row to regenerate</label><input type="number" id="healthStreak" name="healthStreak" min="1" max="100" step="1" value="5"></div>
+            <div class="row"><label for="healthRegen">Health: regenerated each time</label><input type="number" id="healthRegen" name="healthRegen" min="0" max="100" step="1" value="5"></div>
+            <p class="small muted">Score, rings, sound, and hammer are all on by default (decided October 17 and 26, 2026); all off is Dr. Song's original no-feedback design. Each run records which were on, and the file names include it, for example <code>_score_</code>. Sound needs one key press or click in the display tab first; browsers block sound until then.</p>
           </fieldset>
           <fieldset>
             <legend>Testing</legend>
@@ -161,6 +169,7 @@
           <dt>Display hidden during run</dt><dd id="m-hidden">–</dd>
           <dt>Pauses</dt><dd id="m-pauses">–</dd>
           <dt>Score (as the player would see it)</dt><dd id="m-score">–</dd>
+          <dt>Health (as the player would see it)</dt><dd id="m-health">–</dd>
         </dl>
       </section>
     </aside>

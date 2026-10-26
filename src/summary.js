@@ -91,6 +91,15 @@ export function summarize(trials) {
   const rts = done.map((t) => t.goodRtMs).filter((r) => r != null);
   const m = mean(rts);
   const s = sdev(rts);
+  // Sad-mole (commission) RTs, split by trial type: on a both trial the RT is
+  // timed from trial onset and can include an earlier happy-mole press.
+  const comRtsOf = (type) => done
+    .filter((t) => t.type === type)
+    .flatMap((t) => t.targets)
+    .filter((x) => x.valence === 'bad' && x.outcome === 'commission' && x.rtMs != null)
+    .map((x) => x.rtMs);
+  const comRtsBad = comRtsOf('bad');
+  const comRtsBoth = comRtsOf('both');
   return {
     trials: done.length,
     hits: good.filter((x) => x.outcome === 'hit').length,
@@ -103,6 +112,12 @@ export function summarize(trials) {
     meanRt: m,
     sdRt: s,
     cv: rts.length > 1 ? s / m : NaN,
+    comRtsBad,
+    meanComRtBad: mean(comRtsBad),
+    sdComRtBad: sdev(comRtsBad),
+    comRtsBoth,
+    meanComRtBoth: mean(comRtsBoth),
+    sdComRtBoth: sdev(comRtsBoth),
   };
 }
 
@@ -132,7 +147,10 @@ export function runSummaryText(run) {
   ];
   if (s.rts.length) parts.push(`Mean reaction time ${Math.round(s.meanRt)} ms${s.rts.length > 1 ? `, variability (SD ÷ mean) ${s.cv.toFixed(2)}` : ''}.`);
   const last = [...run.trials].reverse().find((t) => t.scoreDue != null);
-  if (last && last.scoreDue > 0) {
+  if (run.config.gameStyle === 'health') {
+    const h = [...run.trials].reverse().find((t) => t.health != null);
+    if (h) parts.push(`Health at the end: ${Math.round(h.health)} of 100.`);
+  } else if (last && last.scoreDue > 0) {
     parts.push(`Score ${scoreText(last.scorePoints, last.scoreDue)} (${last.scorePoints} points out of ${last.scoreDue}; `
       + `a hit distractor costs ${run.config.scorePenalty}).`);
   }

@@ -38,7 +38,7 @@ export const CSV_COLUMNS = Object.freeze([
   'participant', 'run', 'trial', 'onset_s', 'trial_type',
   'good_row', 'good_col', 'bad_row', 'bad_col',
   'correct_action', 'expected_button', 'n_presses', ...pressHeaders('ms'), 'first_press_ms', 'good_hit_ms',
-  'good_outcome', 'bad_outcome', 'outcome', 'correct', 'score_points', 'score_pct',
+  'good_outcome', 'bad_outcome', 'outcome', 'correct', 'score_points', 'score_pct', 'health',
   'scheduled_onset_s', 'onset_lag_ms', 'preceding_go',
 ]);
 
@@ -102,6 +102,7 @@ export function buildRunCSV(trials, config = {}) {
       orNA(a.correct),
       a.scoreDue != null ? a.scorePoints : NA,
       a.scoreDue != null ? pctText(a) : NA,
+      a.health != null ? a.health : NA,
       sec(a.scheduledOnsetMs),
       ms(a.actualOnsetMs - a.scheduledOnsetMs),
       orNA(a.precedingGo),
@@ -152,6 +153,7 @@ export function trialTable(trials) {
     good_rt_ms: a.goodRtMs != null ? a.goodRtMs : null,
     score_points: a.scoreDue != null ? a.scorePoints : null,
     score_due: a.scoreDue != null ? a.scoreDue : null,
+    health: a.health != null ? a.health : null,
     preceding_go: a.precedingGo,
     targets: a.targets.map((x) => ({
       target: x.index,
@@ -162,6 +164,7 @@ export function trialTable(trials) {
       col: x.col,
       button: x.response + 1,
       outcome: x.outcome || null,
+      counted: x.counted !== false,   // false: a happy mole in a both trial after the sad mole was hit; scoring ignores it
       rt_ms: x.rtMs != null ? x.rtMs : null,
       offset_ms: x.offsetMs != null ? x.offsetMs : null,
       input: x.source || null,
@@ -185,6 +188,7 @@ export function buildFullLog({ config, trials, events, frameStats, userAgent, cr
       schedule_seed: config.scheduleSeed ?? config.seed,
       in_scanner: config.setting === 'scanner' ? 1 : 0,
       feedback_variant: config.feedbackVariant || 'none',
+      game_style: config.gameStyle,
       trial_mix: { good: config.goodShare, bad: config.badShare, both: config.bothShare },
       good_stimulus: 'mole_happy',
       bad_stimulus: config.badStim,

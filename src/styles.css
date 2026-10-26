@@ -191,34 +191,51 @@ a.button.primary{background:var(--signal);border-color:var(--signal);color:var(-
 .hole.fx-hit .fx{stroke:#F2F2F2}
 .hole.fx-com .fx{stroke:#F0443A}
 /* Hammer: hidden until it swings down from above, pivoting on its handle end.
-   It lands at 35% of 260 ms (about 90 ms, HAMMER_LAND_MS in board.js). */
+   It lands at 35% of 260 ms (about 90 ms, HAMMER_LAND_MS in board.js), bounces
+   back a little, and fades. */
 .hammer{opacity:0;transform-box:view-box;transform-origin:116px 8px;transform:rotate(50deg);pointer-events:none}
 .hole.swing .hammer{animation:hammer-swing 260ms ease-in forwards}
 @keyframes hammer-swing{
   0%{opacity:1;transform:rotate(50deg)}
   35%{opacity:1;transform:rotate(0deg)}
-  80%{opacity:1;transform:rotate(0deg)}
+  47%{opacity:1;transform:rotate(7deg)}
+  59%{opacity:1;transform:rotate(0deg)}
+  82%{opacity:1;transform:rotate(0deg)}
   100%{opacity:0;transform:rotate(0deg)}
 }
-/* A mole hit with the hammer on waits for the hammer (90 ms), is squashed,
-   then sinks; all done by 300 ms (HAMMER_SINK_DONE_MS). Display only. */
+/* The impact burst pops as the hammer lands, then fades. */
+.impact{opacity:0;transform-box:view-box;transform-origin:58px 24px;pointer-events:none}
+.hole.swing .impact{animation:impact-pop 260ms ease-out forwards}
+@keyframes impact-pop{
+  0%,33%{opacity:0;transform:scale(.5)}
+  40%{opacity:1;transform:scale(1)}
+  62%{opacity:1;transform:scale(1.18)}
+  100%{opacity:0;transform:scale(1.3)}
+}
+/* A mole hit with the hammer on waits for the hammer (90 ms), is squashed
+   hard on impact, then sinks; all done by 300 ms (HAMMER_SINK_DONE_MS).
+   Display only. */
 .hole.struck .target{animation:mole-struck 210ms ease-in 90ms both;transform-box:view-box;transform-origin:60px 92px}
 @keyframes mole-struck{
   0%{transform:translate(0px,0px) scale(1,1)}
-  25%{transform:translate(0px,4px) scale(1.08,0.8)}
+  18%{transform:translate(0px,7px) scale(1.16,0.7)}
+  38%{transform:translate(0px,6px) scale(1.1,0.78)}
   100%{transform:translate(0px,84px) scale(1,1)}
 }
 /* Score, top centre of the participant display, with a bar that fills to the
    percentage. Its colour slides from dark red through orange and yellow to
    green (scoreColor in summary.js). */
 .scorebox{position:absolute;top:1.5%;left:50%;transform:translateX(-50%);width:min(34vw,420px);text-align:center;pointer-events:none}
-.score-text{font-size:clamp(1.1rem,3vh,2rem);font-weight:700;color:#1C1C1C;font-variant-numeric:tabular-nums;line-height:1.2}
-.score-bar{margin-top:.5vh;height:clamp(10px,1.8vh,18px);background:#5A5A5A;border:2px solid #2B2B2B;border-radius:999px;overflow:hidden}
+/* The value is the big element: bold, large, tabular numerals. */
+.score-value{font-size:clamp(1.9rem,5.6vh,3.6rem);font-weight:800;line-height:1;color:#1C1C1C;font-variant-numeric:tabular-nums;letter-spacing:-.02em;text-shadow:0 1px 3px rgba(255,255,255,.55)}
+.score-bar{margin-top:.9vh;height:clamp(10px,1.8vh,18px);background:#5A5A5A;border:2px solid #2B2B2B;border-radius:999px;overflow:hidden}
+/* The label sits below the bar, small, spaced out, and quiet. */
+.score-label{margin-top:.8vh;font-size:clamp(.65rem,1.6vh,.95rem);font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:#243018;opacity:.85;line-height:1}
 .score-fill{height:100%;width:0;background:#5A5A5A;border-radius:999px;transition:width .25s ease,background-color .25s ease}
 /* Fill colour is set by display.js from scoreColor: a smooth dark red to green. */
 /* With the score on, the grid moves down so the score never covers a mole. */
 .display-page .stage.has-score .holes.grid3x3,
-.display-page .stage.has-score .holes.grid9{top:13%}
+.display-page .stage.has-score .holes.grid9{top:17%}
 .display-page .stage.has-score .holes.row4{top:26%}
 
 /* Link for labmates (console). */
@@ -247,3 +264,19 @@ a.button.primary{background:var(--signal);border-color:var(--signal);color:var(-
 .stage.scene-garden .lip{stroke:#6B4423}
 .stage.scene-garden .keycap{background:#F1E6CF;color:#3A2213}
 .stage.scene-garden .display-hint{color:#1E3A12}
+
+/* Health bar (game style "health"): a shake and red flash when health drops,
+   and a slow pulse when it is low (25 or below). */
+.scorebox.hurt{animation:health-hurt 350ms ease-out}
+@keyframes health-hurt{
+  0%{transform:translateX(-50%)}
+  20%{transform:translateX(calc(-50% - 7px))}
+  40%{transform:translateX(calc(-50% + 7px))}
+  60%{transform:translateX(calc(-50% - 4px))}
+  80%{transform:translateX(calc(-50% + 3px))}
+  100%{transform:translateX(-50%)}
+}
+.scorebox.hurt .score-bar{border-color:#FF3B30;box-shadow:0 0 10px #FF3B30}
+.scorebox.low .score-bar{animation:health-low 900ms ease-in-out infinite}
+@keyframes health-low{0%,100%{box-shadow:none}50%{box-shadow:0 0 10px #FF3B30}}
+

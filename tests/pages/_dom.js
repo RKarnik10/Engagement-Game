@@ -80,8 +80,9 @@ export function installDom({ formInputs = [], search = '', href = 'http://localh
     constructor() { this.m = new Map(formInputs.filter((i) => i.checked !== false).map((i) => [i.name, i.value])); }
     get(k) { return this.m.has(k) ? this.m.get(k) : null; }
   };
-  // A fake sound system: records each tone as 'good' (sine) or 'bad' (square)
-  // so tests can count which sounds played. No real audio.
+  // A fake sound system: records each tone as "<oscillator type>@<start time>"
+  // (for example "sine@0.09"), so tests can check which tones played and when.
+  // No real audio.
   const tones = [];
   globalThis.AudioContext = class {
     constructor() { this.state = 'running'; this.currentTime = 0; this.destination = {}; }
@@ -89,7 +90,7 @@ export function installDom({ formInputs = [], search = '', href = 'http://localh
     createGain() { const p = { setValueAtTime() {}, exponentialRampToValueAtTime() {} }; return { gain: p, connect: (x) => x }; }
     createOscillator() {
       const o = { type: 'sine', frequency: { setValueAtTime() {}, exponentialRampToValueAtTime() {} },
-        connect: (x) => x, stop() {}, start() { tones.push(o.type === 'square' ? 'bad' : 'good'); } };
+        connect: (x) => x, stop() {}, start(t) { tones.push(`${o.type}@${(t ?? 0).toFixed(2)}`); } };
       return o;
     }
   };

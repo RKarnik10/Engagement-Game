@@ -19,7 +19,7 @@ import {
   classifyPress, classifyTimeout, classifyRunEnd, classifyTrial, trialCorrect,
   hasResponseTime, OUTCOME,
 } from './classify.js';
-import { runDurationMs } from './config.js';
+import { runDurationMs, HEALTH_MAX } from './config.js';
 import { scorePercent } from './summary.js';
 
 // Times are logged at full precision (October 16, 2026); no rounding here.
@@ -70,6 +70,8 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     tMs: 0,
     next: 0,
     active: null,
+    health: HEALTH_MAX,      // health bar (see config.gameStyle); never ends the run
+    streak: 0,               // correct trials in a row, toward the next regeneration
     points: 0,               // score numerator
     due: 0,                  // score denominator: happy moles resolved so far
     counts: { wrong_hole: 0, no_target_press: 0 },
@@ -112,11 +114,25 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       d.rt_ms = press.rtMs;
       d.source = press.source;
     }
-    if (outcome === OUTCOME.HIT) s.points += 1;
+    // In a "both" trial, once the sad mole has been hit the trial counts only
+    // as that error (Rehaan Karnik, October 26, 2026): the happy mole no longer
+    // counts toward the score or health, whether it is then pressed (a hit) or
+    // missed. Its raw outcome and press are still recorded in the data; only
+    // the scoring ignores it. If the happy mole was hit BEFORE the sad one, it
+    // had already counted and still does.
+    const voided = x.valence === 'good'
+      && a.targets.some((o) => o.valence === 'bad' && o.outcome === OUTCOME.COMMISSION);
+    x.counted = !voided;
+    if (voided) d.counted = false;
+    if (outcome === OUTCOME.HIT && !voided) s.points += 1;
     if (outcome === OUTCOME.COMMISSION) s.points -= config.scorePenalty;
-    if (x.valence === 'good' && (outcome === OUTCOME.HIT || outcome === OUTCOME.OMISSION)) s.due += 1;
+    if (x.valence === 'good' && (outcome === OUTCOME.HIT || outcome === OUTCOME.OMISSION) && !voided) s.due += 1;
     d.score_points = s.points;
     d.score_due = s.due;
+    // Health: errors cost health at once. It stops at 0 (no game over).
+    if (outcome === OUTCOME.COMMISSION) s.health = Math.max(0, s.health - config.healthSadHit);
+    if (outcome === OUTCOME.OMISSION && !voided) s.health = Math.max(0, s.health - config.healthMiss);
+    d.health = s.health;
     emit(outcome, d, t, a);
   }
 
@@ -126,10 +142,25 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
     a.correct = trialCorrect(a);
     const good = a.targets.find((x) => x.valence === 'good');
     a.goodRtMs = good && good.outcome === OUTCOME.HIT ? good.rtMs : null;
+    // Health regenerates after healthStreak correct trials in a row. A wrong
+    // trial restarts the count; a trial cut off by the end of the run does
+    // neither (correct is null).
+    if (a.correct === 1) {
+      s.streak += 1;
+      if (s.streak >= config.healthStreak) {
+        s.health = Math.min(HEALTH_MAX, s.health + config.healthRegen);
+        s.streak = 0;
+      }
+    } else if (a.correct === 0) {
+      s.streak = 0;
+    }
     a.scorePoints = s.points;
     a.scoreDue = s.due;
+    a.health = s.health;
     s.active = null;
-    emit('trial_end', { trial: a.trial, type: a.type, outcome: a.outcome, correct: a.correct }, t, a);
+    emit('trial_end', {
+      trial: a.trial, type: a.type, outcome: a.outcome, correct: a.correct, health: s.health, health_streak: s.streak,
+    }, t, a);
   }
 
   function tick() {
@@ -313,6 +344,8 @@ export function createEngine({ config, trials, logger, clock, raf, caf, onFrame,
       score: s.points,
       scoreDue: s.due,
       scorePct: scorePercent(s.points, s.due),
+      health: s.health,
+      healthStreak: s.streak,
       counts: { ...s.counts },
       volumes: s.volumes,
       pulses: s.pulses,

@@ -30,7 +30,7 @@ const FEEDBACK_EVENTS = new Set(['hit', 'commission', 'wrong_hole']);
  * @param {BroadcastChannel} opts.channel
  * @param {string} opts.displayId
  * @param {object} [opts.view]   { idle(config), running(config), frame(info), moleUp(hole, stim),
- *                                 moleDown(hole), feedback(record), score(points, due), paused(isPaused),
+ *                                 moleDown(hole), feedback(record), score(points, due), health(value), paused(isPaused),
  *                                 ended(reason, run),
  *                                 error(message) }
  * @param {() => number} [opts.clock]
@@ -43,7 +43,7 @@ export function createDisplaySession({
   channel, displayId, view = {}, clock, raf, caf, userAgent = 'unknown', now = () => new Date(),
 }) {
   const v = {
-    idle() {}, running() {}, frame() {}, moleUp() {}, moleDown() {}, feedback() {}, score() {}, paused() {}, ended() {},
+    idle() {}, running() {}, frame() {}, moleUp() {}, moleDown() {}, feedback() {}, score() {}, health() {}, paused() {}, ended() {},
     error() {},
     ...view,
   };
@@ -82,6 +82,7 @@ export function createDisplaySession({
     // Feedback first, so a ring or hammer lands on the mole before it drops.
     if (FEEDBACK_EVENTS.has(record.event)) v.feedback(record);
     if (record.score_due !== undefined) v.score(record.score_points, record.score_due);
+    if (record.health !== undefined) v.health(record.health);
     if (record.event === 'target_on') v.moleUp(record.hole - 1, record.stim);
     else if (MOLE_DOWN.has(record.event)) v.moleDown(record.hole - 1);
     // The trial itself only travels with trial_end, when it is complete.

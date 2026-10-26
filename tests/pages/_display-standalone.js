@@ -35,7 +35,7 @@ while (clock.pending) {
       sounds: tones.slice(tonesBefore).join(','),
       struck: h.classList.contains('struck'), stillShown: !!stimNow,
       kind: p.kind, ring: h.classList.contains('fx-hit') ? 'white' : h.classList.contains('fx-com') ? 'red' : null,
-      swing: h.classList.contains('swing'), score: $('score-text').textContent, scoreHidden: $('score').hidden,
+      swing: h.classList.contains('swing'), score: `${$('score-label').textContent} ${$('score-value').textContent}`, scoreHidden: $('score').hidden,
       fill: $('score-fill').style.props.width, band: $('score-fill').dataset.band,
       color: $('score-fill').style.props['background-color'],
       roomMade: $('stage').classList.contains('has-score'),

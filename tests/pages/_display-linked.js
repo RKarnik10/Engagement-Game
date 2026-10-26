@@ -25,7 +25,7 @@ const paused = { title: $('ov-title').textContent, framesStopped: !clock.pending
 clock.now += 2000; pausedMs = 2000;
 keydown('p');
 paused.resumed = $('overlay').hidden;
-parentPort.postMessage({ kind: 'paused', ...paused, score: $('score-text').textContent });
+parentPort.postMessage({ kind: 'paused', ...paused, score: `${$('score-label').textContent} ${$('score-value').textContent}` });
 let told = false;
 let n = 0;
 while (clock.pending) {

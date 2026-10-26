@@ -51,8 +51,11 @@ test('pages: a labmate link runs the game alone, with score, rings, sound, and h
   assert.deepEqual(moles.map((p) => [p.kind, p.ring, p.swing]), [
     ['hit', 'white', true], ['hit', 'white', true], ['hit', 'white', true], ['com', 'red', true],
   ]);
-  // Sound only when a mole is hit: two good tones for a happy mole, one bad for a sad one.
-  assert.deepEqual(moles.map((p) => p.sounds), ['good,good', 'good,good', 'good,good', 'bad']);
+  // Sound only when a mole is hit. A bonk (a sine thump and a triangle click) for
+  // a happy mole; the same bonk plus a low square buzz for a sad one. The hammer
+  // is on in this link, so everything is timed to its landing, 0.09 s after the press.
+  const bonk = 'sine@0.09,triangle@0.09';
+  assert.deepEqual(moles.map((p) => p.sounds), [bonk, bonk, bonk, `${bonk},square@0.14`]);
   assert.equal(emptyPress.sounds, '', 'an empty-column press is silent');
   assert.equal(emptyPress.swing, false, 'and gets no hammer');
   // Hammer on: a hit mole stays up, struck, until the hammer lands, then sinks.
@@ -82,6 +85,34 @@ test('pages: a labmate link runs the game alone, with score, rings, sound, and h
   assert.deepEqual(out.autoSaved.map((n) => n.split('_').at(-1)), ['run.csv', 'events.tsv', 'log.json']);
   assert.ok(out.autoSaved.every((n) => n.startsWith('engagement-game_')), 'no participant ID in the link: unlabelled names');
   assert.match(out.download, /_behavioral_seed1234_score\+rings\+sound\+hammer_run\.csv$/, 'the button still works too');
+});
+
+test('pages: the health game style draws a health bar that drops on a sad mole and regenerates', async () => {
+  const { scoreColor } = await import('../src/summary.js');
+  const w = worker('_display-health.js', { search: '?style=health&trials=24&results=1' });
+  const out = await inbox(w).next(() => true, 'the display');
+  const at = (tag) => out.snaps.find((x) => x.tag === tag);
+  assert.deepEqual([at('start').text, at('start').fill], ['Health 100', '100%'], 'a full bar to start');
+  // The layout: a big value, the bar, and a small label below it. Just the
+  // number in the value, just the word in the label.
+  assert.deepEqual([at('start').value, at('start').label], ['100', 'Health']);
+  assert.deepEqual([at('after the sad mole').value, at('after the sad mole').label], ['90', 'Health']);
+  assert.equal(at('start').hidden, false);
+  assert.equal(at('start').color, scoreColor(100));
+  const sad = at('after the sad mole');
+  assert.equal(sad.text, 'Health 90', 'a sad mole hit costs 10');
+  assert.equal(sad.fill, '90%');
+  assert.equal(sad.color, scoreColor(90));
+  assert.equal(sad.hurt, true, 'the bar shakes and flashes when health drops');
+  // Every trial after the sad mole is answered correctly, so health regenerates
+  // +5 for each full run of five of them.
+  const { resolveConfig } = await import('../src/config.js');
+  const { buildSchedule } = await import('../src/schedule.js');
+  const sched = buildSchedule(resolveConfig({ nTrials: 24 }));
+  const badTrial = sched.find((x) => x.type === 'bad' && x.trial >= 6).trial;
+  const regen = Math.floor((24 - badTrial) / 5);
+  assert.equal(at('end').text, `Health ${Math.min(100, 90 + 5 * regen)}`, `${regen} regenerations of +5`);
+  assert.equal(at('end').hurt, false);
 });
 
 test('pages: console and display tabs, with pause, early stop, and results that stay', async () => {
@@ -130,11 +161,11 @@ test('pages: console and display tabs, with pause, early stop, and results that 
   }
   const check = (x, when) => {
     assert.match(x.summary, /Run ended early after \d+ of 30 trials/, `${when}: summary`);
-    assert.match(x.summary, /Feedback shown to the player: score\./, `${when}: variant`);
+    assert.match(x.summary, /Feedback shown to the player: score\+rings\+sound\+hammer\./, `${when}: variant`);
     assert.match(x.hits, /^[1-9]\d* \/ \d+$/, `${when}: hits`);
     assert.equal(x.pauses, '1 (2.0 s)', `${when}: pauses`);
     assert.match(x.trace, /class="vtc"/, `${when}: trace`);
-    assert.equal(x.csv, 'participant,run,trial,onset_s,trial_type,good_row,good_col,bad_row,bad_col,correct_action,expected_button,n_presses,press_1_button,press_1_ms,press_2_button,press_2_ms,press_3_button,press_3_ms,press_4_button,press_4_ms,press_5_button,press_5_ms,first_press_ms,good_hit_ms,good_outcome,bad_outcome,outcome,correct,score_points,score_pct,scheduled_onset_s,onset_lag_ms,preceding_go');
+    assert.equal(x.csv, 'participant,run,trial,onset_s,trial_type,good_row,good_col,bad_row,bad_col,correct_action,expected_button,n_presses,press_1_button,press_1_ms,press_2_button,press_2_ms,press_3_button,press_3_ms,press_4_button,press_4_ms,press_5_button,press_5_ms,first_press_ms,good_hit_ms,good_outcome,bad_outcome,outcome,correct,score_points,score_pct,health,scheduled_onset_s,onset_lag_ms,preceding_go');
   };
   check(r, 'after End run');
   con.postMessage('touch');
@@ -145,12 +176,12 @@ test('pages: console and display tabs, with pause, early stop, and results that 
   con.postMessage('report');
   r = await c.next((m) => m.cmd === 'report', 'report');
   assert.equal(r.downloads.length, 3, `auto-saved once: ${r.downloads.join(', ')}`);
-  for (const n of r.downloads) assert.match(n, /^sub-07_task-whacamole_run-02_\d{8}-\d{6}_behavioral_seed1234_score_(run\.csv|events\.tsv|log\.json)$/);
+  for (const n of r.downloads) assert.match(n, /^sub-07_task-whacamole_run-02_\d{8}-\d{6}_behavioral_seed1234_score\+rings\+sound\+hammer_(run\.csv|events\.tsv|log\.json)$/);
   assert.match(r.saveStatus, /^Saved automatically to your downloads folder/);
   con.postMessage('download');
   r = await c.next((m) => m.cmd === 'download', 'download');
   assert.equal(r.downloads.length, 4, 'the button adds one more');
-  assert.match(r.downloads.at(-1), /^sub-07_task-whacamole_run-02_.*_score_run\.csv$/);
+  assert.match(r.downloads.at(-1), /^sub-07_task-whacamole_run-02_.*_score\+rings\+sound\+hammer_run\.csv$/);
   // Changing a setting afterwards must not save the run again.
   con.postMessage('touch');
   r = await c.next((m) => m.cmd === 'touch', 'touch');

@@ -15,8 +15,9 @@ const BOOL = Object.freeze({
 });
 const INT = Object.freeze({
   trials: 'nTrials', trialms: 'trialMs', holdms: 'holdMs', seed: 'seed', penalty: 'scorePenalty', run: 'run',
+  hsad: 'healthSadHit', hmiss: 'healthMiss', hstreak: 'healthStreak', hregen: 'healthRegen',
 });
-const TEXT = Object.freeze({ setting: 'setting', layout: 'layout', onset: 'onset', scene: 'scene', sub: 'participant' });
+const TEXT = Object.freeze({ setting: 'setting', layout: 'layout', onset: 'onset', scene: 'scene', sub: 'participant', style: 'gameStyle' });
 const DISTRACTOR = Object.freeze({ sad: 'mole_sad', molerat: 'molerat' });
 
 const pct = (x) => Math.round(x * 100);
