@@ -1,15 +1,15 @@
 # Engagement Game: a whac-a-mole attention task for fMRI
 
-**Status:** Blueprint v0.3. Drafted September 18, 2026; revised September 21 after Dr. Song's first round of feedback, September 25 when the trial mix was clarified, and October 11 to 17 after piloting feedback. Ten open decisions were closed on October 17; three remain, listed in section 11.2.
+**Status:** Blueprint v0.3. Drafted September 18, 2026; revised September 21 after Dr. Song's first round of feedback, September 25 when the trial mix was clarified, and October 11 to 17 after piloting feedback. Six decisions are still open (section 2); every answered one is in [process/decisions.md](process/decisions.md).
 The open questions in section 2 now carry her answers. Values still marked *(placeholder)* are starting guesses, not decisions.
 
 **Author:** Rehaan Karnik (undergraduate RA). Drafted with AI assistance; references were pulled from search and are listed in section 10 with notes on what was and was not verified.
 
-**Build status (October 26, 2026):** Phases 0, 1, and 2 of section 7 are done; Phase 3 (the analysis script) is next. `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run. Each trial shows a happy mole to press, a sad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console, and the game is published at the link below. The score is shown by default, with an optional health-bar game style; rings, sound (a bonk), and a hammer that hits the mole are optional; the background is a garden scene. Runs carry a participant ID and run number, save their files automatically, and record every press at full precision. The mole pictures are matched for size and brightness ([docs/stimuli.md](docs/stimuli.md)). 131 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 11** lists what is still open.
+**Build status (October 26, 2026):** Phases 0, 1, and 2 of section 7 are done; Phase 3 (the analysis script) is next. `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run. Each trial shows a happy mole to press, a sad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console, and the game is published at the link below. The score is shown by default, with an optional health-bar game style; rings, sound (a bonk), and a hammer that hits the mole are optional; the background is a garden scene. Runs carry a participant ID and run number, save their files automatically, and record every press at full precision. The mole pictures are matched for size and brightness ([docs/stimuli.md](docs/stimuli.md)). 131 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 2** lists the open decisions.
 
 **Contributors and AI disclosure:** see [section 12](#12-contributors-and-ai-disclosure). Code and documentation in this repository were written by an AI assistant under the author's direction, as recorded there.
 
-**Companion documents:** [docs/for-labmates.md](docs/for-labmates.md) (for labmates testing the game; no coding), [examples/](examples/) (a full 600-trial example run and what to look for in it), [research-notes.md](research-notes.md) (the reading behind sections 8 and 10), [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [docs/decisions.md](docs/decisions.md) (where answers to the open questions are recorded).
+**Companion documents:** [docs/for-labmates.md](docs/for-labmates.md) (for labmates testing the game; no coding), [examples/](examples/) (a full 600-trial example run and what to look for in it), [research-notes.md](research-notes.md) (the reading behind sections 8 and 10), [docs/review-guide.md](docs/review-guide.md) (how to look around this repository without reading code), [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute from the data), [process/decisions.md](process/decisions.md) (every answered decision, dated), [docs/analysis-plan.md].
 
 ---
 
@@ -35,26 +35,24 @@ To run locally, open `index.html` in any browser. For the current build in `src/
 
 ---
 
-## 2. Questions for Dr. Song, and her answers
+## 2. Open decisions
 
-Answered September 21, 2026 unless noted. Full detail, including the points
-that still need a one-line confirmation, is in [docs/decisions.md](docs/decisions.md).
+Only the decisions that are **still open** are listed here. Every answered
+decision, with its date and where it lives in the code, is in
+[process/decisions.md](process/decisions.md). Letters match that log.
 
-| # | Question | Answer |
-|---|----------|--------|
-| Q1 | What construct is the game meant to capture: **attention fluctuations**, **engagement/motivation**, or both? | **Both.** |
-| Q2 | What **response device** is available, and how many buttons? | **One hand, 3 buttons.** Nine holes in a 3 by 3 grid; each button is a column. |
-| Q3 | What **presentation software** should the scanner version use? | **Browser is fine.** Psychtoolbox was the lab's tool but is now paywalled; PsychoPy is the fallback. |
-| Q4 | **TR, run length, number of runs, trigger key**, dummy scans? | **Still to be discussed**, except run length: 600 trials, about 10 minutes. |
-| Q5 | **Continuous** play or **blocks** with rest? | **Continuous.** One trial per second, no rest blocks. |
-| Q6 | Should the player see a **score** or feedback? | **No.** Nothing on screen reacts to a press. *(On October 17, 2026 Rehaan Karnik decided to show the score by default for piloting; see decision L in [docs/decisions.md](docs/decisions.md).)* |
-| Q7 | **Adaptive difficulty**? | **No.** |
-| Q8 | **Mole art vs. neutral art**? | **Moles.** No eggplants. A happy mole to press; a sad mole (or a molerat) to leave alone. |
-| Q9 | **Participant population**? | **Adults.** |
-| Q10 | Is **eye tracking** available, and what is the visual angle? | **No eye tracking.** Visual angle still unknown. |
-| Q11 | A press on a **different hole** while a target is up: commission or wrong-hole? | **Wrong-hole**, and the trial continues. Now means the wrong column. |
+| # | Open decision | What the game does now | Why it is open |
+|---|---------------|------------------------|----------------|
+| C | Both trials, after the good mole is hit | The bad mole stays up until the window ends; pressing it later still counts as a commission, and the trial's outcome is then `commission`. The sad-first case was settled on October 26, 2026 (a sad-mole hit overrides the happy mole's scoring). Still open: happy hit first, then the sad mole, which currently counts both. | Part of the wider question H. The alternative is to take both moles down on the first press, which would make any second press a stray press instead. |
+| F | Q4 remainder | TR 1 s, trigger key `t`, 2 s lead-in, one run. | Needed before any scan. Dr. Song said this is still to be discussed. |
+| H | Several presses in one trial: does every press count, or only the first? | **Every press counts.** Pressing a sad mole and then an empty column records both a sad-mole hit and a wrong-column press. A wrong-column press followed by the right one counts as a hit. In a both trial, hitting the happy mole and then the sad one counts as a hit and a sad-mole hit, and the trial's outcome is `commission`. | Raised by Rehaan Karnik on October 17, 2026. A "first press only" rule (later presses recorded with their times but ignored for scoring) was built and reverted the same day, because it also turns a quick correction into a miss, which Dr. Song's feedback described. Options: (1) every press counts, as now; (2) only the first press counts; (3) a middle way, e.g. only the first press *on a mole* counts, so a wrong-column press can still be corrected but a happy-mole hit cannot be followed by a sad-mole hit. Every press is recorded with its time whichever is chosen, so the analysis can apply any rule later. |
+| O | Same schedule for everyone, or one per participant and run? | Same for everyone: every run uses the schedule from `seed` (1234), unless "Give each participant and run its own schedule" is ticked (`seedFromIds`). | The same schedule for everyone makes participants directly comparable trial by trial and keeps one fMRI design matrix; different schedules avoid order effects and stop anything tied to one particular sequence. Common in fMRI either way. Added October 17, 2026. |
+| P | How should the health bar work, exactly? | Starts at 100 and changes only on mistakes (no drain over time). Stops at 0 and the run continues (no game over). "Correct" for regeneration means a trial with every happy mole hit and every sad mole left alone; five in a row gives +5. | Irene's note ("start slowly decrementing from 100 … slowly regenerating with like 5 correct ones in a row") could also mean a slow drain over time, and a game over at 0 would add the drama she asked for but cut the fixed 600-trial schedule short. Added October 26, 2026. |
+| Q | Behavioral comparison with the gradCPT tasks | Not built. | Dr. Song asked (October 26, 2026) for the game to be turned into a behavioral task and reported against the lab's gradCPT scenes, to show how whac-a-mole differs. Needs a design (the same participants on both tasks for ten minutes each, matched measures such as RT variability, d′, and the variance time course) and the Phase 3 analysis script reading both tasks' data. The gradCPT scripts are in the local `experiment/` folder (not in this repository). |
 
-Points from the same feedback that could be read more than one way are listed at the end of [docs/decisions.md](docs/decisions.md) with what the code does today. Further answers should be recorded there with the date.
+How to answer one: send the letter and your answer to Rehaan Karnik, who moves
+it into [process/decisions.md](process/decisions.md) with the date and, where an
+answer changes behavior, changes the game.
 
 ---
 
@@ -107,7 +105,7 @@ Each trial also gets one overall outcome. A good or bad trial takes its mole's o
 | `omission` | `correct_rejection` | `omission` | no |
 | `omission` | `commission` | `commission` | no |
 
-In a both trial, hitting the good mole takes only that mole down; the bad one stays up until the window ends, so a later press on it still counts as a commission. *(These two rules are a reading of the design, not yet confirmed by Dr. Song; see [docs/decisions.md](docs/decisions.md).)*
+In a both trial, hitting the good mole takes only that mole down; the bad one stays up until the window ends, so a later press on it still counts as a commission. *(These two rules are a reading of the design, not yet confirmed by Dr. Song; see [section 2](#2-open-decisions) and [process/decisions.md](process/decisions.md).)*
 
 `e.repeat` key events (holding a key down) are ignored.
 
@@ -313,8 +311,9 @@ Engagement-Game/
 │   └── _sim.js             # fake-clock helper for the engine tests
 ├── analysis/               # Phase 3 (Python)
 │   └── compute_measures.py
+├── process/
+│   └── decisions.md        # every answered decision, dated (open ones live in README section 2)
 └── docs/
-    ├── decisions.md        # dated answers to the open questions
     ├── review-guide.md     # how to review this repository without reading code
     ├── stimuli.md          # size and brightness matching of the mole pictures
     └── analysis-plan.md    # Phase 3 analysis plan in plain language
@@ -399,7 +398,7 @@ The experimenter console (`index.html`) and the participant display (`display.ht
 ## 7. Implementation phases
 
 ### Phase 0: Scaffolding
-- Folder structure from section 6, `package.json` with `"type": "module"` and a `test` script, `docs/decisions.md` with the open-question table.
+- Folder structure from section 6, `package.json` with `"type": "module"` and a `test` script, a decisions log (now `process/decisions.md`).
 - **Done when:** `npm test` runs (even with zero tests) and `src/index.html` loads from a local server (for example `python3 -m http.server` run from `src/`).
 
 ### Phase 1: Desktop prototype (match the demo)
@@ -506,7 +505,7 @@ Verification notes are in brackets. "Checked" means I saw the abstract or publis
 ## 11. Where things stand and what is still open
 
 *Updated September 25, 2026, in plain language. Companion documents:
-[examples/](examples/) (a full example run), [docs/decisions.md](docs/decisions.md)
+[examples/](examples/) (a full example run), [process/decisions.md](process/decisions.md)
 (every answer, dated), [docs/review-guide.md](docs/review-guide.md) (how to look
 around this repository without reading code),
 [docs/analysis-plan.md](docs/analysis-plan.md) (what we will compute).*
@@ -531,45 +530,11 @@ around this repository without reading code),
 
 ### 11.2 Still open
 
-Six points still need an answer. The full version, with what the code does
-today for each, is at the end of [docs/decisions.md](docs/decisions.md);
-letters match that table.
-
-- **C. Both trials, after the happy mole is hit:** the sad mole stays up, and
-  pressing it then still counts as a sad-mole hit (part of H). The other order
-  was settled on October 26: a sad-mole hit overrides the happy mole's scoring.
-- **F. The rest of Q4:** TR, number of runs, trigger key, dummy scans. Needed
-  before any scan; Dr. Song's call.
-- **H. Several presses in one trial:** every press counts now. Should only the
-  first count? (Tried and reverted on October 17: it turns a quick correction
-  into a miss.)
-- **O. Same schedule for everyone, or one per participant and run?** Same
-  for everyone now; ticking "Give each participant and run its own schedule"
-  gives each its own, reproducibly. Worth deciding with Dr. Song before data
-  collection.
-- **P. Health bar details:** health starts at 100 and changes only on
-  mistakes, not with time; it stops at 0 and the run carries on; regeneration
-  counts correct trials (a hit on a happy mole, or a sad mole left alone).
-  Irene's note could also be read as a slow drain over time, or a game over at
-  0. Worth confirming with her.
-- **Q. Behavioral comparison with gradCPT** (asked by Dr. Song, October 26,
-  2026): how to run it (same participants on both tasks, ten minutes each),
-  which measures to compare, and how to read the gradCPT data. Needs Phase 3.
-
-Closed on October 26, 2026 by Dr. Song: **the run stays ten minutes.**
-Attention fluctuation is largest when people get bored, which is part of what
-the task is aiming for, and the gradCPT is also ten minutes, so the two are
-equated in time.
-
-Closed on October 17, 2026, by Rehaan Karnik: A (sad mole), B (record all
-three buttons), D (800 ms up), G (the same hole may repeat), I (wrong-column
-presses cost nothing), J (no lower limit on press speed in the game), K (keep
-the score formula), L (score shown by default), M (garden scene), N (moles pop
-up). Decided September 25: the button labels under each column stay.
+The open decisions (C, F, H, O, P, Q) are listed in [section 2](#2-open-decisions).
 
 ### 11.3 Next
 
-1. Answer the open decisions in 11.2, with Dr. Song (F is hers).
+1. Answer the open decisions in section 2, with Dr. Song (F is hers).
 2. Pilot with labmates, trying the score and the health bar, and check the
    other feedback options still feel worth keeping.
 3. Plan the behavioral comparison with the gradCPT tasks Dr. Song asked for
@@ -589,7 +554,7 @@ This is research software that may be used with human participants, so how it wa
 | Contributor | Role |
 |---|---|
 | Rehaan Karnik (undergraduate RA, Song Lab) | Human author. Defined the task, wrote the blueprint (sections 1 to 10) and `research-notes.md` with AI assistance, directed and reviewed the AI-written work, and is responsible for this repository. |
-| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, `docs/decisions.md`, `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. On October 11, 2026 (model Claude Opus 5.5), added the four feedback variants for piloting (`sound.js`, ring and hammer drawing in `board.js`), labmate links (`query.js`), the GitHub Pages workflow (`.github/workflows/pages.yml`), `docs/for-labmates.md`, and page-level tests (`tests/pages.test.js`, `tests/pages/`). On October 13, 2026 (model Claude Opus 5.5), recorded every press time, kept decimals in reaction times, and changed the score to a percentage with a 10-point penalty for hitting a distractor. On October 16, 2026 (model Claude Opus 5.5), gave each of the first five presses its own button and time columns and stopped rounding times anywhere in the data. On October 17, 2026 (model Claude Opus 5.5), lowered the default penalty to 3, moved the score to the top centre with a progress bar whose colour slides from dark red to green, made a hit mole wait for the hammer before sinking, silenced presses on empty columns, kept only the front arc of the feedback ring so it no longer crosses a raised mole, and added the garden scene. The same day it recorded ten closed decisions, turned the score on by default, and let the same hole come up on consecutive trials. It then finished Phase 2: participant and run labels, per-run schedules (`scheduleSeed`), auto-save (`downloadRun`), and matching the molerat to the moles (`docs/stimuli.md`, `scripts/measure-stimuli.py`, `tests/phase2.test.js`). On October 26, 2026 (model Claude Sonnet 5.5), added the health-bar game style (`engine.js`, `display.js`, `tests/health.test.js`), replaced the hit sound with a bonk timed to the hammer (`render/sound.js`, `tests/sound.test.js`), added the hammer's impact burst and harder squash, applied the sad-mole reaction-time summary supplied by Rehaan (`summary.js`, `tests/commission-rt.test.js`), and commented `render/trace.js` step by step. Later the same day it applied the both-trial rule that a sad-mole hit overrides the happy mole (`engine.js`, `tests/both-trial-scoring.test.js`) and redesigned the score and health bar layout. Also checked that the exported files load in pandas. |
+| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, the decisions log (`process/decisions.md`, first written as `docs/decisions.md`), `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. On October 11, 2026 (model Claude Opus 5.5), added the four feedback variants for piloting (`sound.js`, ring and hammer drawing in `board.js`), labmate links (`query.js`), the GitHub Pages workflow (`.github/workflows/pages.yml`), `docs/for-labmates.md`, and page-level tests (`tests/pages.test.js`, `tests/pages/`). On October 13, 2026 (model Claude Opus 5.5), recorded every press time, kept decimals in reaction times, and changed the score to a percentage with a 10-point penalty for hitting a distractor. On October 16, 2026 (model Claude Opus 5.5), gave each of the first five presses its own button and time columns and stopped rounding times anywhere in the data. On October 17, 2026 (model Claude Opus 5.5), lowered the default penalty to 3, moved the score to the top centre with a progress bar whose colour slides from dark red to green, made a hit mole wait for the hammer before sinking, silenced presses on empty columns, kept only the front arc of the feedback ring so it no longer crosses a raised mole, and added the garden scene. The same day it recorded ten closed decisions, turned the score on by default, and let the same hole come up on consecutive trials. It then finished Phase 2: participant and run labels, per-run schedules (`scheduleSeed`), auto-save (`downloadRun`), and matching the molerat to the moles (`docs/stimuli.md`, `scripts/measure-stimuli.py`, `tests/phase2.test.js`). On October 26, 2026 (model Claude Sonnet 5.5), added the health-bar game style (`engine.js`, `display.js`, `tests/health.test.js`), replaced the hit sound with a bonk timed to the hammer (`render/sound.js`, `tests/sound.test.js`), added the hammer's impact burst and harder squash, applied the sad-mole reaction-time summary supplied by Rehaan (`summary.js`, `tests/commission-rt.test.js`), and commented `render/trace.js` step by step. Later the same day it applied the both-trial rule that a sad-mole hit overrides the happy mole (`engine.js`, `tests/both-trial-scoring.test.js`) and redesigned the score and health bar layout. Also checked that the exported files load in pandas. |
 
 **What the AI did not do.** It did not run the game in a real browser (the pages were exercised under a simulated page in Node, and the drawings were checked as rendered images), did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
 

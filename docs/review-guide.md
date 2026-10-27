@@ -79,9 +79,9 @@ the instructions; after it, a thank-you. It never shows a score or a summary.
 
 | Where | What it is | Worth opening? |
 |---|---|---|
-| `README.md` | The blueprint: design, open questions, plan, references. | Yes, start here. Section 11 lists what we need from you. |
+| `README.md` | The blueprint: design, open questions, plan, references. | Yes, start here. Section 2 lists the decisions we need from you. |
 | `research-notes.md` | Summaries of the papers behind the design, with links. | Yes, if you want the evidence. |
-| `docs/decisions.md` | Every answer so far, dated, a checklist against the September 21 feedback, and the points still open. | Yes. |
+| `process/decisions.md` | Every answered decision, dated, and a checklist against the September 21 feedback. The decisions still open are in README section 2. | Yes. |
 | `docs/analysis-plan.md` | What we will compute from the data, in plain language. | Yes. |
 | `index.html` | The original September 18 prototype, four holes. Kept as the published demo. | Only for reference. |
 | `examples/` | A complete ten-minute example run, with notes on what to look for. | **Yes, start with `example_run.csv`.** |
@@ -171,7 +171,7 @@ The tests do not check what the screen looks like, and they cannot check the rea
 
 ## How to give feedback
 
-- Quick answers to the section 11 questions: an email or a message to Rehaan is enough. He will record them in `docs/decisions.md` with the date.
+- Quick answers to the open decisions (README section 2): an email or a message to Rehaan is enough. He will move each into `process/decisions.md` with the date.
 - Comments on specific points: GitHub **Issues** on the repository, one per point, or comments in a shared copy of the README.
 - To ask for a change: describe it in plain terms. There is no need to edit code.
 

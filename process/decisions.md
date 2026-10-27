@@ -1,9 +1,16 @@
 # Decisions log
 
-Dated answers to the open questions in README section 2. Until a row has a
-decision, the code uses the "Assumed for now" value. Assumptions still open
-are marked in the source with `TODO(Qn)`; settled ones with `DECIDED(Qn)`.
-Find them with `grep -rn "TODO(Q\|DECIDED(Q" src/`.
+Every **answered** decision, with its date, who made it, and where it lives in
+the code. Newest rounds of feedback are lower down; the lettered decisions
+(A to Q) were raised while testing and are closed in the section "Closed by
+Rehaan Karnik, October 17, 2026" and in the "Piloting feedback" sections.
+
+**Decisions that are still open are not here: they are in the
+[README, section 2](../README.md#2-open-decisions).** When one is answered, it
+moves from the README into this file with the date.
+
+In the source, a setting that is still open is marked `TODO(Qn)` and a settled
+one `DECIDED(Qn)`; find them with `grep -rn "TODO(Q\|DECIDED(Q" src/`.
 
 ## Answers from Dr. Song, September 21, 2026
 
@@ -96,16 +103,16 @@ Feedback relayed by Rehaan Karnik: the decimals matter, and times should be save
 | Hammer timing | With the hammer on, a hit mole no longer drops before the hammer arrives: it stays up until the hammer lands (about 90 ms after the press), is squashed, and sinks by 300 ms. Display only; the data still records the hit, and the mole's offset, at the moment of the press. Hammer off: unchanged. | `sinkStruck` in `src/render/board.js`; `src/display.js`; `styles.css` | 2026-10-17 |
 | Sound | Sound plays only when a mole is hit (good for happy, bad for sad). A press on an empty column is silent. | `src/display.js` | 2026-10-17 |
 | Garden scene | The display shows sky with clouds, hills on the horizon, grass, and brown holes. Default for piloting; plain grey stays available (`scene: 'grey'`), as README 4.3 recommends for scanning. Which one to scan with is open. | `scene` in `src/config.js`; `styles.css` | 2026-10-17 |
-| Penalty | Hitting a sad mole now costs 3 points by default, down from 10 (and briefly 5, the same day). Rehaan Karnik judged −10 too harsh. Still adjustable in the console and in links (`penalty=`). The score formula is otherwise unchanged; the weight of one mistake still shrinks as the run goes on (an open question). | `scorePenalty` in `src/config.js` | 2026-10-17 |
+| Penalty | Hitting a sad mole now costs 3 points by default, down from 10 (and briefly 5, the same day). Rehaan Karnik judged −10 too harsh. Still adjustable in the console and in links (`penalty=`). The score formula is otherwise unchanged; the weight of one mistake still shrinks as the run goes on (raised as decision K and kept). | `scorePenalty` in `src/config.js` | 2026-10-17 |
 
 ## Phase 2, October 17, 2026
 
 | Item | Decision | Where | Date |
 |------|----------|-------|------|
 | Participant and run | Every run can carry a participant ID (letters and digits, as BIDS requires) and a run number. They label the files (`sub-07_task-whacamole_run-02_...`), the first two columns of the run table, and the log. Without an ID, files keep the old `engagement-game_...` names. | `participant`, `run` in `src/config.js`; `exportFilename` in `src/export.js` | 2026-10-17 |
-| Per-run schedules | Optional (`seedFromIds`, off by default): the schedule seed is worked out from the seed, participant, and run, so each participant and run gets its own schedule that can always be recreated. Whether to use it is open decision O. | `scheduleSeed` in `src/config.js` | 2026-10-17 |
+| Per-run schedules | Optional (`seedFromIds`, off by default): the schedule seed is worked out from the seed, participant, and run, so each participant and run gets its own schedule that can always be recreated. Whether to use it is open decision O (README section 2). | `scheduleSeed` in `src/config.js` | 2026-10-17 |
 | Auto-save | When a run ends, its three files are saved to the downloads folder automatically (`autoSave`, on by default): by the console, or by the display when it was opened from a labmate link. A run is saved once, never again after a console reload. | `downloadRun` in `src/export.js`; `src/main.js`; `src/display.js` | 2026-10-17 |
-| Picture matching | The happy and sad moles already matched; the molerat was darkened and scaled up 2.94%. All three are now within 0.3% in mean brightness and equal in area. Details: [stimuli.md](stimuli.md). | `src/render/skin-mole.js`; `scripts/measure-stimuli.py` | 2026-10-17 |
+| Picture matching | The happy and sad moles already matched; the molerat was darkened and scaled up 2.94%. All three are now within 0.3% in mean brightness and equal in area. Details: [stimuli.md](../docs/stimuli.md). | `src/render/skin-mole.js`; `scripts/measure-stimuli.py` | 2026-10-17 |
 
 ## Piloting feedback, October 26, 2026
 
@@ -138,20 +145,6 @@ Every line of the feedback notes, and where it stands in the build.
 | No colour change after a press | Done. Nothing on the display reacts to a press; only a hit mole goes down. |
 | 600 trials, 10 minutes, print the outcome CSV | Done. `examples/example_run.csv`. |
 | Output: which mole (row and column), what should be pressed, what was pressed, reaction time | Done. `good_row`, `good_col`, `bad_row`, `bad_col`, `expected_button`, `pressed_buttons`, `first_press_ms`, `good_hit_ms`. |
-
-## Still open, and how the code reads the feedback today
-
-Six points still need an answer. The rest were closed on October 17, 2026
-(next section). E was answered on September 25, 2026.
-
-| # | Open point | What the code does now | Why it needs confirming |
-|---|------------|------------------------|--------------------------|
-| C | Both trials, after the good mole is hit | The bad mole stays up until the window ends; pressing it later still counts as a commission, and the trial's outcome is then `commission`. The sad-first case was settled on October 26, 2026 (a sad-mole hit overrides the happy mole's scoring). Still open: happy hit first, then the sad mole, which currently counts both. | Part of the wider question H. The alternative is to take both moles down on the first press, which would make any second press a stray press instead. |
-| F | Q4 remainder | TR 1 s, trigger key `t`, 2 s lead-in, one run. | Needed before any scan. Dr. Song said this is still to be discussed. |
-| H | Several presses in one trial: does every press count, or only the first? | **Every press counts.** Pressing a sad mole and then an empty column records both a sad-mole hit and a wrong-column press. A wrong-column press followed by the right one counts as a hit. In a both trial, hitting the happy mole and then the sad one counts as a hit and a sad-mole hit, and the trial's outcome is `commission`. | Raised by Rehaan Karnik on October 17, 2026. A "first press only" rule (later presses recorded with their times but ignored for scoring) was built and reverted the same day, because it also turns a quick correction into a miss, which Dr. Song's feedback described. Options: (1) every press counts, as now; (2) only the first press counts; (3) a middle way, e.g. only the first press *on a mole* counts, so a wrong-column press can still be corrected but a happy-mole hit cannot be followed by a sad-mole hit. Every press is recorded with its time whichever is chosen, so the analysis can apply any rule later. |
-| O | Same schedule for everyone, or one per participant and run? | Same for everyone: every run uses the schedule from `seed` (1234), unless "Give each participant and run its own schedule" is ticked (`seedFromIds`). | The same schedule for everyone makes participants directly comparable trial by trial and keeps one fMRI design matrix; different schedules avoid order effects and stop anything tied to one particular sequence. Common in fMRI either way. Added October 17, 2026. |
-| P | How should the health bar work, exactly? | Starts at 100 and changes only on mistakes (no drain over time). Stops at 0 and the run continues (no game over). "Correct" for regeneration means a trial with every happy mole hit and every sad mole left alone; five in a row gives +5. | Irene's note ("start slowly decrementing from 100 … slowly regenerating with like 5 correct ones in a row") could also mean a slow drain over time, and a game over at 0 would add the drama she asked for but cut the fixed 600-trial schedule short. Added October 26, 2026. |
-| Q | Behavioral comparison with the gradCPT tasks | Not built. | Dr. Song asked (October 26, 2026) for the game to be turned into a behavioral task and reported against the lab's gradCPT scenes, to show how whac-a-mole differs. Needs a design (the same participants on both tasks for ten minutes each, matched measures such as RT variability, d′, and the variance time course) and the Phase 3 analysis script reading both tasks' data. The gradCPT scripts are in the local `experiment/` folder (not in this repository). |
 
 ## Closed by Rehaan Karnik, October 17, 2026
 

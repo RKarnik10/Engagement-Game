@@ -3,7 +3,7 @@
  *
  * Values answered by Dr. Song on September 21, 2026, and clarified by
  * Rehaan Karnik on September 25, 2026, are marked DECIDED and recorded in
- * docs/decisions.md. Values still open are marked TODO.
+ * process/decisions.md. Values still open are marked TODO.
  *
  * Pure: no DOM, no clock.
  */
