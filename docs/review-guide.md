@@ -61,8 +61,8 @@ is switched on) is still the older four-hole prototype from September 18.
 
 ## What is on the two pages
 
-**Participant display** (`display.html`): only the grey field and the moles.
-It stays the same grey in light and dark mode because changes in screen
+**Participant display** (`display.html`): only the garden and the moles.
+It looks the same in light and dark mode because changes in screen
 brightness show up in the visual parts of the brain. Before the run it shows
 the instructions; after it, a thank-you. It never shows a score or a summary.
 

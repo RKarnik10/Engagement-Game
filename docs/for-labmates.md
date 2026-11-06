@@ -5,11 +5,11 @@ browser (Chrome, Safari, Firefox, or Edge) on a computer with a keyboard.*
 
 ## The short version
 
-1. Open the link Rehaan sent you. It opens the game full of grey with nine holes.
+1. Open the link Rehaan sent you. It opens the game in a garden with nine holes.
 2. Click anywhere on the page once, so it can hear your keys.
 3. Press **T** to start.
 4. Play: press **1**, **2**, or **3** for the **column** a happy mole pops up in.
-   Leave sad moles (or molerats) alone. When a happy mole and a sad one appear
+   Leave sad moles alone. When a happy mole and a sad one appear
    together, press only for the happy one.
 5. At the end you'll see your results. Three files save themselves to your
    **Downloads** folder (your browser may ask once whether the site can save

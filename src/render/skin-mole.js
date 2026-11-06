@@ -2,13 +2,11 @@
  * Mole skin (README 3.6).
  *
  * Decided September 21, 2026: no eggplants. The good mole (press) is a happy
- * mole. The bad mole (hold back) is a sad mole by default, or a molerat
- * (config.badStim).
+ * mole. The bad mole (hold back) is a sad mole. (A molerat alternative was
+ * removed in November 2026.)
  *
  * Fixed September 25, 2026: the sad mole's brows slanted down toward the
- * middle, which read as angry; they now rise toward the middle. The
- * molerat's two outlined front teeth read as a pause symbol; they are now
- * one solid block with a faint split.
+ * middle, which read as angry; they now rise toward the middle.
  *
  * A skin only changes drawings. It exports one SVG fragment per stimulus,
  * which board.js places inside a 120x120 hole, plus the instruction text.
@@ -16,13 +14,11 @@
  *
  * Go and no-go differ by SHAPE, not colour alone (README 3.6), so the task
  * still works for colour-blind participants: the happy mole's mouth curves
- * up, the sad mole's curves down, and the molerat has a bald head, big ears,
- * and two front teeth.
+ * up, the sad mole's curves down.
  *
- * Matched for size and average brightness (README 3.6) on October 17, 2026:
- * the happy and sad moles are the same drawing apart from the face; the
- * molerat was darkened and scaled to match. Measurements: docs/stimuli.md,
- * re-run with scripts/measure-stimuli.py (macOS).
+ * Matched for size and average brightness (README 3.6): the happy and sad
+ * moles are the same drawing apart from the face, so they cover the same area
+ * and have the same colours. Notes: docs/stimuli.md.
  */
 
 const C = {
@@ -30,11 +26,6 @@ const C = {
   muzzle: '#9C7A5E',
   nose: '#D9938A',
   eye: '#17110D',
-  // Darkened from #B08C88 / #D8BDB6 on October 17, 2026 so the molerat
-  // matches the mole's average brightness (docs/stimuli.md).
-  ratBody: '#644F4C',
-  ratMuzzle: '#7C6C68',
-  ratTooth: '#F2EBDD',
 };
 
 /** Shared mole body and face, with the mouth path supplied per mood. */
@@ -72,32 +63,18 @@ export const moleSkin = Object.freeze({
       'M66 37 Q71 42 76 43',
     )}</g>`,
 
-    // Bad (alternative): a different animal: bald head, big ears, buck teeth.
-    // Scaled up 2.94% about the hole's centre so its visible area matches the
-    // mole's (docs/stimuli.md).
-    molerat: `<g class="mole-art"><g transform="translate(60 92) scale(1.0294) translate(-60 -92)">` +
-      `<ellipse fill="${C.ratBody}" cx="34" cy="44" rx="9" ry="10"/>` +
-      `<ellipse fill="${C.ratBody}" cx="86" cy="44" rx="9" ry="10"/>` +
-      `<path fill="${C.ratBody}" d="M30 118 V58 C30 38 43 26 60 26 C77 26 90 38 90 58 V118 Z"/>` +
-      `<ellipse fill="${C.ratMuzzle}" cx="60" cy="72" rx="20" ry="15"/>` +
-      `<circle fill="${C.eye}" cx="50" cy="52" r="2.8"/><circle fill="${C.eye}" cx="70" cy="52" r="2.8"/>` +
-      `<ellipse fill="${C.eye}" cx="60" cy="64" rx="5" ry="3.5"/>` +
-      `<path fill="none" stroke="${C.eye}" stroke-width="2" stroke-linecap="round" d="M51 74 Q60 79 69 74"/>` +
-      `<path fill="${C.ratTooth}" d="M55 76 H65 V83 Q65 86 62 86 H58 Q55 86 55 83 Z"/>` +
-      `<path fill="none" stroke="${C.ratMuzzle}" stroke-width="0.9" d="M60 77 V85"/>` +
-    `</g></g>`,
   }),
 
   /** Plain names for the instructions. */
-  names: Object.freeze({ mole_happy: 'happy mole', mole_sad: 'sad mole', molerat: 'molerat' }),
+  names: Object.freeze({ mole_happy: 'happy mole', mole_sad: 'sad mole' }),
 
   /**
    * Participant instructions.
    * @param {string} keysText  From board.js keysDescription().
-   * @param {object} config    Resolved config (badStim, bothShare).
+   * @param {object} config    Resolved config (bothShare).
    */
   instructions(keysText, config) {
-    const bad = this.names[config.badStim] || 'the other mole';
+    const bad = this.names.mole_sad;
     const both = config.bothShare > 0
       ? `Sometimes a happy mole and a ${bad} pop up together: press only for the happy one. `
       : '';

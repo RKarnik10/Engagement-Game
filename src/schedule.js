@@ -35,8 +35,9 @@ export const LEAD_IN_GO_TRIALS = 3;
 
 export const TRIAL = Object.freeze({ GOOD: 'good', BAD: 'bad', BOTH: 'both' });
 export const VALENCE = Object.freeze({ GOOD: 'good', BAD: 'bad' });
-/** The good mole is always the happy mole; the bad picture comes from config.badStim. */
+/** The good mole is the happy mole; the bad one (the distractor) is the sad mole. */
 export const GOOD_STIM = 'mole_happy';
+export const BAD_STIM = 'mole_sad';
 
 /**
  * Exact trial counts for n trials. Bad trials are capped by the
@@ -103,13 +104,13 @@ export function buildSchedule(config) {
     const type = types[i];
     const targets = [];
     if (type === TRIAL.BAD) {
-      targets.push(target(config, VALENCE.BAD, config.badStim, pick(free, rand)));
+      targets.push(target(config, VALENCE.BAD, BAD_STIM, pick(free, rand)));
     } else {
       const good = pick(free, rand);
       targets.push(target(config, VALENCE.GOOD, GOOD_STIM, good));
       if (type === TRIAL.BOTH) {
         const other = free.filter((h) => responseForHole(config, h) !== responseForHole(config, good));
-        targets.push(target(config, VALENCE.BAD, config.badStim, pick(other, rand)));
+        targets.push(target(config, VALENCE.BAD, BAD_STIM, pick(other, rand)));
       }
     }
     trials.push({

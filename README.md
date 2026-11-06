@@ -5,7 +5,7 @@ The open questions in section 2 now carry her answers. Values still marked *(pla
 
 **Author:** Rehaan Karnik (undergraduate RA). Drafted with AI assistance; references were pulled from search and are listed in section 10 with notes on what was and was not verified.
 
-**Build status (October 26, 2026):** Phases 0, 1, and 2 of section 7 are done; Phase 3 (the analysis script) is next. `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run. Each trial shows a happy mole to press, a sad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console, and the game is published at the link below. The score is shown by default, with an optional health-bar game style; rings, sound (a bonk), and a hammer that hits the mole are optional; the background is a garden scene. Runs carry a participant ID and run number, save their files automatically, and record every press at full precision. The mole pictures are matched for size and brightness ([docs/stimuli.md](docs/stimuli.md)). 131 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 2** lists the open decisions.
+**Build status (November 6, 2026):** Phases 0, 1, and 2 of section 7 are done; Phase 3 (the analysis script) is next. `src/` follows Dr. Song's feedback: nine holes in a three-by-three grid, three buttons (one per column), a fixed one-second trial, 600 trials for a ten-minute run. Each trial shows a happy mole to press, a sad mole to leave alone, or both at once in different columns, at 80 / 10 / 10. The participant display runs in its own browser tab, separate from the experimenter console, and the game is published at the link below. The score is shown by default, with an optional health-bar game style; rings, sound (a bonk), and a hammer that hits the mole are optional; the background is a garden scene (the only one). Runs carry a participant ID and run number, save their files automatically, and record every press at full precision. The mole pictures are matched for size and brightness ([docs/stimuli.md](docs/stimuli.md)). 129 automated tests (`npm test`). A complete example run is in [examples/](examples/). **Section 2** lists the open decisions.
 
 **Contributors and AI disclosure:** see [section 12](#12-contributors-and-ai-disclosure). Code and documentation in this repository were written by an AI assistant under the author's direction, as recorded there.
 
@@ -120,7 +120,7 @@ Settled values are marked **decided**; the rest are still placeholders.
 | Trials per run | 600 | **Decided.** About 10 minutes. |
 | Trial rate | one every 1000 ms, fixed | **Decided (Q5).** Not jittered, so onsets are exact. |
 | Trial mix | 80% good, 10% bad, 10% both | **Decided** (confirmed September 25, 2026). A both trial shows a good and a bad mole at once, in different columns. |
-| Bad mole picture | sad mole | **Decided** (A, October 17, 2026). A molerat stays available (`badStim`). |
+| Bad mole picture | sad mole | **Decided** (A, October 17, 2026). The molerat option was removed on November 6, 2026. |
 | Target up time | 800 ms | **Decided** (D, October 17, 2026). Inside the 1000 ms cycle, leaving 200 ms empty. |
 | Constraints | First 3 trials good; no two bad trials in a row; the same hole **may** come up on consecutive trials | The repeat rule was **decided** (G, October 17, 2026); the other two are placeholders carried over from v0.1. |
 | Feedback | none | **Decided (Q6).** No score, no highlight, no sound. |
@@ -141,17 +141,17 @@ Implication: a pop-up whack-a-mole might be *less* sensitive to attention lapses
 
 ### 3.6 Looks ("skins")
 
-A skin changes **only the drawings**. Schedule, positions, sizes, timing, and keys are identical across skins, so the same seed produces the same run under either look. Decided (Q8): the mole skin is the one to build. The good mole is a happy mole; the bad mole is a sad mole by default, or a molerat.
+A skin changes **only the drawings**. Schedule, positions, sizes, timing, and keys are identical across skins, so the same seed produces the same run under either look. Decided (Q8): the mole skin is the one to build. The good mole is a happy mole; the bad mole is a sad mole.
 
 | Skin | Go target | No-go target |
 |------|-----------|--------------|
-| `mole` | Happy mole | Sad mole (or a molerat) |
+| `mole` | Happy mole | Sad mole |
 | `neutral` | Round light | Diamond, and a second neutral shape |
 
 Requirements for the real build:
 
-- Match the go and no-go drawings across skins for **size and average brightness (luminance)**, so any brain difference between skins comes from meaning, not from low-level visual properties. **Done** for the mole skin on October 17, 2026: happy mole, sad mole, and molerat are equal in area and within 0.3% in mean brightness ([docs/stimuli.md](docs/stimuli.md); re-check with `scripts/measure-stimuli.py`).
-- Distinguish go from no-go by **shape**, not color alone, so color-blind participants can play. The happy mole's mouth curves up and the sad mole's curves down, with its inner brows raised; the molerat has a bald head, big ears, and buck teeth. (Fixed September 25, 2026: the first sad mole's brows read as angry, and the molerat's outlined teeth looked like a pause symbol.)
+- Match the go and no-go drawings across skins for **size and average brightness (luminance)**, so any brain difference between skins comes from meaning, not from low-level visual properties. **Done** for the mole skin on October 17, 2026: the happy and sad mole are equal in area and in mean brightness ([docs/stimuli.md](docs/stimuli.md); re-check with `scripts/measure-stimuli.py`).
+- Distinguish go from no-go by **shape**, not color alone, so color-blind participants can play. The happy mole's mouth curves up and the sad mole's curves down, with its inner brows raised. (Fixed September 25, 2026: the first sad mole's brows read as angry.)
 - Keep the "violence dial" at its lowest setting: no hammer, no impact animation, no sound. Adding those would be a separate, deliberate decision (section 8).
 
 ---
@@ -175,7 +175,7 @@ Requirements for the real build:
 ### 4.3 Display
 
 - The participant display runs in its own browser tab or window, separate from the experimenter console, so the participant never sees the settings or the data. See section 6.4.
-- Background is a fixed mid-grey in every theme. Large brightness changes on screen produce responses in visual cortex that we don't want mixed into the attention signal. Since October 17, 2026 the display can instead show a static garden scene (sky, hills, grass, brown holes) for piloting; it is the default, and plain grey is one click away in the console (`scene`). The garden never changes during a run, so it adds no brightness changes over time, but it is brighter and busier than grey. **Decided** (M, October 17, 2026): the garden is used, scanning included.
+- Background is a static garden scene (sky, hills, grass, brown holes), the same in every theme. Large brightness changes on screen produce responses in visual cortex that we don't want mixed into the attention signal. The garden never changes during a run, so it adds no brightness changes over time, but it is brighter and busier than the plain mid-grey this section first recommended. **Decided** (M, October 17, 2026): the garden is used, scanning included. The plain grey option was removed on November 6, 2026.
 - Confirm projector resolution, refresh rate, and visual angle (Q10) before finalizing hole spacing.
 
 ### 4.4 Timing precision
@@ -292,7 +292,7 @@ Engagement-Game/
 │   └── render/
 │       ├── board.js        # hole layout shared by all skins
 │       ├── trace.js        # attention-trace chart, experimenter view only
-│       ├── skin-mole.js    # happy mole, sad mole, molerat
+│       ├── skin-mole.js    # happy mole, sad mole
 │       ├── sound.js        # good/bad feedback sounds (piloting only)
 │       └── skin-neutral.js # not built
 ├── tests/
@@ -345,7 +345,6 @@ Engagement-Game/
   "goodShare": 0.8,
   "badShare": 0.1,
   "bothShare": 0.1,
-  "badStim": "mole_sad",
   "trS": 1.0,
   "showScore": false,
   "feedback": false,
@@ -355,7 +354,7 @@ Engagement-Game/
 
 `durationS` is derived, not set: 600 trials of 1000 ms plus a 2000 ms lead-in
 is 602 seconds. The three shares must add up to 1; 600 trials give exactly 480
-good, 60 bad, and 60 both. `badStim` is `mole_sad` or `molerat`.
+good, 60 bad, and 60 both.
 
 ### 6.2 Trial record
 
@@ -523,7 +522,7 @@ around this repository without reading code),
 - A ten-minute example run, played by a simulated participant through the real
   engine, is in [examples/](examples/) as all three output files.
 - Phase 2: participant and run labels, optional per-run schedules, auto-save, and matched pictures.
-- 131 automated tests pass (`npm test`), including both pages running together.
+- 129 automated tests pass (`npm test`), including both pages running together.
 - Published at https://rkarnik10.github.io/Engagement-Game/ , rebuilt after every push once the tests pass. Labmates get one-click links with the settings built in ([docs/for-labmates.md](docs/for-labmates.md)).
 - Feedback: a percentage score (+1 per happy mole, −3 per sad mole) with a bar that slides from dark red to green, shown by default, or a health-bar game style (100 down on mistakes, −10 for a sad mole, −3 for a miss, regenerating +5 after five correct trials in a row); and, all on by default, white and red rings, a bonk sound, and a hammer that strikes and sinks the mole. The garden scene (sky, hills, grass) is the background; plain grey stays available.
 - Every press in a trial is saved with its own button and full-precision time (up to five per trial in the run table; all in the full log).
@@ -554,7 +553,7 @@ This is research software that may be used with human participants, so how it wa
 | Contributor | Role |
 |---|---|
 | Rehaan Karnik (undergraduate RA, Song Lab) | Human author. Defined the task, wrote the blueprint (sections 1 to 10) and `research-notes.md` with AI assistance, directed and reviewed the AI-written work, and is responsible for this repository. |
-| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, the decisions log (`process/decisions.md`, first written as `docs/decisions.md`), `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. On October 11, 2026 (model Claude Opus 5.5), added the four feedback variants for piloting (`sound.js`, ring and hammer drawing in `board.js`), labmate links (`query.js`), the GitHub Pages workflow (`.github/workflows/pages.yml`), `docs/for-labmates.md`, and page-level tests (`tests/pages.test.js`, `tests/pages/`). On October 13, 2026 (model Claude Opus 5.5), recorded every press time, kept decimals in reaction times, and changed the score to a percentage with a 10-point penalty for hitting a distractor. On October 16, 2026 (model Claude Opus 5.5), gave each of the first five presses its own button and time columns and stopped rounding times anywhere in the data. On October 17, 2026 (model Claude Opus 5.5), lowered the default penalty to 3, moved the score to the top centre with a progress bar whose colour slides from dark red to green, made a hit mole wait for the hammer before sinking, silenced presses on empty columns, kept only the front arc of the feedback ring so it no longer crosses a raised mole, and added the garden scene. The same day it recorded ten closed decisions, turned the score on by default, and let the same hole come up on consecutive trials. It then finished Phase 2: participant and run labels, per-run schedules (`scheduleSeed`), auto-save (`downloadRun`), and matching the molerat to the moles (`docs/stimuli.md`, `scripts/measure-stimuli.py`, `tests/phase2.test.js`). On October 26, 2026 (model Claude Sonnet 5.5), added the health-bar game style (`engine.js`, `display.js`, `tests/health.test.js`), replaced the hit sound with a bonk timed to the hammer (`render/sound.js`, `tests/sound.test.js`), added the hammer's impact burst and harder squash, applied the sad-mole reaction-time summary supplied by Rehaan (`summary.js`, `tests/commission-rt.test.js`), and commented `render/trace.js` step by step. Later the same day it applied the both-trial rule that a sad-mole hit overrides the happy mole (`engine.js`, `tests/both-trial-scoring.test.js`) and redesigned the score and health bar layout. Also checked that the exported files load in pandas. |
+| Claude, an AI assistant made by Anthropic (used through the Claude Code tool) | AI contributor. On September 18, 2026 (model Claude Fable 5.1, `claude-fable-5-1`), under Rehaan's instructions and following this blueprint, wrote the modular build in `src/`, the test suite in `tests/`, `package.json`, the decisions log (`process/decisions.md`, first written as `docs/decisions.md`), `docs/review-guide.md`, `docs/analysis-plan.md`, and README sections 11 and 12. On September 21, 2026 (model Claude Opus 5, `claude-opus-5`), revised `src/` and `tests/` to Dr. Song's feedback, wrote the example-run generator in `examples/`, and updated this blueprint and the decisions log. On September 25, 2026 (model Claude Opus 5.5, `claude-opus-5-5`), added the good / bad / both trial types, split the participant display into its own tab (`display.html`, `display.js`, `session.js`, `link.js`), added the no-cache local server (`scripts/serve.mjs`), fixed the sad-mole and molerat drawings, and updated the tests, example run, and documents. On September 28, 2026 (model Claude Opus 5.5), added pausing for testing, kept results, trace, and downloads on screen after a run however it ends, added an optional results panel on the display for testing (`summary.js`), and the matching tests. On October 11, 2026 (model Claude Opus 5.5), added the four feedback variants for piloting (`sound.js`, ring and hammer drawing in `board.js`), labmate links (`query.js`), the GitHub Pages workflow (`.github/workflows/pages.yml`), `docs/for-labmates.md`, and page-level tests (`tests/pages.test.js`, `tests/pages/`). On October 13, 2026 (model Claude Opus 5.5), recorded every press time, kept decimals in reaction times, and changed the score to a percentage with a 10-point penalty for hitting a distractor. On October 16, 2026 (model Claude Opus 5.5), gave each of the first five presses its own button and time columns and stopped rounding times anywhere in the data. On October 17, 2026 (model Claude Opus 5.5), lowered the default penalty to 3, moved the score to the top centre with a progress bar whose colour slides from dark red to green, made a hit mole wait for the hammer before sinking, silenced presses on empty columns, kept only the front arc of the feedback ring so it no longer crosses a raised mole, and added the garden scene. The same day it recorded ten closed decisions, turned the score on by default, and let the same hole come up on consecutive trials. It then finished Phase 2: participant and run labels, per-run schedules (`scheduleSeed`), auto-save (`downloadRun`), and matching the molerat to the moles (`docs/stimuli.md`, `scripts/measure-stimuli.py`, `tests/phase2.test.js`). On October 26, 2026 (model Claude Sonnet 5.5), added the health-bar game style (`engine.js`, `display.js`, `tests/health.test.js`), replaced the hit sound with a bonk timed to the hammer (`render/sound.js`, `tests/sound.test.js`), added the hammer's impact burst and harder squash, applied the sad-mole reaction-time summary supplied by Rehaan (`summary.js`, `tests/commission-rt.test.js`), and commented `render/trace.js` step by step. Later the same day it applied the both-trial rule that a sad-mole hit overrides the happy mole (`engine.js`, `tests/both-trial-scoring.test.js`) and redesigned the score and health bar layout. On November 6, 2026 it removed the molerat picture, the plain grey background, and the 4-in-a-row and one-key-per-hole layouts, at Rehaan's request (`config.js`, `schedule.js`, `render/`, `styles.css`, the console, and the tests). Also checked that the exported files load in pandas. |
 
 **What the AI did not do.** It did not run the game in a real browser (the pages were exercised under a simulated page in Node, and the drawings were checked as rendered images), did not validate timing on any hardware, and its work has not yet been checked by a second person. The example run in [examples/](examples/) was played by a simulated participant, not a person. No part of this repository has been used with participants, and no human data exists.
 

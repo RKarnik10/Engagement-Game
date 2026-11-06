@@ -9,15 +9,13 @@ comes from what they mean, not from one being bigger or brighter.*
 | Picture | Visible area | vs. happy mole | Mean brightness (relative luminance Y) | vs. happy mole |
 |---|---|---|---|---|
 | Happy mole (press) | 28.22% of the hole's square | — | 0.1168 | — |
-| Sad mole (don't press; the distractor in use) | 28.22% | +0.0% | 0.1166 | −0.1% |
-| Molerat (optional distractor) | 28.22% | +0.0% | 0.1171 | +0.3% |
+| Sad mole (don't press; the distractor) | 28.22% | +0.0% | 0.1166 | −0.1% |
 
 - **Happy and sad mole:** already matched. They are the same drawing apart
   from the mouth and eyebrows, so nothing needed to change.
-- **Molerat:** was 3× brighter and 6% smaller. Its body and muzzle were
-  darkened (`#B08C88` to `#644F4C`, `#D8BDB6` to `#7C6C68`) and it was scaled
-  up 2.94% about the centre of the hole. It still differs by shape: bald head,
-  round ears, buck teeth.
+- **Molerat:** an optional third picture was matched on October 17, 2026
+  (darkened and scaled up 2.94%), then removed on November 6, 2026 when the
+  sad mole was settled on as the distractor.
 
 ## How it was measured
 
@@ -39,8 +37,7 @@ python3 scripts/measure-stimuli.py
   real display with a photometer (README 4.4).
 - **Shape and contrast.** Matching mean brightness and area does not match
   every visual feature. The sad mole differs from the happy one only in its
-  face, which keeps low-level differences small; the molerat differs more in
-  shape by design.
-- **The background.** The pictures sit on brown holes on grass (or on grey).
+  face, which keeps low-level differences small.
+- **The background.** The pictures sit on brown holes on grass.
   The scene is the same for every picture, so it does not affect the
   comparison between them.

@@ -11,7 +11,8 @@
 export const VERSION = '0.3';
 
 /**
- * Hole layouts.
+ * Hole layout. The 3x3 column layout is the only one (the 4-in-a-row and
+ * one-key-per-hole layouts were removed in November 2026).
  *
  * `holeResponse` maps a 0-based hole index (reading order: left to right,
  * top to bottom) to the 0-based button the participant should press for it.
@@ -28,36 +29,12 @@ export const LAYOUTS = Object.freeze({
     holeResponse: Object.freeze([0, 1, 2, 0, 1, 2, 0, 1, 2]),
     label: '9 holes in a 3x3 grid, 3 buttons, one per column (one hand)',
   }),
-  row4: Object.freeze({
-    holes: 4,
-    rows: 1,
-    columns: 4,
-    keys: Object.freeze(['1', '2', '3', '4']),
-    holeResponse: Object.freeze([0, 1, 2, 3]),
-    label: '4 holes in a row, keys 1 to 4 (superseded September 21, 2026)',
-  }),
-  grid9: Object.freeze({
-    holes: 9,
-    rows: 3,
-    columns: 3,
-    keys: Object.freeze(['7', '8', '9', '4', '5', '6', '1', '2', '3']),
-    holeResponse: Object.freeze([0, 1, 2, 3, 4, 5, 6, 7, 8]),
-    label: '9 holes, number pad, one key per hole (desktop piloting only)',
-  }),
 });
 
 export const SKINS = Object.freeze(['mole', 'neutral']); // neutral: not built
-/** Pictures the "bad" mole can use. The good mole is always the happy mole. */
-export const BAD_STIMS = Object.freeze(['mole_sad', 'molerat']);
 export const ONSETS = Object.freeze(['instant', 'gradual']);
 /** Where the run is happening. Logged with the data as 1 (scanner) or 0 (behavioral). */
 export const SETTINGS = Object.freeze(['scanner', 'behavioral']);
-/**
- * What the participant display looks like behind the holes.
- *   garden: sky, a horizon with hills, and grass; brown holes (October 17, 2026).
- *   grey:   plain mid-grey, as README 4.3 recommends for scanning.
- */
-export const SCENES = Object.freeze(['garden', 'grey']);
 /** What the on-screen bar shows: the percentage score, or a health bar. */
 export const GAME_STYLES = Object.freeze(['score', 'health']);
 /** The top of the health bar. */
@@ -65,13 +42,12 @@ export const HEALTH_MAX = 100;
 
 export const DEFAULTS = Object.freeze({
   version: VERSION,
-  skin: 'mole',                 // DECIDED(Q8): moles. No-go is a sad mole or a molerat, not an eggplant.
+  skin: 'mole',                 // DECIDED(Q8): moles. No-go is a sad mole, not an eggplant.
   layout: 'grid3x3',            // DECIDED(Q2): one hand, 3 buttons, 3x3 grid, a button per column.
   keys: LAYOUTS.grid3x3.keys,   // TODO(Q2): confirm the codes the scanner button box actually sends (README 4.2).
   triggerKey: 't',              // TODO(Q4): 't' simulates the scanner trigger in development.
   setting: 'behavioral',        // DECIDED: logged as scanner = 1, behavioral = 0.
   onset: 'instant',             // DECIDED (N, October 17, 2026): moles pop up instantly.
-  scene: 'garden',              // DECIDED (M, October 17, 2026): garden, scanning included. Grey kept as an option.
   rampMs: 350,                  // Rise/sink time, only used when onset is "gradual".
 
   // Timing. DECIDED: a fixed 1 s trial cycle, 600 trials, so a run is 10 minutes.
@@ -85,7 +61,6 @@ export const DEFAULTS = Object.freeze({
   badShare: 0.1,                // One bad mole: do nothing (it is not killed).
   bothShare: 0.1,               // A good and a bad mole at once, in different columns:
                                 // press the good one's column only.
-  badStim: 'mole_sad',          // DECIDED (A, October 17, 2026): the distractor is the sad mole.
 
   trS: 1.0,                     // TODO(Q4): TR, used for simulated volume events.
   // Feedback. Dr. Song's Q6 answer was no feedback at all. Rehaan Karnik
@@ -224,7 +199,6 @@ export function validateConfig(config) {
   if (!SKINS.includes(c.skin)) problems.push(`skin must be one of ${SKINS.join(', ')}`);
   if (!ONSETS.includes(c.onset)) problems.push(`onset must be one of ${ONSETS.join(', ')}`);
   if (!SETTINGS.includes(c.setting)) problems.push(`setting must be one of ${SETTINGS.join(', ')}`);
-  if (!SCENES.includes(c.scene)) problems.push(`scene must be one of ${SCENES.join(', ')}`);
 
   if (!Array.isArray(c.keys) || !c.keys.every((k) => typeof k === 'string' && k.length > 0)) {
     problems.push('keys must be an array of non-empty strings');
@@ -247,7 +221,6 @@ export function validateConfig(config) {
   else if (Math.abs(c.goodShare + c.badShare + c.bothShare - 1) > 1e-9) {
     problems.push(`goodShare + badShare + bothShare must add up to 1, got ${+(c.goodShare + c.badShare + c.bothShare).toFixed(6)}`);
   }
-  if (!BAD_STIMS.includes(c.badStim)) problems.push(`badStim must be one of ${BAD_STIMS.join(', ')}`);
   if (layout && c.bothShare > 0 && buttonCount(c.layout) < 2) problems.push('"both" trials need at least 2 buttons');
   if (!(isInt(c.nTrials) && c.nTrials > 0)) problems.push('nTrials must be a positive integer');
   if (!(isInt(c.trialMs) && c.trialMs > 0)) problems.push('trialMs must be a positive integer (ms)');

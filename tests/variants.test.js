@@ -96,11 +96,11 @@ test('the display hears about hits, pressed distractors, and wrong columns, and 
 test('links: settings round-trip, defaults are left out', () => {
   assert.equal(configToQuery(resolveConfig()), '');
   const c = resolveConfig({
-    nTrials: 60, seed: 7, goodShare: 0.7, badShare: 0.2, bothShare: 0.1, badStim: 'molerat',
+    nTrials: 60, seed: 7, goodShare: 0.7, badShare: 0.2, bothShare: 0.1,
     setting: 'scanner', showScore: true, hitRings: true, sound: true, hammer: true,
   });
   const q = configToQuery(c);
-  assert.equal(q, '?trials=60&seed=7&mix=70-20-10&distractor=molerat&setting=scanner', 'score, rings, sound, and hammer are the defaults, so they are left out');
+  assert.equal(q, '?trials=60&seed=7&mix=70-20-10&setting=scanner', 'score, rings, sound, and hammer are the defaults, so they are left out');
   // Turning features off is what a link has to say.
   const off = resolveConfig({ ...OFF, hammer: true });
   const qo = configToQuery(off);
@@ -124,12 +124,10 @@ test('links: reading is forgiving about what is not ours, strict about bad value
   assert.equal(hasQuerySettings(''), false);
   assert.equal(hasQuerySettings('?utm_source=email'), false, 'unknown parameters are ignored');
   assert.equal(hasQuerySettings('?trials=30'), true);
-  assert.deepEqual(configFromQuery('?distractor=sad'), { badStim: 'mole_sad' });
   assert.deepEqual(configFromQuery('?score=0'), { showScore: false });
   assert.throws(() => resolveConfig(configFromQuery('?mix=80-10')), /goodShare/);
   assert.throws(() => resolveConfig(configFromQuery('?mix=80-10-20')), /add up to 1/);
   assert.throws(() => resolveConfig(configFromQuery('?trials=abc')), /nTrials/);
-  assert.throws(() => resolveConfig(configFromQuery('?distractor=eggplant')), /badStim/);
 });
 
 test('score: the percentage, its text, and the penalty setting', async () => {
@@ -178,15 +176,4 @@ test('score bar colour: a smooth scale from dark red through orange and yellow t
     const a = rgb(scoreColor(p)); const b = rgb(scoreColor(p + 1));
     assert.ok(a.every((x, k) => Math.abs(x - b[k]) <= 12), `jump between ${p}% and ${p + 1}%`);
   }
-});
-
-test('scene: garden by default, plain grey on request, carried in links', async () => {
-  const { SCENES } = await import('../src/config.js');
-  assert.deepEqual([...SCENES], ['garden', 'grey']);
-  assert.equal(resolveConfig().scene, 'garden');
-  assert.equal(resolveConfig({ scene: 'grey' }).scene, 'grey');
-  assert.throws(() => resolveConfig({ scene: 'beach' }), /scene must be one of/);
-  assert.equal(configToQuery(resolveConfig({ scene: 'grey' })), '?scene=grey');
-  assert.equal(resolveConfig(configFromQuery('?scene=grey')).scene, 'grey');
-  assert.equal(configToQuery(resolveConfig()), '', 'the default scene is left out of links');
 });

@@ -43,16 +43,14 @@ a{color:inherit}
 @media (max-width:900px){.layout{grid-template-columns:1fr}}
 
 /* ---- Participant display ---- */
-/* Fixed #808080 on purpose: it must not follow the viewer's theme. */
-.stage{position:relative;aspect-ratio:16/10;background:#808080;border-radius:4px;overflow:hidden;outline:none;touch-action:manipulation;-webkit-user-select:none;user-select:none;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+/* The garden background below is fixed on purpose: it must not follow the viewer's theme. */
+.stage{position:relative;aspect-ratio:16/10;border-radius:4px;overflow:hidden;outline:none;touch-action:manipulation;-webkit-user-select:none;user-select:none;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
 .stage:focus-visible{box-shadow:0 0 0 3px var(--signal)}
 
 /* Board (render/board.js). TODO(Q10): spacing depends on visual angle. */
 .holes{position:absolute;display:grid;justify-items:center;align-items:center;
   grid-template-columns:repeat(var(--cols,3),1fr);grid-template-rows:repeat(var(--rows,3),1fr)}
 .holes.grid3x3{inset:6% 24% 16%;column-gap:4%;row-gap:1%}
-.holes.grid9{inset:6% 24% 16%;column-gap:4%;row-gap:1%}
-.holes.row4{inset:22% 5% 22%;column-gap:3%}
 .hole{width:100%;max-width:150px;display:flex;flex-direction:column;align-items:center}
 .hole .art{width:100%}
 .hole svg{width:100%;height:auto;display:block;overflow:visible}
@@ -60,13 +58,11 @@ a{color:inherit}
 /* Only the active stimulus is drawn. No hole ever reacts to a press. */
 .stim{display:none}
 .hole[data-stim="mole_happy"] .stim[data-stim="mole_happy"],
-.hole[data-stim="mole_sad"]   .stim[data-stim="mole_sad"],
-.hole[data-stim="molerat"]    .stim[data-stim="molerat"]{display:inline}
+.hole[data-stim="mole_sad"]   .stim[data-stim="mole_sad"]{display:inline}
 
 /* Button labels under the board, one per column. */
 .keycaps{position:absolute;left:24%;right:24%;bottom:4%;display:grid;
   grid-template-columns:repeat(var(--cols,3),1fr);justify-items:center}
-.keycaps.row4{left:5%;right:5%}
 .keycap{font-size:.8rem;font-weight:700;line-height:1;padding:4px 9px;border-radius:3px;
   background:#B9B9B9;color:#262626;font-variant-numeric:tabular-nums}
 
@@ -234,9 +230,7 @@ a.button.primary{background:var(--signal);border-color:var(--signal);color:var(-
 .score-fill{height:100%;width:0;background:#5A5A5A;border-radius:999px;transition:width .25s ease,background-color .25s ease}
 /* Fill colour is set by display.js from scoreColor: a smooth dark red to green. */
 /* With the score on, the grid moves down so the score never covers a mole. */
-.display-page .stage.has-score .holes.grid3x3,
-.display-page .stage.has-score .holes.grid9{top:17%}
-.display-page .stage.has-score .holes.row4{top:26%}
+.display-page .stage.has-score .holes.grid3x3{top:17%}
 
 /* Link for labmates (console). */
 .share{margin:16px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
@@ -245,25 +239,21 @@ a.button.primary{background:var(--signal);border-color:var(--signal);color:var(-
 .share-row input{flex:1 1 12rem;min-width:0;font:inherit;font-size:.82rem;padding:6px 8px;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink)}
 .share-row button,.share-row a.button{padding:6px 11px;font-size:.88rem}
 
-/* ---- Scenes behind the holes (config.scene) ----
-   grey:   plain mid-grey, as README 4.3 recommends for scanning.
-   garden: sky with a few clouds, hills on the horizon, and grass, with brown
-           holes (October 17, 2026). It is static: nothing in it changes
-           during a run. */
-.mound{fill:#6E6258}
-.pit{fill:#2A231D}
-.lip{stroke:#574B40}
-.stage.scene-garden{background:
+/* ---- The garden behind the holes (the only background) ----
+   Sky with a few clouds, hills on the horizon, and grass, with brown holes
+   (October 17, 2026; the plain grey option was removed in November 2026).
+   It is static: nothing in it changes during a run. */
+.stage{background:
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 200' preserveAspectRatio='none'%3E%3Cg fill='%23FFFFFF' fill-opacity='.85'%3E%3Cellipse cx='140' cy='70' rx='70' ry='22'/%3E%3Cellipse cx='185' cy='58' rx='45' ry='24'/%3E%3Cellipse cx='790' cy='95' rx='80' ry='20'/%3E%3Cellipse cx='840' cy='82' rx='46' ry='22'/%3E%3Cellipse cx='470' cy='40' rx='50' ry='14'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 16% no-repeat,
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cpath fill='%235E9C46' d='M0 100V58C90 30 170 34 250 52S410 40 500 30 660 22 760 46 900 60 1000 40V100Z'/%3E%3Cpath fill='%2373B550' d='M0 100V78C120 60 230 64 340 76S560 60 680 70 870 82 1000 68V100Z'/%3E%3C/svg%3E") 0 18% / 100% 12% no-repeat,
   linear-gradient(#6DB6E8, #CDE9F6) 0 0 / 100% 24% no-repeat,
   linear-gradient(#7BC24D, #4E9733) 0 100% / 100% 76% no-repeat,
   #7BC24D}
-.stage.scene-garden .mound{fill:#8A5A2E}
-.stage.scene-garden .pit{fill:#3A2213}
-.stage.scene-garden .lip{stroke:#6B4423}
-.stage.scene-garden .keycap{background:#F1E6CF;color:#3A2213}
-.stage.scene-garden .display-hint{color:#1E3A12}
+.mound{fill:#8A5A2E}
+.pit{fill:#3A2213}
+.lip{stroke:#6B4423}
+.stage .keycap{background:#F1E6CF;color:#3A2213}
+.stage .display-hint{color:#1E3A12}
 
 /* Health bar (game style "health"): a shake and red flash when health drops,
    and a slow pulse when it is low (25 or below). */

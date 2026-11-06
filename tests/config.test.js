@@ -15,7 +15,6 @@ test('config: defaults are the September 21 and 25, 2026 decisions', () => {
   assert.equal(c.goodShare, 0.8);
   assert.equal(c.badShare, 0.1);
   assert.equal(c.bothShare, 0.1);
-  assert.equal(c.badStim, 'mole_sad');
   assert.equal(c.version, '0.3');
   // All four feedback features are on by default (October 17 and 26, 2026; decision L).
   for (const k of ['showScore', 'hitRings', 'sound', 'hammer']) assert.equal(c[k], true, `${k} on by default`);
@@ -41,8 +40,7 @@ test('config: the 3x3 layout maps nine holes onto three column buttons', () => {
 });
 
 test('config: keys follow the layout unless given explicitly', () => {
-  assert.deepEqual(resolveConfig({ layout: 'grid9' }).keys, [...LAYOUTS.grid9.keys]);
-  assert.deepEqual(resolveConfig({ layout: 'row4' }).keys, ['1', '2', '3', '4']);
+  assert.deepEqual(resolveConfig({}).keys, [...LAYOUTS.grid3x3.keys]);
   assert.deepEqual(resolveConfig({ keys: ['a', 'b', 'c'] }).keys, ['a', 'b', 'c']);
 });
 
@@ -65,7 +63,6 @@ test('config: validation rejects bad values with a message naming each problem',
   const bad = (p, re) => assert.throws(() => resolveConfig(p), re);
   bad({ goodShare: 0.7 }, /add up to 1/);
   bad({ goodShare: 1.5, badShare: -0.5 }, /each be in \[0, 1\]/);
-  bad({ badStim: 'eggplant' }, /badStim/);
   bad({ nTrials: 0 }, /nTrials/);
   bad({ nTrials: 10.5 }, /nTrials/);
   bad({ trialMs: 0 }, /trialMs/);
@@ -83,7 +80,7 @@ test('config: validation rejects bad values with a message naming each problem',
   bad({ keys: ['1', '1', '2'] }, /unique/);
   bad({ triggerKey: '' }, /triggerKey/);
   bad({ triggerKey: '2' }, /collides/);
-  assert.throws(() => resolveConfig({ badStim: 'x', holdMs: -1 }), /badStim[\s\S]*holdMs/);
+  assert.throws(() => resolveConfig({ goodShare: 2, holdMs: -1 }), /goodShare[\s\S]*holdMs/);
 });
 
 test('config: a target may never be up longer than the trial cycle', () => {

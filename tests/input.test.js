@@ -4,7 +4,6 @@ import { resolveConfig } from '../src/config.js';
 import { interpretKey } from '../src/input.js';
 
 const grid = resolveConfig({});                              // 3 buttons: 1, 2, 3
-const perHole = resolveConfig({ layout: 'grid9' });          // 9 keys, one per hole
 const custom = resolveConfig({ keys: ['a', 's', 'd'], triggerKey: '5' });
 const k = (key, extra = {}) => ({ key, repeat: false, ...extra });
 
@@ -35,7 +34,6 @@ test('input: only mapped keys are recorded; every other key is ignored', () => {
   for (const key of ['4', '5', '9', 'x', 'Enter', ' ', 'ArrowLeft']) {
     assert.equal(interpretKey(k(key), grid, true), null, `${key} is ignored`);
   }
-  assert.equal(interpretKey(k('7'), perHole, true).button, 0, 'the per-hole layout still maps its own keys');
 });
 
 test('input: held keys (e.repeat) are ignored', () => {

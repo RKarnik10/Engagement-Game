@@ -12,12 +12,8 @@
 
 import { LAYOUTS } from '../config.js';
 
-/** Fixed mid-grey stimulus background (README 4.3). Must not change with theme. */
-export const STIMULUS_BACKGROUND = '#808080';
-
 /** Hole colors, identical in every skin and theme. */
-// Hole colours come from styles.css (.mound, .pit, .lip), so each scene can
-// colour them: brown earth in the garden scene, muted grey-brown on plain grey.
+// Hole colours come from styles.css (.mound, .pit, .lip): brown earth.
 
 /** Vertical travel of the target group inside its clip, in SVG units. */
 const TRAVEL = 84;
@@ -168,12 +164,6 @@ export function cancelSink(holesEl, i) {
   return true;
 }
 
-/** Put the scene on the stage: `scene-garden` or `scene-grey` (styles.css). */
-export function applyScene(stageEl, config) {
-  stageEl.classList.toggle('scene-garden', config.scene === 'garden');
-  stageEl.classList.toggle('scene-grey', config.scene !== 'garden');
-}
-
 /** Select which picture is shown in a hole, or '' for none. */
 export function setStimulus(holesEl, i, stim) {
   const h = holesEl.children[i];
@@ -196,10 +186,6 @@ export function rampVisibility(elapsedMs, windowMs, config) {
 
 /** Human description of the button mapping for instructions. */
 export function keysDescription(config) {
-  const layout = LAYOUTS[config.layout];
-  if (layout.holeResponse.some((r, i) => r !== i)) {
-    return `One button per column, left to right: ${config.keys.join(', ')}. ` +
-      'The row does not matter, only the column.';
-  }
-  return `One button per hole: ${config.keys.join(', ')}.`;
+  return `One button per column, left to right: ${config.keys.join(', ')}. ` +
+    'The row does not matter, only the column.';
 }

@@ -4,7 +4,7 @@ import { installDom } from './_dom.js';
 
 const formInputs = [
   ['setting', 'behavioral', true], ['goodPct', '80'], ['badPct', '10'], ['bothPct', '10'],
-  ['badStim', 'molerat', true], ['layout', 'grid3x3', true], ['onset', 'instant', true],
+  ['onset', 'instant', true],
   ['nTrials', '30'], ['trialMs', '1000'], ['holdMs', '800'], ['tr', '1'], ['seed', '1234'],
   ['showScore', 'on', true], ['hitRings', 'on', true], ['sound', 'on', true], ['hammer', 'on', true], ['participant', '07'], ['run', '2'], ['autoSave', 'on', true],
 ].map(([name, value, checked]) => ({ name, value, checked, disabled: false }));

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { resolveConfig, LAYOUTS, trialWindowMs } from '../src/config.js';
-import { buildSchedule, trialCounts, LEAD_IN_GO_TRIALS, TRIAL, GOOD_STIM } from '../src/schedule.js';
+import { buildSchedule, trialCounts, LEAD_IN_GO_TRIALS, TRIAL, GOOD_STIM, BAD_STIM } from '../src/schedule.js';
 
 const cfg = (p = {}) => resolveConfig(p);
 const SEEDS = 1200;
@@ -29,7 +29,7 @@ function checkConstraints(trials, config, label) {
       assert.equal(x.response, layout.holeResponse[x.hole], `${label}: response is the hole's column`);
       assert.equal(x.row, Math.floor(x.hole / layout.columns) + 1, `${label}: row`);
       assert.equal(x.col, (x.hole % layout.columns) + 1, `${label}: col`);
-      assert.equal(x.stim, x.valence === 'good' ? GOOD_STIM : config.badStim, `${label}: picture`);
+      assert.equal(x.stim, x.valence === 'good' ? GOOD_STIM : BAD_STIM, `${label}: picture`);
     }
     // Both trials: the two moles are in different columns.
     if (t.type === TRIAL.BOTH) {
@@ -84,7 +84,7 @@ test('schedule: same config and seed produce an identical schedule', () => {
 test('schedule: interleaved calls with other seeds do not change the result', () => {
   const a1 = buildSchedule(cfg({ seed: 11, ...SHORT }));
   buildSchedule(cfg({ seed: 12, ...SHORT }));
-  buildSchedule(cfg({ seed: 13, layout: 'grid9', nTrials: 40 }));
+  buildSchedule(cfg({ seed: 13, nTrials: 40 }));
   assert.deepEqual(buildSchedule(cfg({ seed: 11, ...SHORT })), a1);
 });
 
@@ -94,12 +94,10 @@ test('schedule: different seeds give different schedules', () => {
   assert.ok(seen.size >= 49, `expected near-unique schedules, got ${seen.size} of 50`);
 });
 
-test('schedule: the bad picture follows config, the good one is always the happy mole', () => {
-  for (const badStim of ['mole_sad', 'molerat']) {
-    const trials = buildSchedule(cfg({ badStim, ...SHORT }));
-    const stims = new Set(trials.flatMap((t) => t.targets.map((x) => `${x.valence}:${x.stim}`)));
-    assert.deepEqual([...stims].sort(), [`bad:${badStim}`, 'good:mole_happy']);
-  }
+test('schedule: the good picture is the happy mole and the bad one the sad mole', () => {
+  const trials = buildSchedule(cfg(SHORT));
+  const stims = new Set(trials.flatMap((t) => t.targets.map((x) => `${x.valence}:${x.stim}`)));
+  assert.deepEqual([...stims].sort(), ['bad:mole_sad', 'good:mole_happy']);
 });
 
 test('schedule: every column is used, and both trials use every pair of columns', () => {
@@ -125,15 +123,6 @@ test(`schedule: constraints hold across ${SEEDS} seeds, 3x3 column layout`, () =
   for (let seed = 1; seed <= SEEDS; seed++) {
     const config = cfg({ seed, ...SHORT });
     checkConstraints(buildSchedule(config), config, `seed ${seed}`);
-  }
-});
-
-test(`schedule: constraints hold across ${SEEDS} seeds, one key per hole and four in a row`, () => {
-  for (let seed = 1; seed <= SEEDS; seed++) {
-    for (const layout of ['grid9', 'row4']) {
-      const config = cfg({ seed, layout, nTrials: 40 });
-      checkConstraints(buildSchedule(config), config, `${layout} seed ${seed}`);
-    }
   }
 });
 

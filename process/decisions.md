@@ -128,6 +128,18 @@ From Irene and Dr. Song, relayed by Rehaan Karnik. Dr. Song's note: she tried th
 | Both trials: sad-mole hit overrides the happy mole | Once the sad mole is hit in a both trial, the trial counts only as that error. The happy mole no longer counts toward the score or health, whether it is then pressed or missed (so sad-then-happy gives no +1, and sad-then-missed-happy gives no extra −3). A happy mole hit before the sad one still counts. The raw outcomes and press times stay in the data; the JSON log marks the ignored mole `counted: false`; the summary's hit and miss statistics are unchanged. This settles part of open decision C. | `resolveTarget` in `src/engine.js`; `tests/both-trial-scoring.test.js` | 2026-10-26 |
 | Bar layout | The score and health bar now show the value in large bold numerals above the bar, with a small spaced-out label (SCORE or HEALTH) below it, instead of one line of text ("Health 87"). | `src/display.html`, `src/display.js`, `src/styles.css` | 2026-10-26 |
 
+## Simplified, November 6, 2026
+
+Rehaan Karnik: "we have made decisions, remove the molerat, remove the other background, remove the other layout styles."
+
+| Item | Decision | Where | Date |
+|------|----------|-------|------|
+| Molerat | **Removed.** The distractor is the sad mole only. The `badStim` setting, the console's "Distractor picture" choice, and the `distractor` link parameter are gone. | `src/config.js`, `src/schedule.js` (`BAD_STIM`), `src/render/skin-mole.js`, `src/query.js`, `src/index.html` | 2026-11-06 |
+| Plain grey background | **Removed.** The garden is the only background. The `scene` setting, the console's "Background" choice, and the `scene` link parameter are gone. | `src/config.js`, `src/styles.css`, `src/render/board.js`, `src/index.html`, `src/query.js` | 2026-11-06 |
+| Other layouts | **Removed.** The 4-holes-in-a-row and one-key-per-hole layouts are gone; the 3 by 3 grid with a button per column is the only one. The console's "Layout" choice and the `layout` link parameter are gone. | `src/config.js`, `src/styles.css`, `src/render/board.js`, `src/index.html`, `src/query.js` | 2026-11-06 |
+
+Links made before this date that carry `distractor=`, `scene=`, or `layout=` still open: the game ignores parameters it no longer knows.
+
 ## Checklist against the September 21 feedback notes
 
 Every line of the feedback notes, and where it stands in the build.
@@ -136,7 +148,7 @@ Every line of the feedback notes, and where it stands in the build.
 |------|--------|
 | 9 holes, 3 buttons | Done. 3 by 3 grid; the three buttons sit in a row and each one covers a column. |
 | Hide settings; separate participant screen; experimenter and participant rooms | Done. The participant display is its own tab; settings and data stay in the console. |
-| No eggplants; molerat; happy and sad mole | Done. Happy mole is good. Bad is the sad mole (decided, A); molerat stays an option. |
+| No eggplants; molerat; happy and sad mole | Done. Happy mole is good. Bad is the sad mole (decided, A); the molerat was removed on November 6, 2026. |
 | 1 second per trial | Done. `trialMs: 1000`, fixed. |
 | Trials with correct, incorrect, and both (80-10-10) | Done. Good / bad / both at 80 / 10 / 10. |
 | Scanner or behavioral suite (1 or 0) | Done. `setting`; `in_scanner` 1 or 0 in the log; also in the file name. |
@@ -150,7 +162,7 @@ Every line of the feedback notes, and where it stands in the build.
 
 | # | Question | Decision | Change in the code |
 |---|----------|----------|--------------------|
-| A | Which picture is the distractor | **The sad mole.** The molerat stays available as an option. | None; it was already the default. |
+| A | Which picture is the distractor | **The sad mole.** The molerat option was removed on November 6, 2026. | None at the time; the molerat was removed later. |
 | B | "Record the 1 and 2 inputs" | **Record all three buttons;** every other key is ignored and never stored. Confirming the exact codes the scanner's button box sends is still a hardware check (README 4.2). | None. |
 | D | How long a mole stays up in the 1 s cycle | **800 ms up, 200 ms empty.** | None. |
 | G | Can the same hole come up twice in a row? | **Yes.** Any hole can come up on any trial, so the same hole (and column) can repeat. The two moles of a both trial still sit in different columns. | The no-repeat rule is removed from `src/schedule.js`. Schedules for a given seed differ from before. |
@@ -158,5 +170,5 @@ Every line of the feedback notes, and where it stands in the build.
 | J | Very fast presses | **No lower limit in the game.** Any cut-off for anticipations is left to the analysis. | None. |
 | K | The score formula | **Keep it:** (happy moles hit − 3 × sad moles hit) ÷ happy moles so far. | None. |
 | L | Which feedback stays | **Score, rings, sound, and hammer are all on by default** (the score from October 17, 2026; rings, sound, and hammer from October 26, 2026). This departs from Dr. Song's Q6 answer (no feedback) and from README section 8, which kept the "violence dial" low, so it is worth confirming with her before scanning. Each can still be switched off. | The defaults in `src/config.js` and the console. Links now mention only what is switched off (`score=0`, `rings=0`, `sound=0`, `hammer=0`), and file names carry `_score+rings+sound+hammer_` by default. Browsers block sound until a key press or click in the display, so the display's start screen asks for one click when sound is on. |
-| M | Garden scene or plain grey | **The garden,** scanning included. Plain grey stays available. Note for Dr. Song: README 4.3 recommended plain grey for scanning. | None; it was already the default. |
+| M | Garden scene or plain grey | **The garden,** scanning included. The plain grey option was removed on November 6, 2026. Note for Dr. Song: README 4.3 recommended plain grey for scanning. | None at the time; plain grey was removed later. |
 | N | Pop-up or gradual rise | **Moles pop up instantly.** Gradual rise stays available. | None; it was already the default. |

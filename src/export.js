@@ -191,7 +191,7 @@ export function buildFullLog({ config, trials, events, frameStats, userAgent, cr
       game_style: config.gameStyle,
       trial_mix: { good: config.goodShare, bad: config.badShare, both: config.bothShare },
       good_stimulus: 'mole_happy',
-      bad_stimulus: config.badStim,
+      bad_stimulus: 'mole_sad',
       clock: 'milliseconds from trigger, via performance.now() in the participant display',
       onset_note: 'actual onset = animation frame on which the moles were first drawn; display latency not measured',
       response_note: 'a button is a column: three buttons cover nine holes, so the row does not change the correct button',

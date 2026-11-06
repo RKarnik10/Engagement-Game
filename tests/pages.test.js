@@ -62,7 +62,6 @@ test('pages: a labmate link runs the game alone, with score, rings, sound, and h
   assert.ok(moles.every((p) => p.struck && p.stillShown), 'each hit mole waits for the hammer');
   assert.equal(out.leftUp, 0, 'every struck mole is gone once the hammer finishes');
   assert.equal(out.leftStruck, 0);
-  assert.equal(out.sceneGarden, true, 'the garden scene is the default');
   const { resolveConfig } = await import('../src/config.js');
   const { buildSchedule } = await import('../src/schedule.js');
   const sched = buildSchedule(resolveConfig({ nTrials: 20 }));
@@ -122,7 +121,7 @@ test('pages: console and display tabs, with pause, early stop, and results that 
   assert.equal(r.loadCheckHidden, true);
   assert.match(r.link, /not open/);
   assert.equal(r.startDisabled, true);
-  assert.equal(r.share, 'https://example.org/Engagement-Game/display.html?trials=30&run=2&distractor=molerat&sub=07&results=1',
+  assert.equal(r.share, 'https://example.org/Engagement-Game/display.html?trials=30&run=2&sub=07&results=1',
     'the labmate link carries the settings and turns results on');
   con.postMessage('copy');
   r = await c.next((m) => m.cmd === 'copy', 'copy');

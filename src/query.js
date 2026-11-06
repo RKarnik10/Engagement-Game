@@ -17,8 +17,7 @@ const INT = Object.freeze({
   trials: 'nTrials', trialms: 'trialMs', holdms: 'holdMs', seed: 'seed', penalty: 'scorePenalty', run: 'run',
   hsad: 'healthSadHit', hmiss: 'healthMiss', hstreak: 'healthStreak', hregen: 'healthRegen',
 });
-const TEXT = Object.freeze({ setting: 'setting', layout: 'layout', onset: 'onset', scene: 'scene', sub: 'participant', style: 'gameStyle' });
-const DISTRACTOR = Object.freeze({ sad: 'mole_sad', molerat: 'molerat' });
+const TEXT = Object.freeze({ setting: 'setting', onset: 'onset', sub: 'participant', style: 'gameStyle' });
 
 const pct = (x) => Math.round(x * 100);
 
@@ -37,7 +36,6 @@ export function configFromQuery(search) {
     if (parts.length === 3) [out.goodShare, out.badShare, out.bothShare] = parts.map((n) => n / 100);
     else out.goodShare = NaN;                        // let validation report it
   }
-  if (q.has('distractor')) out.badStim = DISTRACTOR[q.get('distractor')] || q.get('distractor');
   return out;
 }
 
@@ -58,7 +56,6 @@ export function configToQuery(config, force = {}) {
   if ([c.goodShare, c.badShare, c.bothShare].some((v, i) => v !== [DEFAULTS.goodShare, DEFAULTS.badShare, DEFAULTS.bothShare][i])) {
     q.set('mix', [c.goodShare, c.badShare, c.bothShare].map(pct).join('-'));
   }
-  if (c.badStim !== DEFAULTS.badStim) q.set('distractor', c.badStim === 'mole_sad' ? 'sad' : c.badStim);
   for (const [k, field] of Object.entries(TEXT)) if (c[field] !== DEFAULTS[field]) q.set(k, c[field]);
   // Only switches that differ from the default: score is on by default, so
   // a link turns it off with score=0; the others are off and turned on with 1.

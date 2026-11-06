@@ -47,7 +47,6 @@ await new Promise((r) => setTimeout(r, 20));
 await new Promise((r) => setTimeout(r, 400));   // let the hammer sinks finish
 out.leftUp = $('holes').children.filter((h) => h.dataset.stim).length;
 out.leftStruck = $('holes').children.filter((h) => h.classList.contains('struck')).length;
-out.sceneGarden = $('stage').classList.contains('scene-garden');
 out.resultsHidden = $('results').hidden;
 out.summary = $('results-summary').textContent;
 await new Promise((r) => setTimeout(r, 1000));   // the auto-saved files are spaced 400 ms apart

@@ -9,7 +9,7 @@ import { createDisplaySession } from './session.js';
 import { interpretKey } from './input.js';
 import {
   renderBoard, renderKeycaps, setTarget, setStimulus, rampVisibility, keysDescription, flashRing, swingHammer,
-  sinkStruck, cancelSink, applyScene, HAMMER_LAND_MS,
+  sinkStruck, cancelSink, HAMMER_LAND_MS,
 } from './render/board.js';
 import { createSounds } from './render/sound.js';
 import { configFromQuery, hasQuerySettings } from './query.js';
@@ -97,7 +97,6 @@ const view = {
     const skin = SKINS[c.skin] || moleSkin;
     renderBoard(holesEl, c, skin);
     renderKeycaps(capsEl, c);
-    applyScene(stage, c);
     struck.clear();
     const start = standalone
       ? '<p>Click this page once, then press <kbd>T</kbd> to start. <kbd>P</kbd> pauses, <kbd>Esc</kbd> ends the run.</p>'
